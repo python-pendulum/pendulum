@@ -29,7 +29,7 @@ from pendulum.helpers import set_locale
 from pendulum.helpers import week_ends_at
 from pendulum.helpers import week_starts_at
 from pendulum.interval import Interval
-from pendulum.parser import parse
+from pendulum.parser import parse as parse
 from pendulum.testing.traveller import Traveller
 from pendulum.time import Time
 from pendulum.tz import UTC
