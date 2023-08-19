@@ -376,8 +376,7 @@ class Formatter:
         """
         escaped_fmt = re.escape(fmt)
 
-        tokens = self._FROM_FORMAT_RE.findall(escaped_fmt)
-        if not tokens:
+        if not self._FROM_FORMAT_RE.search(escaped_fmt):
             raise ValueError("The given time string does not match the given format")
 
         if not locale:
@@ -405,7 +404,7 @@ class Formatter:
             lambda m: self._replace_tokens(m.group(0), loaded_locale), escaped_fmt
         )
 
-        if not re.search("^" + pattern + "$", time):
+        if not re.fullmatch(pattern, time):
             raise ValueError(f"String does not match format {fmt}")
 
         def _get_parsed_values(m: Match[str]) -> Any:
@@ -629,7 +628,6 @@ class Formatter:
             match = "months.abbreviated"
         elif token == "Do":
             parsed["day"] = int(cast(Match[str], re.match(r"(\d+)", value)).group(1))
-
             return
         elif token == "dddd":
             unit = "day_of_week"
