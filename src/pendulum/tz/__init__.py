@@ -10,6 +10,7 @@ from pendulum.tz.local_timezone import test_local_timezone
 from pendulum.tz.timezone import UTC
 from pendulum.tz.timezone import FixedTimezone
 from pendulum.tz.timezone import Timezone
+from zoneinfo import available_timezones
 
 
 if TYPE_CHECKING:
@@ -26,13 +27,7 @@ _tz_cache: dict[int, FixedTimezone] = {}
 
 
 def timezones() -> tuple[str, ...]:
-    global _timezones
-
-    if _timezones is None:
-        with cast("Path", resources.files("tzdata").joinpath("zones")).open() as f:
-            _timezones = tuple(tz.strip() for tz in f.readlines())
-
-    return _timezones
+    return available_timezones()
 
 
 def fixed_timezone(offset: int) -> FixedTimezone:
