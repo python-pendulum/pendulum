@@ -62,7 +62,7 @@ def test_separator():
 def test_subseconds():
     pi = pendulum.duration(microseconds=123456)
 
-    assert pi.in_words() == "0.12 second"
+    assert pi.in_words() == "0.12 seconds"
 
 
 def test_subseconds_with_seconds():
