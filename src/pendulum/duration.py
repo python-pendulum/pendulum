@@ -284,7 +284,7 @@ class Duration(timedelta):
             unit = f"units.second.{loaded_locale.plural(0)}"
             if self.microseconds != 0:
                 microseconds = abs(self.microseconds) / 1e6
-                count = f"{round(microseconds, ndigits=seconds_n_decimal)}"
+                count = str({round(microseconds, ndigits=seconds_n_decimal)})
             else:
                 unit = f"units.microsecond.{loaded_locale.plural(0)}"
             translation = loaded_locale.translation(unit)
