@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import copy
 import operator
 
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Generic
 from typing import TypeVar
 from typing import cast
@@ -409,3 +411,10 @@ class Interval(Duration, Generic[_T]):
 
     def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> Self:
+        return self.__class__(
+            copy.deepcopy(self.start, memo),
+            copy.deepcopy(self.end, memo),
+            self._absolute,
+        )
