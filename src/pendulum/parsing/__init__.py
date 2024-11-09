@@ -44,7 +44,8 @@ COMMON = re.compile(
     "    )"
     ")?"
     # Time (optional)  # noqa: ERA001
-    "(?P<time>" r"    (?P<timesep>\ )?"  # Separator (space)
+    "(?P<time>"
+    r"    (?P<timesep>\ )?"  # Separator (space)
     # HH:mm:ss (optional mm and ss)
     r"    (?P<hour>\d{1,2}):(?P<minute>\d{1,2})?(?::(?P<second>\d{1,2}))?"
     # Subsecond part (optional)

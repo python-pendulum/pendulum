@@ -80,6 +80,7 @@ tox = "^4.0.0"
 
 # [tool.poetry.group.benchmark.dependencies]
 # pytest-codspeed = "^1.2.2"
+ruff = "^0.7.3"
 
 [tool.poetry.group.build.dependencies]
 maturin = ">=1.0,<2.0"

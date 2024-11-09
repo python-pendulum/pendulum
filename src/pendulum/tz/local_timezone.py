@@ -206,7 +206,8 @@ def _get_unix_timezone(_root: str = "/") -> Timezone:
                 line = line[match.end() :]
                 etctz = line[
                     : cast(
-                        re.Match, end_re.search(line)  # type: ignore[type-arg]
+                        re.Match,
+                        end_re.search(line),  # type: ignore[type-arg]
                     ).start()
                 ]
 

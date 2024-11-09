@@ -47,8 +47,7 @@ class BaseTraveller:
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def _not_implemented(self) -> NotImplementedError:
         return NotImplementedError()
