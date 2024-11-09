@@ -62,8 +62,7 @@ def add_duration(
     minutes: int = 0,
     seconds: float = 0,
     microseconds: int = 0,
-) -> _DT:
-    ...
+) -> _DT: ...
 
 
 @overload

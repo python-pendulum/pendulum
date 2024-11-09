@@ -27,6 +27,7 @@ pub struct ParsedDateTime {
     pub second: u32,
     pub microsecond: u32,
     pub offset: Option<i32>,
+    #[allow(dead_code)]
     pub has_offset: bool,
     pub tzname: Option<String>,
     pub has_date: bool,

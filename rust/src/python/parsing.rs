@@ -16,7 +16,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
             (Some(datetime), None, None) => match (datetime.has_date, datetime.has_time) {
                 (true, true) => match datetime.offset {
                     Some(offset) => {
-                        let dt = PyDateTime::new(
+                        let dt = PyDateTime::new_bound(
                             py,
                             datetime.year as i32,
                             datetime.month as u8,
@@ -28,14 +28,14 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             Some(
                                 Py::new(py, FixedTimezone::new(offset, datetime.tzname))?
                                     .to_object(py)
-                                    .extract(py)?,
+                                    .downcast_bound(py)?,
                             ),
                         )?;
 
                         Ok(dt.to_object(py))
                     }
                     None => {
-                        let dt = PyDateTime::new(
+                        let dt = PyDateTime::new_bound(
                             py,
                             datetime.year as i32,
                             datetime.month as u8,
@@ -51,7 +51,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                     }
                 },
                 (true, false) => {
-                    let dt = PyDate::new(
+                    let dt = PyDate::new_bound(
                         py,
                         datetime.year as i32,
                         datetime.month as u8,
@@ -62,7 +62,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                 }
                 (false, true) => match datetime.offset {
                     Some(offset) => {
-                        let dt = PyTime::new(
+                        let dt = PyTime::new_bound(
                             py,
                             datetime.hour as u8,
                             datetime.minute as u8,
@@ -71,14 +71,14 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             Some(
                                 Py::new(py, FixedTimezone::new(offset, datetime.tzname))?
                                     .to_object(py)
-                                    .extract(py)?,
+                                    .downcast_bound(py)?,
                             ),
                         )?;
 
                         Ok(dt.to_object(py))
                     }
                     None => {
-                        let dt = PyTime::new(
+                        let dt = PyTime::new_bound(
                             py,
                             datetime.hour as u8,
                             datetime.minute as u8,

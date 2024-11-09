@@ -20,14 +20,14 @@ jobs:
             platform: linux
           - os: windows
             ls: dir
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 pypy3.8 pypy3.9 pypy3.10
+            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13 pypy3.8 pypy3.9 pypy3.10
           - os: windows
             ls: dir
             target: aarch64
             interpreter: 3.11 3.12
           - os: macos
             target: aarch64
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 pypy3.8 pypy3.9 pypy3.10
+            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13 pypy3.8 pypy3.9 pypy3.10
           - os: ubuntu
             platform: linux
             target: aarch64
@@ -45,13 +45,13 @@ jobs:
           - os: ubuntu
             platform: linux
             target: ppc64le
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12
+            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13
             # mimalloc not supported on manylinux2014 cross-compile container
             extra-build-args: --no-default-features
           - os: ubuntu
             platform: linux
             target: s390x
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12
+            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13
             # mimalloc not supported on manylinux2014 cross-compile container
             extra-build-args: --no-default-features
 
@@ -71,7 +71,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux || 'auto' }}
           container: ${{ matrix.container }}
-          args: --release --out dist --interpreter ${{ matrix.interpreter || '3.7 3.8 3.9 3.10 3.11 3.12 pypy3.7 pypy3.8 pypy3.9 pypy3.10' }} ${{ matrix.extra-build-args }}
+          args: --release --out dist --interpreter ${{ matrix.interpreter || '3.7 3.8 3.9 3.10 3.11 3.12 3.13 pypy3.7 pypy3.8 pypy3.9 pypy3.10' }} ${{ matrix.extra-build-args }}
           rust-toolchain: stable
           docker-options: -e CI
 
@@ -138,8 +138,8 @@ jobs:
           draft: false
           prerelease: steps.check-version.outputs.prerelease == 'true'
 
-      - name: Publish to PyPI
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          poetry publish
+      # - name: Publish to PyPI
+      #   env:
+      #     POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+      #   run: |
+      #     poetry publish

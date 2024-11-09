@@ -1,7 +1,6 @@
 use std::cmp::Ordering;
 
 use pyo3::{
-    intern,
     prelude::*,
     types::{PyDate, PyDateAccess, PyDateTime, PyDelta, PyDeltaAccess, PyString, PyTimeAccess},
     PyTypeInfo,
@@ -74,57 +73,41 @@ impl PartialOrd for DateTimeInfo<'_> {
     }
 }
 
-pub fn get_tz_name<'py>(py: Python, dt: &'py PyAny) -> PyResult<&'py str> {
-    let tz: &str = "";
+pub fn get_tz_name<'py>(dt: &Bound<'py, PyAny>) -> PyResult<String> {
+    // let tz: &str = "";
 
-    if !PyDateTime::is_type_of(dt) {
-        return Ok(tz);
+    if !PyDateTime::is_type_of_bound(dt) {
+        return Ok(String::new());
     }
 
-    let tzinfo = dt.getattr("tzinfo");
+    let tzinfo: Bound<'py, PyAny> = dt.getattr("tzinfo")?;
 
-    match tzinfo {
-        Err(_) => Ok(tz),
-        Ok(tzinfo) => {
-            if tzinfo.is_none() {
-                return Ok(tz);
-            }
-            if tzinfo.hasattr(intern!(py, "key")).unwrap_or(false) {
-                // zoneinfo timezone
-                let tzname: &PyString = tzinfo
-                    .getattr(intern!(py, "key"))
-                    .unwrap()
-                    .downcast()
-                    .unwrap();
+    if tzinfo.is_none() {
+        return Ok(String::new());
+    }
 
-                return tzname.to_str();
-            } else if tzinfo.hasattr(intern!(py, "name")).unwrap_or(false) {
-                // Pendulum timezone
-                let tzname: &PyString = tzinfo
-                    .getattr(intern!(py, "name"))
-                    .unwrap()
-                    .downcast()
-                    .unwrap();
+    let tzname_attr: Option<Bound<'py, PyAny>>;
 
-                return tzname.to_str();
-            } else if tzinfo.hasattr(intern!(py, "zone")).unwrap_or(false) {
-                // pytz timezone
-                let tzname: &PyString = tzinfo
-                    .getattr(intern!(py, "zone"))
-                    .unwrap()
-                    .downcast()
-                    .unwrap();
+    if tzinfo.hasattr("key")? {
+        tzname_attr = Some(tzinfo.getattr("key")?);
+    } else if tzinfo.hasattr("name")? {
+        tzname_attr = Some(tzinfo.getattr("name")?);
+    } else if tzinfo.hasattr("zone")? {
+        tzname_attr = Some(tzinfo.getattr("zone")?);
+    } else {
+        tzname_attr = None;
+    }
 
-                return tzname.to_str();
-            }
-
-            Ok(tz)
-        }
+    if let Some(tzname_attr) = tzname_attr {
+        let tzname: &Bound<PyString> = tzname_attr.downcast()?;
+        tzname.extract()
+    } else {
+        Ok(String::new())
     }
 }
 
-pub fn get_offset(dt: &PyAny) -> PyResult<i32> {
-    if !PyDateTime::is_type_of(dt) {
+pub fn get_offset(dt: &Bound<PyAny>) -> PyResult<i32> {
+    if !PyDateTime::is_type_of_bound(dt) {
         return Ok(0);
     }
 
@@ -133,8 +116,8 @@ pub fn get_offset(dt: &PyAny) -> PyResult<i32> {
     if tzinfo.is_none() {
         return Ok(0);
     }
-
-    let offset: &PyDelta = tzinfo.call_method1("utcoffset", (dt,))?.downcast()?;
+    let binding = tzinfo.call_method1("utcoffset", (dt,))?;
+    let offset: &Bound<PyDelta> = binding.downcast()?;
 
     Ok(offset.get_days() * SECS_PER_DAY as i32 + offset.get_seconds())
 }
@@ -169,8 +152,13 @@ pub fn local_time(
 }
 
 #[pyfunction]
-pub fn precise_diff<'py>(py: Python, dt1: &'py PyAny, dt2: &'py PyAny) -> PyResult<PreciseDiff> {
+pub fn precise_diff<'py>(
+    dt1: &Bound<'py, PyAny>,
+    dt2: &Bound<'py, PyAny>,
+) -> PyResult<PreciseDiff> {
     let mut sign = 1;
+    let dt1_tz = get_tz_name(dt1)?;
+    let dt2_tz = get_tz_name(dt2)?;
     let mut dtinfo1 = DateTimeInfo {
         year: dt1.downcast::<PyDate>()?.get_year(),
         month: i32::from(dt1.downcast::<PyDate>()?.get_month()),
@@ -180,9 +168,9 @@ pub fn precise_diff<'py>(py: Python, dt1: &'py PyAny, dt2: &'py PyAny) -> PyResu
         second: 0,
         microsecond: 0,
         total_seconds: 0,
-        tz: get_tz_name(py, dt1)?,
+        tz: dt1_tz.as_str(),
         offset: get_offset(dt1)?,
-        is_datetime: PyDateTime::is_type_of(dt1),
+        is_datetime: PyDateTime::is_type_of_bound(dt1),
     };
     let mut dtinfo2 = DateTimeInfo {
         year: dt2.downcast::<PyDate>()?.get_year(),
@@ -193,16 +181,16 @@ pub fn precise_diff<'py>(py: Python, dt1: &'py PyAny, dt2: &'py PyAny) -> PyResu
         second: 0,
         microsecond: 0,
         total_seconds: 0,
-        tz: get_tz_name(py, dt2)?,
+        tz: dt2_tz.as_str(),
         offset: get_offset(dt2)?,
-        is_datetime: PyDateTime::is_type_of(dt2),
+        is_datetime: PyDateTime::is_exact_type_of_bound(dt2),
     };
     let in_same_tz: bool = dtinfo1.tz == dtinfo2.tz && !dtinfo1.tz.is_empty();
     let mut total_days = helpers::day_number(dtinfo2.year, dtinfo2.month as u8, dtinfo2.day as u8)
         - helpers::day_number(dtinfo1.year, dtinfo1.month as u8, dtinfo1.day as u8);
 
     if dtinfo1.is_datetime {
-        let dt1dt: &PyDateTime = dt1.downcast()?;
+        let dt1dt: &Bound<PyDateTime> = dt1.downcast()?;
 
         dtinfo1.hour = i32::from(dt1dt.get_hour());
         dtinfo1.minute = i32::from(dt1dt.get_minute());
@@ -247,7 +235,7 @@ pub fn precise_diff<'py>(py: Python, dt1: &'py PyAny, dt2: &'py PyAny) -> PyResu
     }
 
     if dtinfo2.is_datetime {
-        let dt2dt: &PyDateTime = dt2.downcast()?;
+        let dt2dt: &Bound<PyDateTime> = dt2.downcast()?;
 
         dtinfo2.hour = i32::from(dt2dt.get_hour());
         dtinfo2.minute = i32::from(dt2dt.get_minute());

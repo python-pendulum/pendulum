@@ -9,7 +9,7 @@ use parsing::parse_iso8601;
 use types::{Duration, PreciseDiff};
 
 #[pymodule]
-pub fn _pendulum(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+pub fn _pendulum(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(days_in_year, m)?)?;
     m.add_function(wrap_pyfunction!(is_leap, m)?)?;
     m.add_function(wrap_pyfunction!(is_long_year, m)?)?;

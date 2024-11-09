@@ -11,20 +11,29 @@ pub struct FixedTimezone {
 #[pymethods]
 impl FixedTimezone {
     #[new]
+    #[pyo3(signature = (offset, name=None))]
     pub fn new(offset: i32, name: Option<String>) -> Self {
         Self { offset, name }
     }
 
-    fn utcoffset<'p>(&self, py: Python<'p>, _dt: &PyAny) -> PyResult<&'p PyDelta> {
-        PyDelta::new(py, 0, self.offset, 0, true)
+    fn utcoffset<'p>(
+        &self,
+        py: Python<'p>,
+        _dt: &Bound<'p, PyAny>,
+    ) -> Result<pyo3::Bound<'p, PyDelta>, PyErr> {
+        PyDelta::new_bound(py, 0, self.offset, 0, true)
     }
 
-    fn tzname(&self, _dt: &PyAny) -> String {
+    fn tzname(&self, _dt: &Bound<PyAny>) -> String {
         self.__str__()
     }
 
-    fn dst<'p>(&self, py: Python<'p>, _dt: &PyAny) -> PyResult<&'p PyDelta> {
-        PyDelta::new(py, 0, 0, 0, true)
+    fn dst<'p>(
+        &self,
+        py: Python<'p>,
+        _dt: &Bound<'p, PyAny>,
+    ) -> Result<pyo3::Bound<'p, PyDelta>, PyErr> {
+        PyDelta::new_bound(py, 0, 0, 0, true)
     }
 
     fn __repr__(&self) -> String {
@@ -46,7 +55,7 @@ impl FixedTimezone {
         }
     }
 
-    fn __deepcopy__(&self, py: Python, _memo: &PyDict) -> PyResult<Py<Self>> {
+    fn __deepcopy__(&self, py: Python, _memo: &Bound<PyDict>) -> PyResult<Py<Self>> {
         Py::new(py, self.clone())
     }
 }
