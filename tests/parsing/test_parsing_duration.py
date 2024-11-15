@@ -293,6 +293,14 @@ def test_parse_duration_invalid():
         parse("P1Dasdfasdf")
 
 
+def test_parse_interval_invalid():
+    with pytest.raises(ParserError):
+        parse("/no_start")
+
+    with pytest.raises(ParserError):
+        parse("no_end/")
+
+
 def test_parse_duration_fraction_only_allowed_on_last_component():
     with pytest.raises(ParserError):
         parse("P2Y3M4DT5.5H6M7S")
