@@ -146,13 +146,11 @@ class DateTime(datetime.datetime, Date):
 
     @overload
     @classmethod
-    def now(cls, tz: datetime.tzinfo | None = None) -> Self:
-        ...
+    def now(cls, tz: datetime.tzinfo | None = None) -> Self: ...
 
     @overload
     @classmethod
-    def now(cls, tz: str | Timezone | FixedTimezone | None = None) -> Self:
-        ...
+    def now(cls, tz: str | Timezone | FixedTimezone | None = None) -> Self: ...
 
     @classmethod
     def now(
@@ -474,7 +472,7 @@ class DateTime(datetime.datetime, Date):
         if self.microsecond:
             us = f", {self.microsecond}"
 
-        repr_ = "{klass}(" "{year}, {month}, {day}, " "{hour}, {minute}, {second}{us}"
+        repr_ = "{klass}({year}, {month}, {day}, {hour}, {minute}, {second}{us}"
 
         if self.tzinfo is not None:
             repr_ += ", tzinfo={tzinfo}"
@@ -1008,7 +1006,7 @@ class DateTime(datetime.datetime, Date):
         if unit not in ["month", "quarter", "year"]:
             raise ValueError(f'Invalid unit "{unit}" for first_of()')
 
-        dt = cast(Optional["Self"], getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
+        dt = cast("Optional[Self]", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
         if not dt:
             raise PendulumException(
                 f"Unable to find occurrence {nth}"
@@ -1186,12 +1184,10 @@ class DateTime(datetime.datetime, Date):
         )
 
     @overload  # type: ignore[override]
-    def __sub__(self, other: datetime.timedelta) -> Self:
-        ...
+    def __sub__(self, other: datetime.timedelta) -> Self: ...
 
     @overload
-    def __sub__(self, other: DateTime) -> Interval[datetime.datetime]:
-        ...
+    def __sub__(self, other: DateTime) -> Interval[datetime.datetime]: ...
 
     def __sub__(
         self, other: datetime.datetime | datetime.timedelta

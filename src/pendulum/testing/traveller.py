@@ -47,8 +47,7 @@ class BaseTraveller:
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def _not_implemented(self) -> NotImplementedError:
         return NotImplementedError()
@@ -72,7 +71,7 @@ if not PYPY:
 
             def freeze(self) -> Self:
                 if self._started:
-                    cast(time_machine.Coordinates, self._coordinates).move_to(
+                    cast("time_machine.Coordinates", self._coordinates).move_to(
                         self._datetime_class.now(), tick=False
                     )
                 else:
@@ -84,7 +83,7 @@ if not PYPY:
                 if not self._started:
                     return self
 
-                cast(time_machine.travel, self._traveller).stop()
+                cast("time_machine.travel", self._traveller).stop()
                 self._coordinates = None
                 self._traveller = None
                 self._started = False
@@ -106,7 +105,7 @@ if not PYPY:
             ) -> Self:
                 self._start(freeze=freeze)
 
-                cast(time_machine.Coordinates, self._coordinates).move_to(
+                cast("time_machine.Coordinates", self._coordinates).move_to(
                     self._datetime_class.now().add(
                         years=years,
                         months=months,
@@ -124,7 +123,7 @@ if not PYPY:
             def travel_to(self, dt: DateTime, *, freeze: bool = False) -> Self:
                 self._start(freeze=freeze)
 
-                cast(time_machine.Coordinates, self._coordinates).move_to(dt)
+                cast("time_machine.Coordinates", self._coordinates).move_to(dt)
 
                 return self
 

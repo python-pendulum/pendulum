@@ -42,9 +42,10 @@ ISO8601_DT = re.compile(
     "    )"
     ")?"
     # Time (optional)  # noqa: ERA001
-    "(?P<time>" r"    (?P<timesep>[T\ ])?"  # Separator (T or space)
+    "(?P<time>"
+    r"    (?P<timesep>[T\ ])?"  # Separator (T or space)
     # HH:mm:ss (optional mm and ss)
-    r"    (?P<hour>\d{1,2})(?P<minsep>:)?(?P<minute>\d{1,2})?(?P<secsep>:)?(?P<second>\d{1,2})?"  # noqa: E501
+    r"    (?P<hour>\d{1,2})(?P<minsep>:)?(?P<minute>\d{1,2})?(?P<secsep>:)?(?P<second>\d{1,2})?"
     # Subsecond part (optional)
     "    (?P<subsecondsection>"
     "        (?:[.,])"  # Subsecond separator (optional)
@@ -366,7 +367,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
             if fractional:
                 raise ParserError("Invalid duration")
 
-            _hours = cast(str, _hours).replace(",", ".").replace("H", "")
+            _hours = cast("str", _hours).replace(",", ".").replace("H", "")
 
             if "." in _hours:
                 fractional = True
@@ -381,7 +382,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
             if fractional:
                 raise ParserError("Invalid duration")
 
-            _minutes = cast(str, _minutes).replace(",", ".").replace("M", "")
+            _minutes = cast("str", _minutes).replace(",", ".").replace("M", "")
 
             if "." in _minutes:
                 fractional = True
@@ -396,7 +397,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
             if fractional:
                 raise ParserError("Invalid duration")
 
-            _seconds = cast(str, _seconds).replace(",", ".").replace("S", "")
+            _seconds = cast("str", _seconds).replace(",", ".").replace("S", "")
 
             if "." in _seconds:
                 _seconds, _microseconds = _seconds.split(".")
@@ -425,7 +426,7 @@ def _get_iso_8601_week(
     year = int(year)
     week = int(week)
 
-    if week > 53 or week > 52 and not is_long_year(year):
+    if week > 53 or (week > 52 and not is_long_year(year)):
         raise ParserError("Invalid week for week date")
 
     if weekday > 7:

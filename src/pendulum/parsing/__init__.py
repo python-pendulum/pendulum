@@ -27,7 +27,7 @@ try:
     from pendulum._pendulum import Duration
     from pendulum._pendulum import parse_iso8601
 except ImportError:
-    from pendulum.duration import Duration  # type: ignore[assignment]
+    from pendulum.duration import Duration  # type: ignore[assignment]  # noqa: TC001
     from pendulum.parsing.iso8601 import parse_iso8601  # type: ignore[assignment]
 
 
@@ -44,7 +44,8 @@ COMMON = re.compile(
     "    )"
     ")?"
     # Time (optional)  # noqa: ERA001
-    "(?P<time>" r"    (?P<timesep>\ )?"  # Separator (space)
+    "(?P<time>"
+    r"    (?P<timesep>\ )?"  # Separator (space)
     # HH:mm:ss (optional mm and ss)
     r"    (?P<hour>\d{1,2}):(?P<minute>\d{1,2})?(?::(?P<second>\d{1,2}))?"
     # Subsecond part (optional)
@@ -90,7 +91,7 @@ def _normalize(
         return parsed
 
     if isinstance(parsed, time):
-        now = cast(Optional[datetime], options["now"]) or datetime.now()
+        now = cast("Optional[datetime]", options["now"]) or datetime.now()
 
         return datetime(
             now.year,
@@ -228,7 +229,7 @@ def _parse_iso8601_interval(text: str) -> _Interval:
         end = parse_iso8601(last)
 
     return _Interval(
-        cast(datetime, start), cast(datetime, end), cast(Duration, duration)
+        cast("datetime", start), cast("datetime", end), cast("Duration", duration)
     )
 
 
