@@ -7,7 +7,6 @@ import zoneinfo
 from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
-from typing import Any
 from typing import TypeVar
 from typing import cast
 
@@ -67,7 +66,7 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
         except zoneinfo.ZoneInfoNotFoundError:
             raise InvalidTimezone(key)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, PendulumTimezone) and self.key == other.key
 
     @property
