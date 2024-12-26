@@ -37,11 +37,8 @@ class Interval(Duration, Generic[_T]):
     """
 
     def __new__(cls, start: _T, end: _T, absolute: bool = False) -> Self:
-        if (
-            isinstance(start, datetime)
-            and not isinstance(end, datetime)
-            or not isinstance(start, datetime)
-            and isinstance(end, datetime)
+        if (isinstance(start, datetime) and not isinstance(end, datetime)) or (
+            not isinstance(start, datetime) and isinstance(end, datetime)
         ):
             raise ValueError(
                 "Both start and end of an Interval must have the same type"
@@ -51,10 +48,8 @@ class Interval(Duration, Generic[_T]):
             isinstance(start, datetime)
             and isinstance(end, datetime)
             and (
-                start.tzinfo is None
-                and end.tzinfo is not None
-                or start.tzinfo is not None
-                and end.tzinfo is None
+                (start.tzinfo is None and end.tzinfo is not None)
+                or (start.tzinfo is not None and end.tzinfo is None)
             )
         ):
             raise TypeError("can't compare offset-naive and offset-aware datetimes")
@@ -336,12 +331,10 @@ class Interval(Duration, Generic[_T]):
     __rmul__ = __mul__  # type: ignore[assignment]
 
     @overload  # type: ignore[override]
-    def __floordiv__(self, other: timedelta) -> int:
-        ...
+    def __floordiv__(self, other: timedelta) -> int: ...
 
     @overload
-    def __floordiv__(self, other: int) -> Duration:
-        ...
+    def __floordiv__(self, other: int) -> Duration: ...
 
     def __floordiv__(self, other: int | timedelta) -> int | Duration:
         return self.as_duration().__floordiv__(other)
@@ -349,12 +342,10 @@ class Interval(Duration, Generic[_T]):
     __div__ = __floordiv__  # type: ignore[assignment]
 
     @overload  # type: ignore[override]
-    def __truediv__(self, other: timedelta) -> float:
-        ...
+    def __truediv__(self, other: timedelta) -> float: ...
 
     @overload
-    def __truediv__(self, other: float) -> Duration:
-        ...
+    def __truediv__(self, other: float) -> Duration: ...
 
     def __truediv__(self, other: float | timedelta) -> Duration | float:
         return self.as_duration().__truediv__(other)

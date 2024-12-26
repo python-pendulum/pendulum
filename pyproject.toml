@@ -85,34 +85,10 @@ test = ["time-machine"]
 [tool.maturin]
 module-name = "pendulum._pendulum"
 
-
 [tool.ruff]
 fix = true
-unfixable = [
-    "ERA", # do not autoremove commented out code
-]
-target-version = "py39"
 line-length = 88
-extend-select = [
-    "B", # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "ERA", # flake8-eradicate/eradicate
-    "I", # isort
-    "N", # pep8-naming
-    "PIE", # flake8-pie
-    "PGH", # pygrep
-    "RUF", # ruff checks
-    "SIM", # flake8-simplify
-    "TCH", # flake8-type-checking
-    "TID", # flake8-tidy-imports
-    "UP", # pyupgrade
-]
-ignore = [
-    "B904", # use 'raise ... from err'
-    "B905", # use explicit 'strict=' parameter with 'zip()'
-    "N818", #  Exception name should be named with an Error suffix
-    "RUF001",
-]
+target-version = "py39"
 extend-exclude = [
     # External to the project's coding standards:
     "docs/*",
@@ -122,10 +98,39 @@ extend-exclude = [
     "*.pyi",
 ]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint]
+extend-select = [
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "ERA", # flake8-eradicate/eradicate
+    "I",   # isort
+    "N",   # pep8-naming
+    "PIE", # flake8-pie
+    "PGH", # pygrep
+    "RUF", # ruff checks
+    "SIM", # flake8-simplify
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "UP",  # pyupgrade
+]
+ignore = [
+    "B904", # use 'raise ... from err'
+    "B905", # use explicit 'strict=' parameter with 'zip()'
+    "N818",
+    "RUF001"
+]
+extend-safe-fixes = [
+    "TCH", # move import from and to TYPE_CHECKING blocks
+]
+unfixable = [
+    "ERA", # do not autoremove commented out code
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-single-line = true
 lines-between-types = 1
 lines-after-imports = 2
@@ -139,7 +144,7 @@ known-third-party = [
 ]
 required-imports = ["from __future__ import annotations"]
 
-[tool.ruff.extend-per-file-ignores]
+[tool.ruff.lint.extend-per-file-ignores]
 "build.py" = ["I002"]
 "clock" = ["RUF012"]
 

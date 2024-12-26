@@ -62,8 +62,7 @@ def add_duration(
     minutes: int = 0,
     seconds: float = 0,
     microseconds: int = 0,
-) -> _DT:
-    ...
+) -> _DT: ...
 
 
 @overload
@@ -205,17 +204,17 @@ def week_ends_at(wday: WeekDay) -> None:
 
 __all__ = [
     "PreciseDiff",
+    "add_duration",
     "days_in_year",
+    "format_diff",
+    "get_locale",
     "is_leap",
     "is_long_year",
     "local_time",
-    "precise_diff",
-    "week_day",
-    "add_duration",
-    "format_diff",
     "locale",
+    "precise_diff",
     "set_locale",
-    "get_locale",
-    "week_starts_at",
+    "week_day",
     "week_ends_at",
+    "week_starts_at",
 ]
