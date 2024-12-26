@@ -67,7 +67,7 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
             raise InvalidTimezone(key)
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, PendulumTimezone) and self.key == other.key
+        return isinstance(other, Timezone) and self.key == other.key
 
     @property
     def name(self) -> str:
@@ -174,6 +174,9 @@ class FixedTimezone(_datetime.tzinfo, PendulumTimezone):
         self._name = name
         self._offset = offset
         self._utcoffset = _datetime.timedelta(seconds=offset)
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, FixedTimezone) and self._offset == other._offset
 
     @property
     def name(self) -> str:

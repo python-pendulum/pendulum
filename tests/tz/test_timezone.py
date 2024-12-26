@@ -404,6 +404,11 @@ def test_fixed_timezone():
     assert tz2.dst(dt) == timedelta()
 
 
+def test_fixed_equality():
+    assert fixed_timezone(19800) == fixed_timezone(19800)
+    assert fixed_timezone(19800) != fixed_timezone(19801)
+
+
 def test_just_before_last_transition():
     tz = pendulum.timezone("Asia/Shanghai")
     dt = datetime(1991, 4, 20, 1, 49, 8, fold=0)
