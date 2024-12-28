@@ -11,7 +11,7 @@ from pendulum.utils._compat import PYPY
 
 
 if TYPE_CHECKING:
-    from typing import Generator
+    from collections.abc import Generator
 
 
 @pytest.fixture(autouse=True)

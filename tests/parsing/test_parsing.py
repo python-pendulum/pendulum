@@ -660,6 +660,16 @@ def test_invalid():
     with pytest.raises(ParserError):
         parse(text)
 
+    text = "/2012"
+
+    with pytest.raises(ParserError):
+        parse(text)
+
+    text = "2012/"
+
+    with pytest.raises(ParserError):
+        parse(text)
+
 
 def test_exif_edge_case():
     text = "2016:12:26 15:45:28"

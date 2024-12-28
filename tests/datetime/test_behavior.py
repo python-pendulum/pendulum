@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pickle
+import zoneinfo
 
 from copy import deepcopy
 from datetime import date
@@ -13,7 +14,6 @@ import pendulum
 
 from pendulum import timezone
 from pendulum.tz.timezone import Timezone
-from pendulum.utils._compat import zoneinfo
 
 
 @pytest.fixture

@@ -7,13 +7,17 @@ import sys
 import warnings
 
 from contextlib import contextmanager
-from typing import Iterator
+from typing import TYPE_CHECKING
 from typing import cast
 
 from pendulum.tz.exceptions import InvalidTimezone
 from pendulum.tz.timezone import UTC
 from pendulum.tz.timezone import FixedTimezone
 from pendulum.tz.timezone import Timezone
+
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 if sys.platform == "win32":

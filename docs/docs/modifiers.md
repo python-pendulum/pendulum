@@ -81,6 +81,6 @@ True
 '2014-01-15 12:00:00'
 
 # others that are defined that are similar
-# and tha accept month, quarter and year units
+# and that accept month, quarter and year units
 # first_of(), last_of(), nth_of()
 ```

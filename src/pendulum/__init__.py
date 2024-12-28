@@ -325,7 +325,9 @@ def duration(
     )
 
 
-def interval(start: DateTime, end: DateTime, absolute: bool = False) -> Interval:
+def interval(
+    start: DateTime, end: DateTime, absolute: bool = False
+) -> Interval[DateTime]:
     """
     Create an Interval instance.
     """

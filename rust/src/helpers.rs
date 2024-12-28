@@ -49,57 +49,57 @@ pub fn local_time(
     microsecond: usize,
 ) -> (usize, usize, usize, usize, usize, usize, usize) {
     let mut year: usize = EPOCH_YEAR as usize;
-    let mut seconds: isize = unix_time.floor() as isize;
+    let mut seconds: i64 = unix_time.floor() as i64;
 
     // Shift to a base year that is 400-year aligned.
     if seconds >= 0 {
-        seconds -= (10957 * SECS_PER_DAY as usize) as isize;
+        seconds -= 10957 * SECS_PER_DAY as i64;
         year += 30; // == 2000
     } else {
-        seconds += ((146_097 - 10957) * SECS_PER_DAY as usize) as isize;
+        seconds += (146_097 - 10957) * SECS_PER_DAY as i64;
         year -= 370; // == 1600
     }
 
-    seconds += utc_offset;
+    seconds += utc_offset as i64;
 
     // Handle years in chunks of 400/100/4/1
-    year += 400 * (seconds / SECS_PER_400_YEARS as isize) as usize;
-    seconds %= SECS_PER_400_YEARS as isize;
+    year += 400 * (seconds / SECS_PER_400_YEARS as i64) as usize;
+    seconds %= SECS_PER_400_YEARS as i64;
     if seconds < 0 {
-        seconds += SECS_PER_400_YEARS as isize;
+        seconds += SECS_PER_400_YEARS as i64;
         year -= 400;
     }
 
     let mut leap_year = 1; // 4-century aligned
-    let mut sec_per_100years = SECS_PER_100_YEARS[leap_year] as isize;
+    let mut sec_per_100years = SECS_PER_100_YEARS[leap_year].try_into().unwrap();
 
     while seconds >= sec_per_100years {
         seconds -= sec_per_100years;
         year += 100;
         leap_year = 0; // 1-century, non 4-century aligned
-        sec_per_100years = SECS_PER_100_YEARS[leap_year] as isize;
+        sec_per_100years = SECS_PER_100_YEARS[leap_year].try_into().unwrap();
     }
 
-    let mut sec_per_4years = SECS_PER_4_YEARS[leap_year] as isize;
+    let mut sec_per_4years = SECS_PER_4_YEARS[leap_year].into();
     while seconds >= sec_per_4years {
         seconds -= sec_per_4years;
         year += 4;
         leap_year = 1; // 4-year, non century aligned
-        sec_per_4years = SECS_PER_4_YEARS[leap_year] as isize;
+        sec_per_4years = SECS_PER_4_YEARS[leap_year].into();
     }
 
-    let mut sec_per_year = SECS_PER_YEAR[leap_year] as isize;
+    let mut sec_per_year = SECS_PER_YEAR[leap_year].into();
     while seconds >= sec_per_year {
         seconds -= sec_per_year;
         year += 1;
         leap_year = 0; // non 4-year aligned
-        sec_per_year = SECS_PER_YEAR[leap_year] as isize;
+        sec_per_year = SECS_PER_YEAR[leap_year].into();
     }
 
     // Handle months and days
     let mut month = TM_DECEMBER + 1;
-    let mut day: usize = (seconds / (SECS_PER_DAY as isize) + 1) as usize;
-    seconds %= SECS_PER_DAY as isize;
+    let mut day: usize = (seconds / (SECS_PER_DAY as i64) + 1) as usize;
+    seconds %= SECS_PER_DAY as i64;
 
     let mut month_offset: usize;
     while month != (TM_JANUARY + 1) {
@@ -113,10 +113,10 @@ pub fn local_time(
     }
 
     // Handle hours, minutes and seconds
-    let hour: usize = (seconds / SECS_PER_HOUR as isize) as usize;
-    seconds %= SECS_PER_HOUR as isize;
-    let minute: usize = (seconds / SECS_PER_MIN as isize) as usize;
-    let second: usize = (seconds % SECS_PER_MIN as isize) as usize;
+    let hour: usize = (seconds / SECS_PER_HOUR as i64) as usize;
+    seconds %= SECS_PER_HOUR as i64;
+    let minute: usize = (seconds / SECS_PER_MIN as i64) as usize;
+    let second: usize = (seconds % SECS_PER_MIN as i64) as usize;
 
     (year, month, day, hour, minute, second, microsecond)
 }

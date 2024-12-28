@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import re
 
-from importlib import import_module
+from importlib import import_module, resources
 from pathlib import Path
 from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import cast
-
-from pendulum.utils._compat import resources
 
 
 class Locale:

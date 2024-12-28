@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import math
+import zoneinfo
 
 from typing import NamedTuple
 from typing import cast
@@ -22,7 +23,6 @@ from pendulum.constants import SECS_PER_YEAR
 from pendulum.constants import TM_DECEMBER
 from pendulum.constants import TM_JANUARY
 from pendulum.tz.timezone import Timezone
-from pendulum.utils._compat import zoneinfo
 
 
 class PreciseDiff(NamedTuple):

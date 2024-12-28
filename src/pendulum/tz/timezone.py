@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as _datetime
+import zoneinfo
 
 from abc import ABC
 from abc import abstractmethod
@@ -12,7 +13,6 @@ from typing import cast
 from pendulum.tz.exceptions import AmbiguousTime
 from pendulum.tz.exceptions import InvalidTimezone
 from pendulum.tz.exceptions import NonExistingTime
-from pendulum.utils._compat import zoneinfo
 
 
 if TYPE_CHECKING:
@@ -65,6 +65,9 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
             return super().__new__(cls, key)  # type: ignore[call-arg]
         except zoneinfo.ZoneInfoNotFoundError:
             raise InvalidTimezone(key)
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Timezone) and self.key == other.key
 
     @property
     def name(self) -> str:
@@ -171,6 +174,9 @@ class FixedTimezone(_datetime.tzinfo, PendulumTimezone):
         self._name = name
         self._offset = offset
         self._utcoffset = _datetime.timedelta(seconds=offset)
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, FixedTimezone) and self._offset == other._offset
 
     @property
     def name(self) -> str:

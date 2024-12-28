@@ -26,13 +26,13 @@ jobs:
           - os: ubuntu
             platform: linux
             target: ppc64le
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13
+            interpreter: 3.9 3.10 3.11 3.12 3.13
             # mimalloc not supported on manylinux2014 cross-compile container
             extra-build-args: --no-default-features
           - os: ubuntu
             platform: linux
             target: s390x
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13
+            interpreter: 3.9 3.10 3.11 3.12 3.13
             # mimalloc not supported on manylinux2014 cross-compile container
             extra-build-args: --no-default-features
 
@@ -60,7 +60,7 @@ jobs:
           - os: windows
             target: i686
             python-architecture: x86
-            interpreter: 3.8 3.9 3.10 3.11 3.12 3.13
+            interpreter: 3.9 3.10 3.11 3.12 3.13
           - os: windows
             target: aarch64
             interpreter: 3.11 3.12 3.13
@@ -70,7 +70,7 @@ jobs:
             target: x86_64
           - os: macos
             target: aarch64
-            interpreter: 3.7 3.8 3.9 3.10 3.11 3.12 3.13 pypy3.8 pypy3.9 pypy3.10
+            interpreter: 3.9 3.10 3.11 3.12 3.13 pypy3.8 pypy3.9 pypy3.10
         
           
 
@@ -90,7 +90,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux || 'auto' }}
           container: ${{ matrix.container }}
-          args: --release --out dist --interpreter ${{ matrix.interpreter || '3.7 3.8 3.9 3.10 3.11 3.12 3.13 pypy3.7 pypy3.8 pypy3.9 pypy3.10' }} ${{ matrix.extra-build-args }}
+          args: --release --out dist --interpreter ${{ matrix.interpreter || '3.9 3.10 3.11 3.12 3.13 pypy3.9 pypy3.10' }} ${{ matrix.extra-build-args }}
           rust-toolchain: stable
           docker-options: -e CI
 

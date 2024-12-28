@@ -215,11 +215,11 @@ def _parse_iso8601_interval(text: str) -> _Interval:
     first, last = text.split("/")
     start = end = duration = None
 
-    if first[0] == "P":
+    if first[:1] == "P":
         # duration/end
         duration = parse_iso8601(first)
         end = parse_iso8601(last)
-    elif last[0] == "P":
+    elif last[:1] == "P":
         # start/duration
         start = parse_iso8601(first)
         duration = parse_iso8601(last)
