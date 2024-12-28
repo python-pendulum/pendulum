@@ -80,7 +80,7 @@ ruff = "^0.7.3"
 
 [tool.poetry.group.build.dependencies]
 maturin = ">=1.0,<2.0"
-patchelf = ">=17"
+patchelf = ">=0.17"
 
 [tool.poetry.extras]
 test = ["time-machine"]
