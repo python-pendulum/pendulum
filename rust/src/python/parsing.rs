@@ -7,6 +7,7 @@ use pyo3::types::PyTime;
 use crate::parsing::Parser;
 use crate::python::types::{Duration, FixedTimezone};
 
+#[allow(deprecated)]
 #[pyfunction]
 pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
     let parsed = Parser::new(input).parse();
@@ -16,7 +17,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
             (Some(datetime), None, None) => match (datetime.has_date, datetime.has_time) {
                 (true, true) => match datetime.offset {
                     Some(offset) => {
-                        let dt = PyDateTime::new_bound(
+                        let dt = PyDateTime::new(
                             py,
                             datetime.year as i32,
                             datetime.month as u8,
@@ -35,7 +36,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                         Ok(dt.to_object(py))
                     }
                     None => {
-                        let dt = PyDateTime::new_bound(
+                        let dt = PyDateTime::new(
                             py,
                             datetime.year as i32,
                             datetime.month as u8,
@@ -51,7 +52,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                     }
                 },
                 (true, false) => {
-                    let dt = PyDate::new_bound(
+                    let dt = PyDate::new(
                         py,
                         datetime.year as i32,
                         datetime.month as u8,
@@ -62,7 +63,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                 }
                 (false, true) => match datetime.offset {
                     Some(offset) => {
-                        let dt = PyTime::new_bound(
+                        let dt = PyTime::new(
                             py,
                             datetime.hour as u8,
                             datetime.minute as u8,
@@ -78,7 +79,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                         Ok(dt.to_object(py))
                     }
                     None => {
-                        let dt = PyTime::new_bound(
+                        let dt = PyTime::new(
                             py,
                             datetime.hour as u8,
                             datetime.minute as u8,

@@ -76,7 +76,7 @@ impl PartialOrd for DateTimeInfo<'_> {
 pub fn get_tz_name<'py>(dt: &Bound<'py, PyAny>) -> PyResult<String> {
     // let tz: &str = "";
 
-    if !PyDateTime::is_type_of_bound(dt) {
+    if !PyDateTime::is_type_of(dt) {
         return Ok(String::new());
     }
 
@@ -107,7 +107,7 @@ pub fn get_tz_name<'py>(dt: &Bound<'py, PyAny>) -> PyResult<String> {
 }
 
 pub fn get_offset(dt: &Bound<PyAny>) -> PyResult<i32> {
-    if !PyDateTime::is_type_of_bound(dt) {
+    if !PyDateTime::is_type_of(dt) {
         return Ok(0);
     }
 
@@ -170,7 +170,7 @@ pub fn precise_diff<'py>(
         total_seconds: 0,
         tz: dt1_tz.as_str(),
         offset: get_offset(dt1)?,
-        is_datetime: PyDateTime::is_type_of_bound(dt1),
+        is_datetime: PyDateTime::is_type_of(dt1),
     };
     let mut dtinfo2 = DateTimeInfo {
         year: dt2.downcast::<PyDate>()?.get_year(),
@@ -183,7 +183,7 @@ pub fn precise_diff<'py>(
         total_seconds: 0,
         tz: dt2_tz.as_str(),
         offset: get_offset(dt2)?,
-        is_datetime: PyDateTime::is_exact_type_of_bound(dt2),
+        is_datetime: PyDateTime::is_exact_type_of(dt2),
     };
     let in_same_tz: bool = dtinfo1.tz == dtinfo2.tz && !dtinfo1.tz.is_empty();
     let mut total_days = helpers::day_number(dtinfo2.year, dtinfo2.month as u8, dtinfo2.day as u8)
