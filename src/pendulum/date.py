@@ -263,9 +263,10 @@ class Date(FormattableMixin, date):
     def __sub__(self, __dt: datetime) -> NoReturn: ...
 
     @overload
-    def __sub__(self, __dt: Self) -> Interval: ...
+    def __sub__(self, __dt: Self) -> Interval[Date]:
+        ...
 
-    def __sub__(self, other: timedelta | date) -> Self | Interval:
+    def __sub__(self, other: timedelta | date) -> Self | Interval[Date]:
         if isinstance(other, timedelta):
             return self._subtract_timedelta(other)
 
@@ -278,7 +279,7 @@ class Date(FormattableMixin, date):
 
     # DIFFERENCES
 
-    def diff(self, dt: date | None = None, abs: bool = True) -> Interval:
+    def diff(self, dt: date | None = None, abs: bool = True) -> Interval[Date]:
         """
         Returns the difference between two Date objects as an Interval.
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import zoneinfo
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -11,7 +13,6 @@ from pendulum import timezone
 from pendulum.tz import fixed_timezone
 from pendulum.tz.exceptions import AmbiguousTime
 from pendulum.tz.exceptions import NonExistingTime
-from pendulum.utils._compat import zoneinfo
 from tests.conftest import assert_datetime
 
 
@@ -39,6 +40,11 @@ def test_basic_convert():
     assert dt.tzinfo.name == "Europe/Paris"
     assert dt.tzinfo.utcoffset(dt) == timedelta(seconds=7200)
     assert dt.tzinfo.dst(dt) == timedelta(seconds=3600)
+
+
+def test_equality():
+    assert timezone("Europe/Paris") == timezone("Europe/Paris")
+    assert timezone("Europe/Paris") != timezone("Europe/Berlin")
 
 
 def test_skipped_time_with_pre_rule():
@@ -396,6 +402,11 @@ def test_fixed_timezone():
 
     assert tz2.utcoffset(dt).total_seconds() == 18000
     assert tz2.dst(dt) == timedelta()
+
+
+def test_fixed_equality():
+    assert fixed_timezone(19800) == fixed_timezone(19800)
+    assert fixed_timezone(19800) != fixed_timezone(19801)
 
 
 def test_just_before_last_transition():

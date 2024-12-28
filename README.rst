@@ -11,10 +11,9 @@ Pendulum
     :alt: Pendulum Build status
     :target: https://github.com/sdispater/pendulum/actions
 
-
 Python datetimes made easy.
 
-Supports Python **3.8 and newer**.
+Supports Python **3.9 and newer**.
 
 
 .. code-block:: python

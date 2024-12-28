@@ -30,7 +30,9 @@ def parse(text: str, **options: t.Any) -> Date | Time | DateTime | Duration:
     return _parse(text, **options)
 
 
-def _parse(text: str, **options: t.Any) -> Date | DateTime | Time | Duration | Interval:
+def _parse(
+    text: str, **options: t.Any
+) -> Date | DateTime | Time | Duration | Interval[DateTime]:
     """
     Parses a string with the given options.
 

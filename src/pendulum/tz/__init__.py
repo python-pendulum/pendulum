@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from importlib import resources
 from pathlib import Path
 from typing import cast
 
@@ -9,7 +10,6 @@ from pendulum.tz.local_timezone import test_local_timezone
 from pendulum.tz.timezone import UTC
 from pendulum.tz.timezone import FixedTimezone
 from pendulum.tz.timezone import Timezone
-from pendulum.utils._compat import resources
 
 
 PRE_TRANSITION = "pre"

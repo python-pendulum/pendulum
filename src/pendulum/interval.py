@@ -6,8 +6,8 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from typing import Iterator
-from typing import Union
+from typing import Generic
+from typing import TypeVar
 from typing import cast
 from typing import overload
 
@@ -19,6 +19,8 @@ from pendulum.helpers import precise_diff
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from typing_extensions import Self
     from typing_extensions import SupportsIndex
 
@@ -26,33 +28,15 @@ if TYPE_CHECKING:
     from pendulum.locales.locale import Locale
 
 
-class Interval(Duration):
+_T = TypeVar("_T", bound=date)
+
+
+class Interval(Duration, Generic[_T]):
     """
     An interval of time between two datetimes.
     """
 
-    @overload
-    def __new__(
-        cls,
-        start: pendulum.DateTime | datetime,
-        end: pendulum.DateTime | datetime,
-        absolute: bool = False,
-    ) -> Self: ...
-
-    @overload
-    def __new__(
-        cls,
-        start: pendulum.Date | date,
-        end: pendulum.Date | date,
-        absolute: bool = False,
-    ) -> Self: ...
-
-    def __new__(
-        cls,
-        start: pendulum.DateTime | pendulum.Date | datetime | date,
-        end: pendulum.DateTime | pendulum.Date | datetime | date,
-        absolute: bool = False,
-    ) -> Self:
+    def __new__(cls, start: _T, end: _T, absolute: bool = False) -> Self:
         if (
             isinstance(start, datetime)
             and not isinstance(end, datetime)
@@ -81,34 +65,40 @@ class Interval(Duration):
         _start = start
         _end = end
         if isinstance(start, pendulum.DateTime):
-            _start = datetime(
-                start.year,
-                start.month,
-                start.day,
-                start.hour,
-                start.minute,
-                start.second,
-                start.microsecond,
-                tzinfo=start.tzinfo,
-                fold=start.fold,
+            _start = cast(
+                _T,
+                datetime(
+                    start.year,
+                    start.month,
+                    start.day,
+                    start.hour,
+                    start.minute,
+                    start.second,
+                    start.microsecond,
+                    tzinfo=start.tzinfo,
+                    fold=start.fold,
+                ),
             )
         elif isinstance(start, pendulum.Date):
-            _start = date(start.year, start.month, start.day)
+            _start = cast(_T, date(start.year, start.month, start.day))
 
         if isinstance(end, pendulum.DateTime):
-            _end = datetime(
-                end.year,
-                end.month,
-                end.day,
-                end.hour,
-                end.minute,
-                end.second,
-                end.microsecond,
-                tzinfo=end.tzinfo,
-                fold=end.fold,
+            _end = cast(
+                _T,
+                datetime(
+                    end.year,
+                    end.month,
+                    end.day,
+                    end.hour,
+                    end.minute,
+                    end.second,
+                    end.microsecond,
+                    tzinfo=end.tzinfo,
+                    fold=end.fold,
+                ),
             )
         elif isinstance(end, pendulum.Date):
-            _end = date(end.year, end.month, end.day)
+            _end = cast(_T, date(end.year, end.month, end.day))
 
         # Fixing issues with datetime.__sub__()
         # not handling offsets if the tzinfo is the same
@@ -119,69 +109,70 @@ class Interval(Duration):
         ):
             if _start.tzinfo is not None:
                 offset = cast(timedelta, cast(datetime, start).utcoffset())
-                _start = (_start - offset).replace(tzinfo=None)
+                _start = cast(_T, (_start - offset).replace(tzinfo=None))
 
             if isinstance(end, datetime) and _end.tzinfo is not None:
                 offset = cast(timedelta, end.utcoffset())
-                _end = (_end - offset).replace(tzinfo=None)
+                _end = cast(_T, (_end - offset).replace(tzinfo=None))
 
-        delta: timedelta = _end - _start  # type: ignore[operator]
+        delta: timedelta = _end - _start
 
         return super().__new__(cls, seconds=delta.total_seconds())
 
-    def __init__(
-        self,
-        start: pendulum.DateTime | pendulum.Date | datetime | date,
-        end: pendulum.DateTime | pendulum.Date | datetime | date,
-        absolute: bool = False,
-    ) -> None:
+    def __init__(self, start: _T, end: _T, absolute: bool = False) -> None:
         super().__init__()
 
-        _start: pendulum.DateTime | pendulum.Date | datetime | date
+        _start: _T
         if not isinstance(start, pendulum.Date):
             if isinstance(start, datetime):
-                start = pendulum.instance(start)
+                start = cast(_T, pendulum.instance(start))
             else:
-                start = pendulum.date(start.year, start.month, start.day)
+                start = cast(_T, pendulum.date(start.year, start.month, start.day))
 
             _start = start
         else:
             if isinstance(start, pendulum.DateTime):
-                _start = datetime(
-                    start.year,
-                    start.month,
-                    start.day,
-                    start.hour,
-                    start.minute,
-                    start.second,
-                    start.microsecond,
-                    tzinfo=start.tzinfo,
+                _start = cast(
+                    _T,
+                    datetime(
+                        start.year,
+                        start.month,
+                        start.day,
+                        start.hour,
+                        start.minute,
+                        start.second,
+                        start.microsecond,
+                        tzinfo=start.tzinfo,
+                    ),
                 )
             else:
-                _start = date(start.year, start.month, start.day)
+                _start = cast(_T, date(start.year, start.month, start.day))
 
-        _end: pendulum.DateTime | pendulum.Date | datetime | date
+        _end: _T
         if not isinstance(end, pendulum.Date):
             if isinstance(end, datetime):
-                end = pendulum.instance(end)
+                end = cast(_T, pendulum.instance(end))
             else:
-                end = pendulum.date(end.year, end.month, end.day)
+                end = cast(_T, pendulum.date(end.year, end.month, end.day))
 
             _end = end
         else:
             if isinstance(end, pendulum.DateTime):
-                _end = datetime(
-                    end.year,
-                    end.month,
-                    end.day,
-                    end.hour,
-                    end.minute,
-                    end.second,
-                    end.microsecond,
-                    tzinfo=end.tzinfo,
+                _end = cast(
+                    _T,
+                    datetime(
+                        end.year,
+                        end.month,
+                        end.day,
+                        end.hour,
+                        end.minute,
+                        end.second,
+                        end.microsecond,
+                        tzinfo=end.tzinfo,
+                    ),
                 )
             else:
-                _end = date(end.year, end.month, end.day)
+                _end = cast(_T, date(end.year, end.month, end.day))
 
         self._invert = False
         if start > end:
@@ -192,8 +183,8 @@ class Interval(Duration):
                 _end, _start = _start, _end
 
         self._absolute = absolute
-        self._start: pendulum.DateTime | pendulum.Date = start
-        self._end: pendulum.DateTime | pendulum.Date = end
+        self._start: _T = start
+        self._end: _T = end
         self._delta: PreciseDiff = precise_diff(_start, _end)
 
     @property
@@ -225,11 +216,11 @@ class Interval(Duration):
         return self._delta.minutes
 
     @property
-    def start(self) -> pendulum.DateTime | pendulum.Date | datetime | date:
+    def start(self) -> _T:
         return self._start
 
     @property
-    def end(self) -> pendulum.DateTime | pendulum.Date | datetime | date:
+    def end(self) -> _T:
         return self._end
 
     def in_years(self) -> int:
@@ -299,9 +290,7 @@ class Interval(Duration):
 
         return separator.join(parts)
 
-    def range(
-        self, unit: str, amount: int = 1
-    ) -> Iterator[pendulum.DateTime | pendulum.Date]:
+    def range(self, unit: str, amount: int = 1) -> Iterator[_T]:
         method = "add"
         op = operator.le
         if not self._absolute and self.invert:
@@ -312,7 +301,7 @@ class Interval(Duration):
 
         i = amount
         while op(start, end):
-            yield cast(Union[pendulum.DateTime, pendulum.Date], start)
+            yield start
 
             start = getattr(self.start, method)(**{unit: i})
 
@@ -324,12 +313,10 @@ class Interval(Duration):
         """
         return Duration(seconds=self.total_seconds())
 
-    def __iter__(self) -> Iterator[pendulum.DateTime | pendulum.Date]:
+    def __iter__(self) -> Iterator[_T]:
         return self.range("days")
 
-    def __contains__(
-        self, item: datetime | date | pendulum.DateTime | pendulum.Date
-    ) -> bool:
+    def __contains__(self, item: _T) -> bool:
         return self.start <= item <= self.end
 
     def __add__(self, other: timedelta) -> Duration:  # type: ignore[override]
@@ -394,13 +381,7 @@ class Interval(Duration):
 
         return 0 if td == other else 1 if td > other else -1
 
-    def _getstate(
-        self, protocol: SupportsIndex = 3
-    ) -> tuple[
-        pendulum.DateTime | pendulum.Date | datetime | date,
-        pendulum.DateTime | pendulum.Date | datetime | date,
-        bool,
-    ]:
+    def _getstate(self, protocol: SupportsIndex = 3) -> tuple[_T, _T, bool]:
         start, end = self.start, self.end
 
         if self._invert and self._absolute:
@@ -410,26 +391,12 @@ class Interval(Duration):
 
     def __reduce__(
         self,
-    ) -> tuple[
-        type[Self],
-        tuple[
-            pendulum.DateTime | pendulum.Date | datetime | date,
-            pendulum.DateTime | pendulum.Date | datetime | date,
-            bool,
-        ],
-    ]:
+    ) -> tuple[type[Self], tuple[_T, _T, bool]]:
         return self.__reduce_ex__(2)
 
     def __reduce_ex__(
         self, protocol: SupportsIndex
-    ) -> tuple[
-        type[Self],
-        tuple[
-            pendulum.DateTime | pendulum.Date | datetime | date,
-            pendulum.DateTime | pendulum.Date | datetime | date,
-            bool,
-        ],
-    ]:
+    ) -> tuple[type[Self], tuple[_T, _T, bool]]:
         return self.__class__, self._getstate(protocol)
 
     def __hash__(self) -> int:

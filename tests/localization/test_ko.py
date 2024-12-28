@@ -59,8 +59,8 @@ def diff_for_humans():
 
     d = pendulum.now().add(seconds=1)
     d2 = pendulum.now()
-    assert d.diff_for_humans(d2, locale=locale) == "1초 뒤"
-    assert d2.diff_for_humans(d, locale=locale) == "1초 앞"
+    assert d.diff_for_humans(d2, locale=locale) == "1초 후"
+    assert d2.diff_for_humans(d, locale=locale) == "1초 전"
 
     assert d.diff_for_humans(d2, True, locale=locale) == "1초"
     assert d2.diff_for_humans(d.add(seconds=1), True, locale=locale) == "2초"
