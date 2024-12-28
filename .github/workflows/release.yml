@@ -94,7 +94,7 @@ jobs:
           rust-toolchain: stable
           docker-options: -e CI
 
-      - run: ${{ matrix.ls || 'ls -lh' }} dist/
+      - run: ${{ matrix.ls || 'ls -l' }} dist/
 
       - uses: actions/upload-artifact@v3
         with:
