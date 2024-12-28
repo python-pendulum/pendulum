@@ -168,10 +168,12 @@ class Time(FormattableMixin, time):
         return self.add_timedelta(other)
 
     @overload
-    def __sub__(self, other: time) -> pendulum.Duration: ...
+    def __sub__(self, other: time) -> pendulum.Duration:
+        ...
 
     @overload
-    def __sub__(self, other: datetime.timedelta) -> Time: ...
+    def __sub__(self, other: datetime.timedelta) -> Time:
+        ...
 
     def __sub__(self, other: time | datetime.timedelta) -> pendulum.Duration | Time:
         if not isinstance(other, (Time, time, timedelta)):
@@ -191,10 +193,12 @@ class Time(FormattableMixin, time):
         return other.diff(self, False)
 
     @overload
-    def __rsub__(self, other: time) -> pendulum.Duration: ...
+    def __rsub__(self, other: time) -> pendulum.Duration:
+        ...
 
     @overload
-    def __rsub__(self, other: datetime.timedelta) -> Time: ...
+    def __rsub__(self, other: datetime.timedelta) -> Time:
+        ...
 
     def __rsub__(self, other: time | datetime.timedelta) -> pendulum.Duration | Time:
         if not isinstance(other, (Time, time)):

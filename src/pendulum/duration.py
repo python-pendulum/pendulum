@@ -375,10 +375,12 @@ class Duration(timedelta):
     __rmul__ = __mul__
 
     @overload
-    def __floordiv__(self, other: timedelta) -> int: ...
+    def __floordiv__(self, other: timedelta) -> int:
+        ...
 
     @overload
-    def __floordiv__(self, other: int) -> Self: ...
+    def __floordiv__(self, other: int) -> Self:
+        ...
 
     def __floordiv__(self, other: int | timedelta) -> int | Duration:
         if not isinstance(other, (int, timedelta)):
@@ -401,10 +403,12 @@ class Duration(timedelta):
             )
 
     @overload
-    def __truediv__(self, other: timedelta) -> float: ...
+    def __truediv__(self, other: timedelta) -> float:
+        ...
 
     @overload
-    def __truediv__(self, other: float) -> Self: ...
+    def __truediv__(self, other: float) -> Self:
+        ...
 
     def __truediv__(self, other: int | float | timedelta) -> Self | float:
         if not isinstance(other, (int, float, timedelta)):

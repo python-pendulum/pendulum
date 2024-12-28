@@ -80,7 +80,6 @@ ruff = "^0.7.3"
 
 [tool.poetry.group.build.dependencies]
 maturin = ">=1.0,<2.0"
-patchelf = ">=0.17"
 
 [tool.poetry.extras]
 test = ["time-machine"]
@@ -95,7 +94,7 @@ unfixable = [
     "ERA", # do not autoremove commented out code
 ]
 target-version = "py39"
-line-length = 88
+line-length = 100
 extend-select = [
     "B", # flake8-bugbear
     "C4", # flake8-comprehensions

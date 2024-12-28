@@ -25,7 +25,7 @@ jobs:
         run: pip install pre-commit
       - name: "Install Rust toolchain"
         run: rustup component add rustfmt clippy
-      - run: pre-commit run --all-files
+      - run: make lint
 
   Tests:
     name: ${{ matrix.os }} / ${{ matrix.python-version }}

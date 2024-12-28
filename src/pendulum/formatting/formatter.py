@@ -440,10 +440,9 @@ class Formatter:
         # we use it and don't go any further
         if parsed["timestamp"] is not None:
             str_us = str(parsed["timestamp"])
-            if "." in str_us:
-                microseconds = int(f'{str_us.split(".")[1].ljust(6, "0")}')
-            else:
-                microseconds = 0
+            microseconds = (
+                int(f"{str_us.split('.')[1].ljust(6, '0')}") if "." in str_us else 0
+            )
 
             from pendulum.helpers import local_time
 

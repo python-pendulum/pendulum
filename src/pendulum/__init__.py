@@ -59,15 +59,18 @@ _formatter = Formatter()
 
 
 @overload
-def timezone(name: int) -> FixedTimezone: ...
+def timezone(name: int) -> FixedTimezone:
+    ...
 
 
 @overload
-def timezone(name: str) -> Timezone: ...
+def timezone(name: str) -> Timezone:
+    ...
 
 
 @overload
-def timezone(name: str | int) -> Timezone | FixedTimezone: ...
+def timezone(name: str | int) -> Timezone | FixedTimezone:
+    ...
 
 
 def timezone(name: str | int) -> Timezone | FixedTimezone:
@@ -202,21 +205,24 @@ def time(hour: int, minute: int = 0, second: int = 0, microsecond: int = 0) -> T
 def instance(
     obj: _datetime.datetime,
     tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
-) -> DateTime: ...
+) -> DateTime:
+    ...
 
 
 @overload
 def instance(
     obj: _datetime.date,
     tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
-) -> Date: ...
+) -> Date:
+    ...
 
 
 @overload
 def instance(
     obj: _datetime.time,
     tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
-) -> Time: ...
+) -> Time:
+    ...
 
 
 def instance(

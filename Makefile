@@ -23,6 +23,7 @@ dev:
 
 lint:
 	poetry run mypy
+	pre-commit run --all-files
 
 test:
 	PENDULUM_EXTENSIONS=0 poetry run pytest -q tests
