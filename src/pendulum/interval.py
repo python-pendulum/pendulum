@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import operator
 
 from datetime import date
@@ -418,3 +419,10 @@ class Interval(Duration, Generic[_T]):
 
     def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
+
+    def __deepcopy__(self, memodict: dict[int, Self]) -> Self:
+        return self.__class__(
+            copy.deepcopy(self.start),
+            copy.deepcopy(self.end),
+            self._absolute,
+        )
