@@ -389,7 +389,8 @@ class Duration(timedelta):
         usec = self._to_microseconds()
         if isinstance(other, timedelta):
             return cast(
-                int, usec // other._to_microseconds()  # type: ignore[attr-defined]
+                int,
+                usec // other._to_microseconds(),  # type: ignore[attr-defined]
             )
 
         if isinstance(other, int):
@@ -416,7 +417,8 @@ class Duration(timedelta):
         usec = self._to_microseconds()
         if isinstance(other, timedelta):
             return cast(
-                float, usec / other._to_microseconds()  # type: ignore[attr-defined]
+                float,
+                usec / other._to_microseconds(),  # type: ignore[attr-defined]
             )
 
         if isinstance(other, int):
@@ -443,7 +445,7 @@ class Duration(timedelta):
 
     def __mod__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
-            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined] # noqa: E501
+            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined]
 
             return self.__class__(0, 0, r)
 

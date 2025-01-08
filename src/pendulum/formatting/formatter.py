@@ -38,7 +38,7 @@ _MATCH_SHORT_OFFSET = r"[Zz]|[+-]\d\d(?::?\d\d)?"
 _MATCH_TIMESTAMP = r"[+-]?\d+(\.\d{1,6})?"
 _MATCH_WORD = (
     "(?i)[0-9]*"
-    "['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+"
+    "['a-z\u00a0-\u05ff\u0700-\ud7ff\uf900-\ufdcf\ufdf0-\uffef]+"
     r"|[\u0600-\u06FF/]+(\s*?[\u0600-\u06FF]+){1,2}"
 )
 _MATCH_TIMEZONE = "[A-Za-z0-9-+]+(/[A-Za-z0-9-+_]+)?"
@@ -440,10 +440,9 @@ class Formatter:
         # we use it and don't go any further
         if parsed["timestamp"] is not None:
             str_us = str(parsed["timestamp"])
-            if "." in str_us:
-                microseconds = int(f'{str_us.split(".")[1].ljust(6, "0")}')
-            else:
-                microseconds = 0
+            microseconds = (
+                int(f"{str_us.split('.')[1].ljust(6, '0')}") if "." in str_us else 0
+            )
 
             from pendulum.helpers import local_time
 
