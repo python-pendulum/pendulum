@@ -54,15 +54,7 @@ jobs:
 
       - name: Install poetry
         run: |
-          curl -fsS https://install.python-poetry.org | python - --preview -y
-
-      - name: Update PATH
-        if: ${{ matrix.os != 'Windows' }}
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Update Path for Windows
-        if: ${{ matrix.os == 'Windows' }}
-        run: echo "$APPDATA\Python\Scripts" >> $GITHUB_PATH
+          pipx install poetry>=2
 
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
@@ -90,7 +82,7 @@ jobs:
 
       - name: Uninstall typing dependencies
         # This ensures pendulum runs without typing_extensions installed
-        run: poetry install --only main --only test --only build --sync --no-root -vvv
+        run: poetry sync --only main --only test --only build --no-root -vvv
 
       - name: Test Pure Python
         run: |
