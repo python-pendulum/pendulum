@@ -46,7 +46,7 @@ jobs:
           python -c 'import pendulum._pendulum'
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v1
+        uses: CodSpeedHQ/action@v3
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
           run: pytest tests/ --codspeed
