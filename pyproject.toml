@@ -7,7 +7,6 @@ requires-python = ">=3.9"
 license = { text = "MIT License" }
 authors = [{ name = "Sébastien Eustace", email = "sebastien@eustace.io" }]
 keywords = ['datetime', 'date', 'time']
-
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -20,6 +19,10 @@ classifiers = [
 dependencies = [
     "python-dateutil>=2.6",
     "tzdata>=2020.1",
+]
+
+[project.optional-dependencies]
+test = [
     'time-machine>=2.6.0; implementation_name != "pypy"',
 ]
 
@@ -28,25 +31,6 @@ Homepage = "https://pendulum.eustace.io"
 Documentation = "https://pendulum.eustace.io/docs"
 Repository = "https://github.com/sdispater/pendulum"
 
-
-[tool.poetry]
-name = "pendulum"
-version = "3.0.0"
-description = "Python datetimes made easy"
-authors = ["Sébastien Eustace <sebastien@eustace.io>"]
-license = "MIT"
-readme = 'README.rst'
-homepage = "https://pendulum.eustace.io"
-repository = "https://github.com/sdispater/pendulum"
-documentation = "https://pendulum.eustace.io/docs"
-keywords = ['datetime', 'date', 'time']
-
-
-[tool.poetry.dependencies]
-python = ">=3.9"
-python-dateutil = ">=2.6"
-time-machine = { version = ">=2.16.0", markers = "implementation_name != 'pypy'", optional = true }
-tzdata = ">=2020.1"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.1.2"
@@ -79,12 +63,8 @@ pytest-codspeed = "^3.0.0"
 [tool.poetry.group.build.dependencies]
 maturin = ">=1.0,<2.0"
 
-[tool.poetry.extras]
-test = ["time-machine"]
-
 [tool.maturin]
 module-name = "pendulum._pendulum"
-
 
 [tool.ruff]
 fix = true
