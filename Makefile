@@ -28,3 +28,6 @@ lint:
 test:
 	PENDULUM_EXTENSIONS=0 poetry run pytest -q tests
 	poetry run pytest -q tests
+
+clean:
+	rm src/pendulum/*.so

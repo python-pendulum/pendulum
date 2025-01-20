@@ -21,20 +21,14 @@ jobs:
           - os: ubuntu
             platform: linux
             target: aarch64
-            # mimalloc not supported on manylinux2014 cross-compile container
-            extra-build-args: --no-default-features
           - os: ubuntu
             platform: linux
             target: ppc64le
             interpreter: 3.9 3.10 3.11 3.12 3.13
-            # mimalloc not supported on manylinux2014 cross-compile container
-            extra-build-args: --no-default-features
           - os: ubuntu
             platform: linux
             target: s390x
             interpreter: 3.9 3.10 3.11 3.12 3.13
-            # mimalloc not supported on manylinux2014 cross-compile container
-            extra-build-args: --no-default-features
 
             # musllinux
           - os: ubuntu
