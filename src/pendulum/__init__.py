@@ -292,11 +292,7 @@ def from_timestamp(timestamp: int | float, tz: str | Timezone = UTC) -> DateTime
     """
     Create a DateTime instance from a timestamp.
     """
-    dt = _datetime.datetime.utcfromtimestamp(timestamp)
-
-    dt = datetime(
-        dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond
-    )
+    dt = DateTime.fromtimestamp(timestamp, tz=UTC)
 
     if tz is not UTC or tz != "UTC":
         dt = dt.in_timezone(tz)
