@@ -278,7 +278,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
     fractional = False
 
     _days: str | float
-    _hour: str | int | None
+    _hours: str | int | None
     _minutes: str | int | None
     _seconds: str | int | None
     if m.group("w"):
