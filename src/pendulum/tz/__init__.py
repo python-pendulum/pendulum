@@ -3,6 +3,7 @@ from __future__ import annotations
 from importlib import resources
 from pathlib import Path
 from typing import cast
+from zoneinfo import available_timezones
 
 from pendulum.tz.local_timezone import get_local_timezone
 from pendulum.tz.local_timezone import set_local_timezone
@@ -22,13 +23,7 @@ _tz_cache: dict[int, FixedTimezone] = {}
 
 
 def timezones() -> tuple[str, ...]:
-    global _timezones
-
-    if _timezones is None:
-        with cast(Path, resources.files("tzdata").joinpath("zones")).open() as f:
-            _timezones = tuple(tz.strip() for tz in f.readlines())
-
-    return _timezones
+    return available_timezones()
 
 
 def fixed_timezone(offset: int) -> FixedTimezone:
