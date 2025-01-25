@@ -257,16 +257,13 @@ class Date(FormattableMixin, date):
         return self._add_timedelta(other)
 
     @overload  # type: ignore[override]  # this is only needed because of Python 3.7
-    def __sub__(self, __delta: timedelta) -> Self:
-        ...
+    def __sub__(self, __delta: timedelta) -> Self: ...
 
     @overload
-    def __sub__(self, __dt: datetime) -> NoReturn:
-        ...
+    def __sub__(self, __dt: datetime) -> NoReturn: ...
 
     @overload
-    def __sub__(self, __dt: Self) -> Interval[Date]:
-        ...
+    def __sub__(self, __dt: Self) -> Interval[Date]: ...
 
     def __sub__(self, other: timedelta | date) -> Self | Interval[Date]:
         if isinstance(other, timedelta):

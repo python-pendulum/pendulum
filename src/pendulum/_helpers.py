@@ -174,11 +174,8 @@ def precise_diff(
         d2.tzinfo if isinstance(d2, datetime.datetime) else None
     )
 
-    if (
-        tzinfo1 is None
-        and tzinfo2 is not None
-        or tzinfo2 is None
-        and tzinfo1 is not None
+    if (tzinfo1 is None and tzinfo2 is not None) or (
+        tzinfo2 is None and tzinfo1 is not None
     ):
         raise ValueError(
             "Comparison between naive and aware datetimes is not supported"

@@ -146,13 +146,11 @@ class DateTime(datetime.datetime, Date):
 
     @overload
     @classmethod
-    def now(cls, tz: datetime.tzinfo | None = None) -> Self:
-        ...
+    def now(cls, tz: datetime.tzinfo | None = None) -> Self: ...
 
     @overload
     @classmethod
-    def now(cls, tz: str | Timezone | FixedTimezone | None = None) -> Self:
-        ...
+    def now(cls, tz: str | Timezone | FixedTimezone | None = None) -> Self: ...
 
     @classmethod
     def now(
@@ -1186,12 +1184,10 @@ class DateTime(datetime.datetime, Date):
         )
 
     @overload  # type: ignore[override]
-    def __sub__(self, other: datetime.timedelta) -> Self:
-        ...
+    def __sub__(self, other: datetime.timedelta) -> Self: ...
 
     @overload
-    def __sub__(self, other: DateTime) -> Interval[datetime.datetime]:
-        ...
+    def __sub__(self, other: DateTime) -> Interval[datetime.datetime]: ...
 
     def __sub__(
         self, other: datetime.datetime | datetime.timedelta

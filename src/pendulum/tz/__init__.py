@@ -53,12 +53,12 @@ def local_timezone() -> Timezone | FixedTimezone:
 
 __all__ = [
     "UTC",
-    "Timezone",
     "FixedTimezone",
-    "set_local_timezone",
-    "get_local_timezone",
-    "test_local_timezone",
+    "Timezone",
     "fixed_timezone",
+    "get_local_timezone",
     "local_timezone",
+    "set_local_timezone",
+    "test_local_timezone",
     "timezones",
 ]

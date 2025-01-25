@@ -59,18 +59,15 @@ _formatter = Formatter()
 
 
 @overload
-def timezone(name: int) -> FixedTimezone:
-    ...
+def timezone(name: int) -> FixedTimezone: ...
 
 
 @overload
-def timezone(name: str) -> Timezone:
-    ...
+def timezone(name: str) -> Timezone: ...
 
 
 @overload
-def timezone(name: str | int) -> Timezone | FixedTimezone:
-    ...
+def timezone(name: str | int) -> Timezone | FixedTimezone: ...
 
 
 def timezone(name: str | int) -> Timezone | FixedTimezone:
@@ -205,24 +202,21 @@ def time(hour: int, minute: int = 0, second: int = 0, microsecond: int = 0) -> T
 def instance(
     obj: _datetime.datetime,
     tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
-) -> DateTime:
-    ...
+) -> DateTime: ...
 
 
 @overload
 def instance(
     obj: _datetime.date,
     tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
-) -> Date:
-    ...
+) -> Date: ...
 
 
 @overload
 def instance(
     obj: _datetime.time,
     tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
-) -> Time:
-    ...
+) -> Time: ...
 
 
 def instance(
@@ -350,7 +344,6 @@ travel_to = _traveller.travel_to
 travel_back = _traveller.travel_back
 
 __all__ = [
-    "__version__",
     "DAYS_PER_WEEK",
     "HOURS_PER_DAY",
     "MINUTES_PER_HOUR",
@@ -358,14 +351,20 @@ __all__ = [
     "SECONDS_PER_DAY",
     "SECONDS_PER_HOUR",
     "SECONDS_PER_MINUTE",
+    "UTC",
     "WEEKS_PER_YEAR",
     "YEARS_PER_CENTURY",
     "YEARS_PER_DECADE",
     "Date",
     "DateTime",
     "Duration",
+    "FixedTimezone",
     "Formatter",
+    "Interval",
+    "Time",
+    "Timezone",
     "WeekDay",
+    "__version__",
     "date",
     "datetime",
     "duration",
@@ -377,18 +376,13 @@ __all__ = [
     "instance",
     "interval",
     "local",
+    "local_timezone",
     "locale",
     "naive",
     "now",
-    "set_locale",
-    "week_ends_at",
-    "week_starts_at",
     "parse",
-    "Interval",
-    "Time",
-    "UTC",
-    "local_timezone",
     "set_local_timezone",
+    "set_locale",
     "test_local_timezone",
     "time",
     "timezone",
@@ -398,7 +392,7 @@ __all__ = [
     "travel",
     "travel_back",
     "travel_to",
-    "FixedTimezone",
-    "Timezone",
+    "week_ends_at",
+    "week_starts_at",
     "yesterday",
 ]
