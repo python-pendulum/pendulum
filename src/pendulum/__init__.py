@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as _datetime
+import warnings
 
 from typing import Union
 from typing import cast
@@ -338,6 +339,11 @@ def interval(
     Create an Interval instance.
     """
     return Interval(start, end, absolute=absolute)
+    
+
+def period(*args, *kw) -> Interval:
+    warnings.warn("pendulum.period is renamed to pendulum.interval", DeprecationWarning)
+    return interval(*args, **kw)
 
 
 # Testing
