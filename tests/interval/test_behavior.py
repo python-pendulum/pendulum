@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pickle
+import copy
 
 from datetime import timedelta
 
@@ -65,3 +66,18 @@ def test_inequality():
 
     assert interval1 != interval2
     assert interval1 != interval3
+
+
+def test_deepcopy():
+    dt1 = pendulum.datetime(2016, 11, 18)
+    dt2 = pendulum.datetime(2016, 11, 20)
+
+    interval = dt2 - dt1
+
+    interval2 = copy.deepcopy(interval)
+
+    assert interval == interval2
+    # make sure it's a deep copy
+    assert interval is not interval2
+    assert interval.start is not interval2.start
+    assert interval.end is not interval2.end
