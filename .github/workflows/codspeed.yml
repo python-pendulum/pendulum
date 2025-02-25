@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.9"
 
@@ -25,28 +25,21 @@ jobs:
 
       - name: Install poetry
         run: |
-          curl -fsS https://install.python-poetry.org | python - -y
-
-      - name: Update PATH
-        if: ${{ matrix.os != 'Windows' }}
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+          pipx install poetry>=2
 
       - name: Configure poetry
-        run: poetry config virtualenvs.create false
+        run: poetry config virtualenvs.in-project true
 
       - name: Install dependencies
-        run: poetry install --only test --only benchmark --only build -vvv --no-root
-
-      - name: Install project
         run: poetry install --only test --only benchmark --only build -vvv --no-root
 
       - name: Install pendulum and check extensions
         run: |
           poetry run pip install -e . -vvv
-          python -c 'import pendulum._pendulum'
+          poetry run python -c 'import pendulum._pendulum'
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v3
         with:
           token: ${{ secrets.CODSPEED_TOKEN }}
-          run: pytest tests/ --codspeed
+          run: poetry run pytest tests/ --codspeed

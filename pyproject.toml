@@ -217,7 +217,5 @@ omit = [
 ]
 
 [build-system]
-# requires = ["poetry-core>=1.0.8"]
-# build-backend = "poetry.core.masonry.api"
 requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
