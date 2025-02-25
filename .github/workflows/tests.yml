@@ -53,20 +53,8 @@ jobs:
           echo ::set-output name=version::$(python -c "import sys; print('-'.join(str(v) for v in sys.version_info))")
 
       - name: Install poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-          version: 1.8.5
-
-      - name: Update PATH
-        if: ${{ matrix.os != 'Windows' }}
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Update Path for Windows
-        if: ${{ matrix.os == 'Windows' }}
-        run: echo "$APPDATA\Python\Scripts" >> $GITHUB_PATH
+        run: |
+          pipx install poetry>=2
 
       - name: Configure poetry
         run: poetry config virtualenvs.in-project true
@@ -94,7 +82,7 @@ jobs:
 
       - name: Uninstall typing dependencies
         # This ensures pendulum runs without typing_extensions installed
-        run: poetry install --only main --only test --only build --sync --no-root -vvv
+        run: poetry sync --only main --only test --only build --no-root -vvv
 
       - name: Test Pure Python
         run: |
