@@ -7,6 +7,8 @@ use pyo3::types::PyTime;
 use crate::parsing::Parser;
 use crate::python::types::{Duration, FixedTimezone};
 
+// TODO: pyO3 v0.23 deprecates `ToPyObject`, function below must be migrated as per
+//       https://pyo3.rs/v0.23.0/migration
 #[allow(deprecated)]
 #[pyfunction]
 pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
