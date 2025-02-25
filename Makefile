@@ -18,12 +18,12 @@ format-rust:
 	cd rust && cargo clippy --tests --fix --allow-dirty -- -D warnings
 
 dev:
-	poetry install --only main --only test --only typing --only build
+	poetry install --only main --only test --only typing --only build --only lint
 	poetry run maturin develop
 
 lint:
 	poetry run mypy
-	pre-commit run --all-files
+	poetry run pre-commit run --all-files
 
 test:
 	PENDULUM_EXTENSIONS=0 poetry run pytest -q tests

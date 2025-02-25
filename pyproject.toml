@@ -20,7 +20,6 @@ classifiers = [
 dependencies = [
     "python-dateutil>=2.6",
     "tzdata>=2020.1",
-    "cffi>=1.17",
 ]
 
 [project.optional-dependencies]
@@ -58,16 +57,17 @@ types-pytz = ">=2022.7.1.2"
 babel = "^2.10.3"
 cleo = { version = "^2.0.1", python = ">=3.8,<4.0" }
 tox = "^4.0.0"
-ruff = "^0.7.3"
 
 [tool.poetry.group.benchmark.dependencies]
-pytest-codspeed = "^1.2.2"
+pytest-codspeed = "^3.0.0"
 
 [tool.poetry.group.build.dependencies]
 maturin = ">=1.0,<2.0"
 
 [tool.maturin]
 module-name = "pendulum._pendulum"
+features = ["pyo3/extension-module"]
+python-packages = ["pendulum"]
 
 [tool.ruff]
 fix = true
@@ -75,7 +75,7 @@ unfixable = [
     "ERA", # do not autoremove commented out code
 ]
 target-version = "py39"
-line-length = 100
+line-length = 88
 extend-select = [
     "B", # flake8-bugbear
     "C4", # flake8-comprehensions

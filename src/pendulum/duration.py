@@ -445,7 +445,7 @@ class Duration(timedelta):
 
     def __mod__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
-            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined]
+            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined]  # noqa: E501
 
             return self.__class__(0, 0, r)
 
