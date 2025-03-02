@@ -140,7 +140,7 @@ def _parse_common(text: str, **options: Any) -> datetime | date | time:
 
     :param text: The string to parse.
     """
-    m = COMMON.match(text)
+    m = COMMON.fullmatch(text)
     has_date = False
     year = 0
     month = 1

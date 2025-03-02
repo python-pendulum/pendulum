@@ -96,7 +96,7 @@ def parse_iso8601(
     if parsed is not None:
         return parsed
 
-    m = ISO8601_DT.match(text)
+    m = ISO8601_DT.fullmatch(text)
     if not m:
         raise ParserError("Invalid ISO 8601 string")
 
@@ -263,7 +263,7 @@ def parse_iso8601(
 
 
 def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
-    m = ISO8601_DURATION.match(text)
+    m = ISO8601_DURATION.fullmatch(text)
     if not m:
         return None
 

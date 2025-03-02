@@ -48,7 +48,7 @@ class Locale:
 
     @classmethod
     def normalize_locale(cls, locale: str) -> str:
-        m = re.match("([a-z]{2})[-_]([a-z]{2})", locale, re.I)
+        m = re.fullmatch("([a-z]{2})[-_]([a-z]{2})", locale, re.I)
         if m:
             return f"{m.group(1).lower()}_{m.group(2).lower()}"
         else:
