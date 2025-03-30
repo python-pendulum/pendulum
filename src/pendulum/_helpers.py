@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import datetime
 import math
-import zoneinfo
 
+from typing import TYPE_CHECKING
 from typing import NamedTuple
 from typing import cast
 
@@ -22,7 +22,12 @@ from pendulum.constants import SECS_PER_MIN
 from pendulum.constants import SECS_PER_YEAR
 from pendulum.constants import TM_DECEMBER
 from pendulum.constants import TM_JANUARY
-from pendulum.tz.timezone import Timezone
+
+
+if TYPE_CHECKING:
+    import zoneinfo
+
+    from pendulum.tz.timezone import Timezone
 
 
 class PreciseDiff(NamedTuple):
@@ -174,11 +179,8 @@ def precise_diff(
         d2.tzinfo if isinstance(d2, datetime.datetime) else None
     )
 
-    if (
-        tzinfo1 is None
-        and tzinfo2 is not None
-        or tzinfo2 is None
-        and tzinfo1 is not None
+    if (tzinfo1 is None and tzinfo2 is not None) or (
+        tzinfo2 is None and tzinfo1 is not None
     ):
         raise ValueError(
             "Comparison between naive and aware datetimes is not supported"
@@ -324,10 +326,10 @@ def _get_tzinfo_name(tzinfo: datetime.tzinfo | None) -> str | None:
 
     if hasattr(tzinfo, "key"):
         # zoneinfo timezone
-        return cast(zoneinfo.ZoneInfo, tzinfo).key
+        return cast("zoneinfo.ZoneInfo", tzinfo).key
     elif hasattr(tzinfo, "name"):
         # Pendulum timezone
-        return cast(Timezone, tzinfo).name
+        return cast("Timezone", tzinfo).name
     elif hasattr(tzinfo, "zone"):
         # pytz timezone
         return tzinfo.zone  # type: ignore[no-any-return]

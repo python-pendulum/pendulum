@@ -108,11 +108,11 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
             # >>>         print(tzname)
 
             offset_before = cast(
-                _datetime.timedelta,
+                "_datetime.timedelta",
                 (self.utcoffset(dt.replace(fold=0)) if dt.fold else self.utcoffset(dt)),
             )
             offset_after = cast(
-                _datetime.timedelta,
+                "_datetime.timedelta",
                 (self.utcoffset(dt) if dt.fold else self.utcoffset(dt.replace(fold=1))),
             )
 
@@ -122,7 +122,7 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
                     raise NonExistingTime(dt)
 
                 dt = cast(
-                    _DT,
+                    "_DT",
                     dt
                     + (
                         (offset_after - offset_before)
@@ -136,7 +136,7 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
 
             return dt.replace(tzinfo=self)
 
-        return cast(_DT, dt.astimezone(self))
+        return cast("_DT", dt.astimezone(self))
 
     def datetime(
         self,
@@ -196,7 +196,7 @@ class FixedTimezone(_datetime.tzinfo, PendulumTimezone):
                 fold=0,
             )
 
-        return cast(_DT, dt.astimezone(self))
+        return cast("_DT", dt.astimezone(self))
 
     def datetime(
         self,

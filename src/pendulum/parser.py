@@ -86,7 +86,7 @@ def _parse(
                 )
 
             dt = pendulum.instance(
-                t.cast(datetime.datetime, parsed.end), tz=options.get("tz", UTC)
+                t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
             )
 
             return pendulum.interval(
@@ -105,10 +105,10 @@ def _parse(
 
         return pendulum.interval(
             pendulum.instance(
-                t.cast(datetime.datetime, parsed.start), tz=options.get("tz", UTC)
+                t.cast("datetime.datetime", parsed.start), tz=options.get("tz", UTC)
             ),
             pendulum.instance(
-                t.cast(datetime.datetime, parsed.end), tz=options.get("tz", UTC)
+                t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
             ),
         )
 
