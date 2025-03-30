@@ -97,7 +97,8 @@ class DifferenceFormatter:
             time = locale.get("custom.units.few_second")
             if time is not None:
                 if absolute:
-                    return t.cast(str, time)
+                    return t.cast("str", time)
+
                 key = "custom"
                 is_future = diff.invert
                 if is_now:
@@ -111,7 +112,7 @@ class DifferenceFormatter:
                     else:
                         key += KEY_BEFORE
 
-                return t.cast(str, locale.get(key).format(time))
+                return t.cast("str", locale.get(key).format(time))
             else:
                 unit = "second"
                 count = diff.remaining_seconds
@@ -154,8 +155,9 @@ class DifferenceFormatter:
                     key += KEY_AFTER
                 else:
                     key += KEY_BEFORE
-                return t.cast(str, locale.get(key).format(time))
+
+                return t.cast("str", locale.get(key).format(time))
 
         key += f".{locale.plural(count)}"
 
-        return t.cast(str, locale.get(key).format(count))
+        return t.cast("str", locale.get(key).format(count))

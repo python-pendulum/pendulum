@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime
 import re
 
-from collections.abc import Sequence
 from re import Match
 from typing import TYPE_CHECKING
 from typing import Any
@@ -17,6 +16,8 @@ from pendulum.locales.locale import Locale
 
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from pendulum import Timezone
 
 _MATCH_1 = r"\d"
@@ -38,7 +39,7 @@ _MATCH_SHORT_OFFSET = r"[Zz]|[+-]\d\d(?::?\d\d)?"
 _MATCH_TIMESTAMP = r"[+-]?\d+(\.\d{1,6})?"
 _MATCH_WORD = (
     "(?i)[0-9]*"
-    "['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+"
+    "['a-z\u00a0-\u05ff\u0700-\ud7ff\uf900-\ufdcf\ufdf0-\uffef]+"
     r"|[\u0600-\u06FF/]+(\s*?[\u0600-\u06FF]+){1,2}"
 )
 _MATCH_TIMEZONE = "[A-Za-z0-9-+]+(/[A-Za-z0-9-+_]+)?"
@@ -138,8 +139,8 @@ class Formatter:
         "X": lambda dt: f"{dt.int_timestamp:d}",
         "x": lambda dt: f"{dt.int_timestamp * 1000 + dt.microsecond // 1000:d}",
         # Timezone
-        "zz": lambda dt: f'{dt.tzname() if dt.tzinfo is not None else ""}',
-        "z": lambda dt: f'{dt.timezone_name or ""}',
+        "zz": lambda dt: f"{dt.tzname() if dt.tzinfo is not None else ''}",
+        "z": lambda dt: f"{dt.timezone_name or ''}",
     }
 
     _DATE_FORMATS: ClassVar[dict[str, str]] = {
@@ -314,20 +315,20 @@ class Formatter:
         :param locale: The locale to use
         """
         if token == "MMM":
-            return cast(str, locale.get("translations.months.abbreviated")[dt.month])
+            return cast("str", locale.get("translations.months.abbreviated")[dt.month])
         elif token == "MMMM":
-            return cast(str, locale.get("translations.months.wide")[dt.month])
+            return cast("str", locale.get("translations.months.wide")[dt.month])
         elif token == "dd":
-            return cast(str, locale.get("translations.days.short")[dt.day_of_week])
+            return cast("str", locale.get("translations.days.short")[dt.day_of_week])
         elif token == "ddd":
             return cast(
-                str,
+                "str",
                 locale.get("translations.days.abbreviated")[dt.day_of_week],
             )
         elif token == "dddd":
-            return cast(str, locale.get("translations.days.wide")[dt.day_of_week])
+            return cast("str", locale.get("translations.days.wide")[dt.day_of_week])
         elif token == "e":
-            first_day = cast(int, locale.get("translations.week_data.first_day"))
+            first_day = cast("int", locale.get("translations.week_data.first_day"))
 
             return str((dt.day_of_week % 7 - first_day) % 7)
         elif token == "Do":
@@ -343,7 +344,7 @@ class Formatter:
         elif token == "DDDo":
             return locale.ordinalize(dt.day_of_year)
         elif token == "eo":
-            first_day = cast(int, locale.get("translations.week_data.first_day"))
+            first_day = cast("int", locale.get("translations.week_data.first_day"))
 
             return locale.ordinalize((dt.day_of_week % 7 - first_day) % 7 + 1)
         elif token == "A":
@@ -353,7 +354,7 @@ class Formatter:
             else:
                 key += ".am"
 
-            return cast(str, locale.get(key))
+            return cast("str", locale.get(key))
         else:
             return token
 
@@ -441,7 +442,7 @@ class Formatter:
         if parsed["timestamp"] is not None:
             str_us = str(parsed["timestamp"])
             if "." in str_us:
-                microseconds = int(f'{str_us.split(".")[1].ljust(6, "0")}')
+                microseconds = int(f"{str_us.split('.')[1].ljust(6, '0')}")
             else:
                 microseconds = 0
 
@@ -460,7 +461,7 @@ class Formatter:
 
         if parsed["quarter"] is not None:
             if validated["year"] is not None:
-                dt = pendulum.datetime(cast(int, validated["year"]), 1, 1)
+                dt = pendulum.datetime(cast("int", validated["year"]), 1, 1)
             else:
                 dt = now
 
@@ -478,8 +479,8 @@ class Formatter:
 
         if parsed["day_of_year"] is not None:
             dt = cast(
-                pendulum.DateTime,
-                pendulum.parse(f'{validated["year"]}-{parsed["day_of_year"]:>03d}'),
+                "pendulum.DateTime",
+                pendulum.parse(f"{validated['year']}-{parsed['day_of_year']:>03d}"),
             )
 
             validated["month"] = dt.month
@@ -487,9 +488,9 @@ class Formatter:
 
         if parsed["day_of_week"] is not None:
             dt = pendulum.datetime(
-                cast(int, validated["year"]),
-                cast(int, validated["month"]) or now.month,
-                cast(int, validated["day"]) or now.day,
+                cast("int", validated["year"]),
+                cast("int", validated["month"]) or now.month,
+                cast("int", validated["day"]) or now.day,
             )
             dt = dt.start_of("week").subtract(days=1)
             dt = dt.next(parsed["day_of_week"])
@@ -628,7 +629,7 @@ class Formatter:
             unit = "month"
             match = "months.abbreviated"
         elif token == "Do":
-            parsed["day"] = int(cast(Match[str], re.match(r"(\d+)", value)).group(1))
+            parsed["day"] = int(cast("Match[str]", re.match(r"(\d+)", value)).group(1))
 
             return
         elif token == "dddd":
@@ -681,18 +682,18 @@ class Formatter:
             else:
                 candidates = tuple(
                     locale.translation(
-                        cast(str, self._LOCALIZABLE_TOKENS[token])
+                        cast("str", self._LOCALIZABLE_TOKENS[token])
                     ).values()
                 )
         else:
-            candidates = cast(Sequence[str], self._REGEX_TOKENS[token])
+            candidates = cast("Sequence[str]", self._REGEX_TOKENS[token])
 
         if not candidates:
             raise ValueError(f"Unsupported token: {token}")
 
         if not isinstance(candidates, tuple):
-            candidates = (cast(str, candidates),)
+            candidates = (cast("str", candidates),)
 
-        pattern = f'(?P<{token}>{"|".join(candidates)})'
+        pattern = f"(?P<{token}>{'|'.join(candidates)})"
 
         return pattern

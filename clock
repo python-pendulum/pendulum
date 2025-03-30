@@ -196,7 +196,7 @@ translations = {{}}
                 v = repr(v)
 
             s.append(f"{'    ' * tab}{k!r}: {v},\n")
-        s.append(f'{"    " * (tab - 1)}}}')
+        s.append(f"{'    ' * (tab - 1)}}}")
 
         return "".join(s)
 

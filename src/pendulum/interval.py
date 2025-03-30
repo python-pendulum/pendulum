@@ -37,11 +37,8 @@ class Interval(Duration, Generic[_T]):
     """
 
     def __new__(cls, start: _T, end: _T, absolute: bool = False) -> Self:
-        if (
-            isinstance(start, datetime)
-            and not isinstance(end, datetime)
-            or not isinstance(start, datetime)
-            and isinstance(end, datetime)
+        if (isinstance(start, datetime) and not isinstance(end, datetime)) or (
+            not isinstance(start, datetime) and isinstance(end, datetime)
         ):
             raise ValueError(
                 "Both start and end of an Interval must have the same type"
@@ -51,10 +48,8 @@ class Interval(Duration, Generic[_T]):
             isinstance(start, datetime)
             and isinstance(end, datetime)
             and (
-                start.tzinfo is None
-                and end.tzinfo is not None
-                or start.tzinfo is not None
-                and end.tzinfo is None
+                (start.tzinfo is None and end.tzinfo is not None)
+                or (start.tzinfo is not None and end.tzinfo is None)
             )
         ):
             raise TypeError("can't compare offset-naive and offset-aware datetimes")
@@ -66,7 +61,7 @@ class Interval(Duration, Generic[_T]):
         _end = end
         if isinstance(start, pendulum.DateTime):
             _start = cast(
-                _T,
+                "_T",
                 datetime(
                     start.year,
                     start.month,
@@ -80,11 +75,11 @@ class Interval(Duration, Generic[_T]):
                 ),
             )
         elif isinstance(start, pendulum.Date):
-            _start = cast(_T, date(start.year, start.month, start.day))
+            _start = cast("_T", date(start.year, start.month, start.day))
 
         if isinstance(end, pendulum.DateTime):
             _end = cast(
-                _T,
+                "_T",
                 datetime(
                     end.year,
                     end.month,
@@ -98,7 +93,7 @@ class Interval(Duration, Generic[_T]):
                 ),
             )
         elif isinstance(end, pendulum.Date):
-            _end = cast(_T, date(end.year, end.month, end.day))
+            _end = cast("_T", date(end.year, end.month, end.day))
 
         # Fixing issues with datetime.__sub__()
         # not handling offsets if the tzinfo is the same
@@ -108,12 +103,12 @@ class Interval(Duration, Generic[_T]):
             and _start.tzinfo is _end.tzinfo
         ):
             if _start.tzinfo is not None:
-                offset = cast(timedelta, cast(datetime, start).utcoffset())
-                _start = cast(_T, (_start - offset).replace(tzinfo=None))
+                offset = cast("timedelta", cast("datetime", start).utcoffset())
+                _start = cast("_T", (_start - offset).replace(tzinfo=None))
 
             if isinstance(end, datetime) and _end.tzinfo is not None:
-                offset = cast(timedelta, end.utcoffset())
-                _end = cast(_T, (_end - offset).replace(tzinfo=None))
+                offset = cast("timedelta", end.utcoffset())
+                _end = cast("_T", (_end - offset).replace(tzinfo=None))
 
         delta: timedelta = _end - _start
 
@@ -125,15 +120,15 @@ class Interval(Duration, Generic[_T]):
         _start: _T
         if not isinstance(start, pendulum.Date):
             if isinstance(start, datetime):
-                start = cast(_T, pendulum.instance(start))
+                start = cast("_T", pendulum.instance(start))
             else:
-                start = cast(_T, pendulum.date(start.year, start.month, start.day))
+                start = cast("_T", pendulum.date(start.year, start.month, start.day))
 
             _start = start
         else:
             if isinstance(start, pendulum.DateTime):
                 _start = cast(
-                    _T,
+                    "_T",
                     datetime(
                         start.year,
                         start.month,
@@ -146,20 +141,20 @@ class Interval(Duration, Generic[_T]):
                     ),
                 )
             else:
-                _start = cast(_T, date(start.year, start.month, start.day))
+                _start = cast("_T", date(start.year, start.month, start.day))
 
         _end: _T
         if not isinstance(end, pendulum.Date):
             if isinstance(end, datetime):
-                end = cast(_T, pendulum.instance(end))
+                end = cast("_T", pendulum.instance(end))
             else:
-                end = cast(_T, pendulum.date(end.year, end.month, end.day))
+                end = cast("_T", pendulum.date(end.year, end.month, end.day))
 
             _end = end
         else:
             if isinstance(end, pendulum.DateTime):
                 _end = cast(
-                    _T,
+                    "_T",
                     datetime(
                         end.year,
                         end.month,
@@ -172,7 +167,7 @@ class Interval(Duration, Generic[_T]):
                     ),
                 )
             else:
-                _end = cast(_T, date(end.year, end.month, end.day))
+                _end = cast("_T", date(end.year, end.month, end.day))
 
         self._invert = False
         if start > end:
@@ -336,12 +331,10 @@ class Interval(Duration, Generic[_T]):
     __rmul__ = __mul__  # type: ignore[assignment]
 
     @overload  # type: ignore[override]
-    def __floordiv__(self, other: timedelta) -> int:
-        ...
+    def __floordiv__(self, other: timedelta) -> int: ...
 
     @overload
-    def __floordiv__(self, other: int) -> Duration:
-        ...
+    def __floordiv__(self, other: int) -> Duration: ...
 
     def __floordiv__(self, other: int | timedelta) -> int | Duration:
         return self.as_duration().__floordiv__(other)
@@ -349,12 +342,10 @@ class Interval(Duration, Generic[_T]):
     __div__ = __floordiv__  # type: ignore[assignment]
 
     @overload  # type: ignore[override]
-    def __truediv__(self, other: timedelta) -> float:
-        ...
+    def __truediv__(self, other: timedelta) -> float: ...
 
     @overload
-    def __truediv__(self, other: float) -> Duration:
-        ...
+    def __truediv__(self, other: float) -> Duration: ...
 
     def __truediv__(self, other: float | timedelta) -> Duration | float:
         return self.as_duration().__truediv__(other)
