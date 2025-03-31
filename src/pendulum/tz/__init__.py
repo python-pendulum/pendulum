@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import cache
 from zoneinfo import available_timezones
 
 from pendulum.tz.local_timezone import get_local_timezone
@@ -17,6 +18,7 @@ TRANSITION_ERROR = "error"
 _tz_cache: dict[int, FixedTimezone] = {}
 
 
+@cache
 def timezones() -> set[str]:
     return available_timezones()
 
