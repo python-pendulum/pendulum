@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from importlib import resources
-from typing import TYPE_CHECKING
-from typing import cast
+from zoneinfo import available_timezones
 
 from pendulum.tz.local_timezone import get_local_timezone
 from pendulum.tz.local_timezone import set_local_timezone
@@ -10,11 +8,6 @@ from pendulum.tz.local_timezone import test_local_timezone
 from pendulum.tz.timezone import UTC
 from pendulum.tz.timezone import FixedTimezone
 from pendulum.tz.timezone import Timezone
-from zoneinfo import available_timezones
-
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 PRE_TRANSITION = "pre"
