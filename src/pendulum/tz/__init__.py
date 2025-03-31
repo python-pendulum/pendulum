@@ -26,7 +26,7 @@ _timezones = None
 _tz_cache: dict[int, FixedTimezone] = {}
 
 
-def timezones() -> tuple[str, ...]:
+def timezones() -> set[str]:
     return available_timezones()
 
 
