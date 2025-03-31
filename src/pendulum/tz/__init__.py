@@ -21,8 +21,6 @@ PRE_TRANSITION = "pre"
 POST_TRANSITION = "post"
 TRANSITION_ERROR = "error"
 
-_timezones = None
-
 _tz_cache: dict[int, FixedTimezone] = {}
 
 
