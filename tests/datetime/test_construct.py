@@ -39,7 +39,7 @@ def test_creates_an_instance_default_to_utcnow():
 
 
 def test_setting_timezone():
-    tz = "Europe/London"
+    tz = "Australia/Brisbane"
     dtz = timezone(tz)
     dt = datetime.utcnow()
     offset = dtz.convert(dt).utcoffset().total_seconds() / 3600
@@ -50,7 +50,7 @@ def test_setting_timezone():
 
 
 def test_setting_timezone_with_string():
-    tz = "Europe/London"
+    tz = "Australia/Brisbane"
     dtz = timezone(tz)
     dt = datetime.utcnow()
     offset = dtz.convert(dt).utcoffset().total_seconds() / 3600

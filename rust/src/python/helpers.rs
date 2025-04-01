@@ -1,3 +1,4 @@
+#![allow(clippy::useless_conversion)]
 use std::cmp::Ordering;
 
 use pyo3::{
@@ -123,23 +124,23 @@ pub fn get_offset(dt: &Bound<PyAny>) -> PyResult<i32> {
 }
 
 #[pyfunction]
-pub fn is_leap(year: i32) -> PyResult<bool> {
-    Ok(helpers::is_leap(year))
+pub fn is_leap(year: i32) -> bool {
+    helpers::is_leap(year)
 }
 
 #[pyfunction]
-pub fn is_long_year(year: i32) -> PyResult<bool> {
-    Ok(helpers::is_long_year(year))
+pub fn is_long_year(year: i32) -> bool {
+    helpers::is_long_year(year)
 }
 
 #[pyfunction]
-pub fn week_day(year: i32, month: u32, day: u32) -> PyResult<u32> {
-    Ok(helpers::week_day(year, month, day))
+pub fn week_day(year: i32, month: u32, day: u32) -> u32 {
+    helpers::week_day(year, month, day)
 }
 
 #[pyfunction]
-pub fn days_in_year(year: i32) -> PyResult<u32> {
-    Ok(helpers::days_in_year(year))
+pub fn days_in_year(year: i32) -> u32 {
+    helpers::days_in_year(year)
 }
 
 #[pyfunction]
@@ -147,8 +148,8 @@ pub fn local_time(
     unix_time: f64,
     utc_offset: isize,
     microsecond: usize,
-) -> PyResult<(usize, usize, usize, usize, usize, usize, usize)> {
-    Ok(helpers::local_time(unix_time, utc_offset, microsecond))
+) -> (usize, usize, usize, usize, usize, usize, usize) {
+    helpers::local_time(unix_time, utc_offset, microsecond)
 }
 
 #[pyfunction]

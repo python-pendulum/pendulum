@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from importlib import resources
-from pathlib import Path
-from typing import cast
+from functools import cache
+from zoneinfo import available_timezones
 
 from pendulum.tz.local_timezone import get_local_timezone
 from pendulum.tz.local_timezone import set_local_timezone
@@ -16,19 +15,12 @@ PRE_TRANSITION = "pre"
 POST_TRANSITION = "post"
 TRANSITION_ERROR = "error"
 
-_timezones = None
-
 _tz_cache: dict[int, FixedTimezone] = {}
 
 
-def timezones() -> tuple[str, ...]:
-    global _timezones
-
-    if _timezones is None:
-        with cast(Path, resources.files("tzdata").joinpath("zones")).open() as f:
-            _timezones = tuple(tz.strip() for tz in f.readlines())
-
-    return _timezones
+@cache
+def timezones() -> set[str]:
+    return available_timezones()
 
 
 def fixed_timezone(offset: int) -> FixedTimezone:
@@ -53,12 +45,12 @@ def local_timezone() -> Timezone | FixedTimezone:
 
 __all__ = [
     "UTC",
-    "Timezone",
     "FixedTimezone",
-    "set_local_timezone",
-    "get_local_timezone",
-    "test_local_timezone",
+    "Timezone",
     "fixed_timezone",
+    "get_local_timezone",
     "local_timezone",
+    "set_local_timezone",
+    "test_local_timezone",
     "timezones",
 ]
