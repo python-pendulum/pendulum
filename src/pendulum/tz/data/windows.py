@@ -46,7 +46,7 @@ windows_timezones = {
     "Eastern Standard Time (Mexico)": "America/Cancun",
     "Egypt Standard Time": "Africa/Cairo",
     "Ekaterinburg Standard Time": "Asia/Yekaterinburg",
-    "FLE Standard Time": "Europe/Kiev",
+    "FLE Standard Time": "Europe/Kyiv",
     "Fiji Standard Time": "Pacific/Fiji",
     "GMT Standard Time": "Europe/London",
     "GTB Standard Time": "Europe/Bucharest",
