@@ -190,10 +190,11 @@ translations = {{}}
     def format_dict(self, d, tab=1):
         s = ["{\n"]
         for k, v in d.items():
-            if isinstance(v, (dict, LocaleDataDict)):
-                v = self.format_dict(v, tab + 1)
-            else:
-                v = repr(v)
+            v = (
+                self.format_dict(v, tab + 1)
+                if isinstance(v, (dict, LocaleDataDict))
+                else repr(v)
+            )
 
             s.append(f"{'    ' * tab}{k!r}: {v},\n")
         s.append(f"{'    ' * (tab - 1)}}}")

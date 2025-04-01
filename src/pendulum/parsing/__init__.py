@@ -4,7 +4,6 @@ import contextlib
 import copy
 import os
 import re
-import struct
 
 from datetime import date
 from datetime import datetime
@@ -21,7 +20,7 @@ from pendulum.parsing.exceptions import ParserError
 with_extensions = os.getenv("PENDULUM_EXTENSIONS", "1") == "1"
 
 try:
-    if not with_extensions or struct.calcsize("P") == 4:
+    if not with_extensions:
         raise ImportError()
 
     from pendulum._pendulum import Duration

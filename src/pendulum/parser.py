@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import os
 import typing as t
 
 import pendulum
@@ -17,7 +18,12 @@ if t.TYPE_CHECKING:
     from pendulum.interval import Interval
     from pendulum.time import Time
 
+with_extensions = os.getenv("PENDULUM_EXTENSIONS", "1") == "1"
+
 try:
+    if not with_extensions:
+        raise ImportError()
+
     from pendulum._pendulum import Duration as RustDuration
 except ImportError:
     RustDuration = None  # type: ignore[assignment,misc]

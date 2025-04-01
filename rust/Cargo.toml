@@ -5,7 +5,7 @@ edition = "2021"
 
 [lib]
 name = "_pendulum"
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
 
 [profile.release]
 lto = "fat"
@@ -14,9 +14,7 @@ strip = true
 overflow-checks = false
 
 [dependencies]
-pyo3 = { version = "0.22", features = ["extension-module", "generate-import-lib"] }
-mimalloc = { version = "0.1.39", optional = true, default-features = false }
+pyo3 = { version = "0.23", features = ["extension-module", "generate-import-lib"] }
 
 [features]
 extension-module = ["pyo3/extension-module"]
-default = ["mimalloc"]

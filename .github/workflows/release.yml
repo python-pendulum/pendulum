@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     name: Build on ${{ matrix.platform || matrix.os }} (${{ matrix.target }} - ${{ matrix.manylinux || 'auto' }})
+    environment: release
     strategy:
       fail-fast: false
       matrix:
@@ -31,8 +32,6 @@ jobs:
           - os: ubuntu
             platform: linux
             target: aarch64
-            # mimalloc not supported on manylinux2014 cross-compile container
-            extra-build-args: --no-default-features
           # musllinux
           - os: ubuntu
             platform: linux
@@ -46,14 +45,10 @@ jobs:
             platform: linux
             target: ppc64le
             interpreter: 3.9 3.10 3.11 3.12 3.13
-            # mimalloc not supported on manylinux2014 cross-compile container
-            extra-build-args: --no-default-features
           - os: ubuntu
             platform: linux
             target: s390x
             interpreter: 3.9 3.10 3.11 3.12 3.13
-            # mimalloc not supported on manylinux2014 cross-compile container
-            extra-build-args: --no-default-features
 
     runs-on: ${{ matrix.os }}-latest
     steps:
@@ -77,13 +72,14 @@ jobs:
 
       - run: ${{ matrix.ls || 'ls -lh' }} dist/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ matrix.os }}-${{ matrix.target }}-${{ matrix.manylinux }}
           path: dist
 
   build_sdist:
     runs-on: ubuntu-latest
+    environment: release
     steps:
       - uses: actions/checkout@v3
       - name: Build sdist
@@ -92,30 +88,49 @@ jobs:
           command: sdist
           args: --out dist
       - name: Upload sdist
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-sdist
+          path: dist
+
+  build_none:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.5
+      - name: Install dependencies
+        run: poetry install --only main --only test --only typing --only build
+      - name: Run poetry build
+        run: poetry build
+      - name: Upload sdist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-any
           path: dist
 
 
   Release:
-    needs: [ build, build_sdist ]
-    if: success() && startsWith(github.ref, 'refs/tags/')
+    needs: [ build, build_sdist, build_none ]
+    if: success()
     runs-on: ubuntu-latest
-
+    environment: release
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: dist
+          pattern: dist*
           path: dist
-
-      - name: Install Poetry
-        run: |
-          curl -fsS https://install.python-poetry.org | python - -y
+          merge-multiple: true
 
       - name: Update PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
@@ -134,12 +149,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: steps.check-version.outputs.prerelease == 'true'
 
-      - name: Publish to PyPI
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          poetry publish
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

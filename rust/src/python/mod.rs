@@ -20,8 +20,5 @@ pub fn _pendulum(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_class::<Duration>()?;
     m.add_class::<PreciseDiff>()?;
 
-    #[cfg(not(feature = "mimalloc"))]
-    m.setattr("__pendulum_default_allocator__", true)?; // uses setattr so this is not in __all__
-
     Ok(())
 }

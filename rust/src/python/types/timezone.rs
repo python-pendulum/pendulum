@@ -22,7 +22,7 @@ impl FixedTimezone {
         py: Python<'p>,
         _dt: &Bound<'p, PyAny>,
     ) -> Result<pyo3::Bound<'p, PyDelta>, PyErr> {
-        PyDelta::new_bound(py, 0, self.offset, 0, true)
+        PyDelta::new(py, 0, self.offset, 0, true)
     }
 
     fn tzname(&self, _dt: &Bound<PyAny>) -> String {
@@ -34,7 +34,7 @@ impl FixedTimezone {
         py: Python<'p>,
         _dt: &Bound<'p, PyAny>,
     ) -> Result<pyo3::Bound<'p, PyDelta>, PyErr> {
-        PyDelta::new_bound(py, 0, 0, 0, true)
+        PyDelta::new(py, 0, 0, 0, true)
     }
 
     fn __repr__(&self) -> String {
