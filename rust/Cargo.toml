@@ -14,7 +14,7 @@ strip = true
 overflow-checks = false
 
 [dependencies]
-pyo3 = { version = "0.23", features = ["extension-module", "generate-import-lib"] }
+pyo3 = { version = "0.24", features = ["extension-module", "generate-import-lib"] }
 
 [features]
 extension-module = ["pyo3/extension-module"]
