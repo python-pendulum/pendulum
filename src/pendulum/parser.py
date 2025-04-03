@@ -46,7 +46,7 @@ def _parse(
     """
     # Handling special cases
     if text == "now":
-        return pendulum.now()
+        return pendulum.now(tz=options.get("tz", UTC))
 
     parsed = base_parse(text, **options)
 

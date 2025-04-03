@@ -128,8 +128,13 @@ def test_parse_interval() -> None:
 
 
 def test_parse_now() -> None:
-    dt = pendulum.parse("now")
+    assert pendulum.parse("now").timezone_name == "UTC"
+    assert (
+        pendulum.parse("now", tz="America/Los_Angeles").timezone_name
+        == "America/Los_Angeles"
+    )
 
+    dt = pendulum.parse("now", tz="local")
     assert dt.timezone_name == "America/Toronto"
 
     mock_now = pendulum.yesterday()
