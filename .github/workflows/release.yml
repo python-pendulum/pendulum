@@ -99,14 +99,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.8.5
+        run: pipx install poetry
+      - name: Hotswap build backend for Poetry
+        # Maturin doesn't support building no-extension wheels, so we swap to Poetry for that
+        run: |
+          sed -i '/^\[build-system\]/,/^\[/{s/^requires = .*/requires = ["poetry-core>=2.0.0,<3.0.0"]/ s/^build-backend = .*/build-backend = "poetry.core.masonry.api"/}' pyproject.toml
       - name: Install dependencies
         run: poetry install --only main --only test --only typing --only build
       - name: Run poetry build
         run: poetry build
-      - name: Upload sdist
+      - name: Upload no-ext wheel
         uses: actions/upload-artifact@v4
         with:
           name: dist-any
@@ -117,10 +119,12 @@ jobs:
     needs: [ build, build_sdist, build_none ]
     if: success()
     runs-on: ubuntu-latest
-    environment: release
     permissions:
       id-token: write
       contents: write
+    environment:
+      name: pypi
+      url: https://pypi.org/project/pendulum/
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -131,9 +135,6 @@ jobs:
           pattern: dist*
           path: dist
           merge-multiple: true
-
-      - name: Update PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Check distributions
         run: |
@@ -151,6 +152,7 @@ jobs:
           artifacts: "dist/*"
           draft: false
           prerelease: steps.check-version.outputs.prerelease == 'true'
+          body: "See CHANGELOG.md for details"
 
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
