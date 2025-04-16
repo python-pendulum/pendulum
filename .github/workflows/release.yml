@@ -103,7 +103,7 @@ jobs:
       - name: Hotswap build backend for Poetry
         # Maturin doesn't support building no-extension wheels, so we swap to Poetry for that
         run: |
-          sed -i '/^\[build-system\]/,/^\[/{s/^requires = .*/requires = ["poetry-core>=2.0.0,<3.0.0"]/ s/^build-backend = .*/build-backend = "poetry.core.masonry.api"/}' pyproject.toml
+          sed -i -e '/^\[build-system\]/,/^\[/{s/^requires = .*/requires = ["poetry-core>=2.0.0,<3.0.0"]/; s/^build-backend = .*/build-backend = "poetry.core.masonry.api"/}' pyproject.toml
       - name: Install dependencies
         run: poetry install --only main --only test --only typing --only build
       - name: Run poetry build
