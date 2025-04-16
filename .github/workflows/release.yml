@@ -93,7 +93,7 @@ jobs:
           name: dist-sdist
           path: dist
 
-  build_none:
+  build_no_ext:
     runs-on: ubuntu-latest
     environment: release
     steps:
@@ -107,7 +107,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --only main --only test --only typing --only build
       - name: Run poetry build
-        run: poetry build
+        run: poetry build -f wheel
       - name: Upload no-ext wheel
         uses: actions/upload-artifact@v4
         with:
