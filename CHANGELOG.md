@@ -1,102 +1,121 @@
 # Change Log
 
+## [3.1.0] - 2025-04-19
+
+### Added
+- Added support for Python 3.13 [#871](https://github.com/python-pendulum/pendulum/pull/871)
+
+### Changed
+- Removed support for Python 3.8 [#863](https://github.com/python-pendulum/pendulum/pull/863)
+- Fixed pure Python wheels support [#889](https://github.com/python-pendulum/pendulum/pull/889)
+- Fixed `pendulum.tz.timezones()` to use system tzdata [#801](https://github.com/python-pendulum/pendulum/pull/801)
+- Fixed spelling of Kyiv [#885](https://github.com/python-pendulum/pendulum/pull/885)
+- Fixed `DeprecationWarning` from `utcfromtimestamp` [#887](https://github.com/python-pendulum/pendulum/pull/887)
+- Fixed parsing of invalid intervals [#843](https://github.com/python-pendulum/pendulum/pull/843)
+
+### Locales
+- Added UA (Ukraine) locale [#793](https://github.com/python-pendulum/pendulum/pull/793)
+- Added BG (Bulgarian) locale [#812](https://github.com/python-pendulum/pendulum/pull/812)
+- Fixed KO (Korean) translations for `before` and `after` [#858](https://github.com/python-pendulum/pendulum/pull/858)
+
+
 ## [3.0.0] - 2023-12-16
 
 ### Changed
 
-- Relaxed dependency constraints. [#760](https://github.com/sdispater/pendulum/pull/760)
-- The testing helpers are now  optional and must be opted-in via the `test` extra. [#778](https://github.com/sdispater/pendulum/pull/778)
+- Relaxed dependency constraints. [#760](https://github.com/python-pendulum/pendulum/pull/760)
+- The testing helpers are now  optional and must be opted-in via the `test` extra. [#778](https://github.com/python-pendulum/pendulum/pull/778)
 
 ### Fixed
 
-- Removed remaining mentions of periods instead of intervals. [#757](https://github.com/sdispater/pendulum/pull/757)
-- Fixed the behavior of the `week_of_month` property for edge cases in January and December. [#774](https://github.com/sdispater/pendulum/pull/774)
-- Fixed the handling of the `fold` attribute when deep-copying a `DateTime` instance. [#776](https://github.com/sdispater/pendulum/pull/776)
-- Fixed errors where hours and days were not handled properly when adding durations. [#775](https://github.com/sdispater/pendulum/pull/775)
-- Fixed errors where hours and days were not handled properly when adding durations. [#775](https://github.com/sdispater/pendulum/pull/775)
+- Removed remaining mentions of periods instead of intervals. [#757](https://github.com/python-pendulum/pendulum/pull/757)
+- Fixed the behavior of the `week_of_month` property for edge cases in January and December. [#774](https://github.com/python-pendulum/pendulum/pull/774)
+- Fixed the handling of the `fold` attribute when deep-copying a `DateTime` instance. [#776](https://github.com/python-pendulum/pendulum/pull/776)
+- Fixed errors where hours and days were not handled properly when adding durations. [#775](https://github.com/python-pendulum/pendulum/pull/775)
+- Fixed errors where hours and days were not handled properly when adding durations. [#775](https://github.com/python-pendulum/pendulum/pull/775)
 
 
 ## [3.0.0b1] - 2023-10-01
 
 ### Added
 
-- Made `instance()` support all native types (date, time, datetime). [#732](https://github.com/sdispater/pendulum/pull/732)
+- Made `instance()` support all native types (date, time, datetime). [#732](https://github.com/python-pendulum/pendulum/pull/732)
 
 ### Changed
 
-- Dropped support for Python 3.7. [#734](https://github.com/sdispater/pendulum/pull/734)
-- Rewrote extensions in Rust. [#721](https://github.com/sdispater/pendulum/pull/721)
-- Made day of week convention more consistent across the codebase. [#731](https://github.com/sdispater/pendulum/pull/731)
+- Dropped support for Python 3.7. [#734](https://github.com/python-pendulum/pendulum/pull/734)
+- Rewrote extensions in Rust. [#721](https://github.com/python-pendulum/pendulum/pull/721)
+- Made day of week convention more consistent across the codebase. [#731](https://github.com/python-pendulum/pendulum/pull/731)
 
 ### Fixed
 
-- Fixed datetime string representation to match the native library. [#733](https://github.com/sdispater/pendulum/pull/733)
-- Fixed issues on some system when retrieving the local timezone. [#733](https://github.com/sdispater/pendulum/pull/733)
-- Fixed DST handling in `start_of()/end_of()` methods. [#713](https://github.com/sdispater/pendulum/pull/713)
+- Fixed datetime string representation to match the native library. [#733](https://github.com/python-pendulum/pendulum/pull/733)
+- Fixed issues on some system when retrieving the local timezone. [#733](https://github.com/python-pendulum/pendulum/pull/733)
+- Fixed DST handling in `start_of()/end_of()` methods. [#713](https://github.com/python-pendulum/pendulum/pull/713)
 
 
 ## [3.0.0a1] - 2022-11-23
 
 ### Added
 
-- Added new testing helpers to time travel. [#626](https://github.com/sdispater/pendulum/pull/626)
+- Added new testing helpers to time travel. [#626](https://github.com/python-pendulum/pendulum/pull/626)
 
 ### Changed
 
-- Dropped support for Python 2.7, 3.5 and 3.6. [#569](https://github.com/sdispater/pendulum/pull/569)
-- The `Timezone` class now relies on the native `zoneinfo.ZoneInfo` class. [#569](https://github.com/sdispater/pendulum/pull/569)
-- Renamed the `Period` class to `Interval`. [#676](https://github.com/sdispater/pendulum/pull/676)
-- Renamed the `period` helper to `interval`. [#676](https://github.com/sdispater/pendulum/pull/676)
-- Removed existing testing helpers: `test()` and `set_test_now()`. [#626](https://github.com/sdispater/pendulum/pull/626)
+- Dropped support for Python 2.7, 3.5 and 3.6. [#569](https://github.com/python-pendulum/pendulum/pull/569)
+- The `Timezone` class now relies on the native `zoneinfo.ZoneInfo` class. [#569](https://github.com/python-pendulum/pendulum/pull/569)
+- Renamed the `Period` class to `Interval`. [#676](https://github.com/python-pendulum/pendulum/pull/676)
+- Renamed the `period` helper to `interval`. [#676](https://github.com/python-pendulum/pendulum/pull/676)
+- Removed existing testing helpers: `test()` and `set_test_now()`. [#626](https://github.com/python-pendulum/pendulum/pull/626)
 
 ### Locales
 
-- Added the `sk` locale. [#575](https://github.com/sdispater/pendulum/pull/575)
-- Added the `ja` locale. [#610](https://github.com/sdispater/pendulum/pull/610)
-- Added the `he` locale. [#585](https://github.com/sdispater/pendulum/pull/585)
-- Added the `sv` locale. [#562](https://github.com/sdispater/pendulum/pull/562)
+- Added the `sk` locale. [#575](https://github.com/python-pendulum/pendulum/pull/575)
+- Added the `ja` locale. [#610](https://github.com/python-pendulum/pendulum/pull/610)
+- Added the `he` locale. [#585](https://github.com/python-pendulum/pendulum/pull/585)
+- Added the `sv` locale. [#562](https://github.com/python-pendulum/pendulum/pull/562)
 
 
 ## [2.1.1] - 2020-07-13
 
 ### Fixed
 
-- Fixed errors where invalid timezones were matched in `from_format()` ([#374](https://github.com/sdispater/pendulum/pull/374)).
-- Fixed errors when subtracting negative timedeltas ([#419](https://github.com/sdispater/pendulum/pull/419)).
-- Fixed errors in total units computation for durations with years and months ([#482](https://github.com/sdispater/pendulum/pull/482)).
-- Fixed an error where the `fold` attribute was overridden when using `replace()` ([#414](https://github.com/sdispater/pendulum/pull/414)).
-- Fixed an error where `now()` was not returning the correct result on DST transitions ([#483](https://github.com/sdispater/pendulum/pull/483)).
-- Fixed inconsistent typing annotation for the `parse()` function ([#452](https://github.com/sdispater/pendulum/pull/452)).
+- Fixed errors where invalid timezones were matched in `from_format()` ([#374](https://github.com/python-pendulum/pendulum/pull/374)).
+- Fixed errors when subtracting negative timedeltas ([#419](https://github.com/python-pendulum/pendulum/pull/419)).
+- Fixed errors in total units computation for durations with years and months ([#482](https://github.com/python-pendulum/pendulum/pull/482)).
+- Fixed an error where the `fold` attribute was overridden when using `replace()` ([#414](https://github.com/python-pendulum/pendulum/pull/414)).
+- Fixed an error where `now()` was not returning the correct result on DST transitions ([#483](https://github.com/python-pendulum/pendulum/pull/483)).
+- Fixed inconsistent typing annotation for the `parse()` function ([#452](https://github.com/python-pendulum/pendulum/pull/452)).
 
 ### Locales
 
-- Added the `pl` locale ([#459](https://github.com/sdispater/pendulum/pull/459)).
+- Added the `pl` locale ([#459](https://github.com/python-pendulum/pendulum/pull/459)).
 
 
 ## [2.1.0] - 2020-03-07
 
 ### Added
 
-- Added better typing and PEP-561 compliance ([#320](https://github.com/sdispater/pendulum/pull/320)).
-- Added the `is_anniversary()` method as an alias of `is_birthday()` ([#298](https://github.com/sdispater/pendulum/pull/298)).
+- Added better typing and PEP-561 compliance ([#320](https://github.com/python-pendulum/pendulum/pull/320)).
+- Added the `is_anniversary()` method as an alias of `is_birthday()` ([#298](https://github.com/python-pendulum/pendulum/pull/298)).
 
 ### Changed
 
 - Dropped support for Python 3.4.
-- `is_utc()` will now return `True` for any datetime with an offset of 0, similar to the behavior in the `1.*` versions ([#295](https://github.com/sdispater/pendulum/pull/295))
+- `is_utc()` will now return `True` for any datetime with an offset of 0, similar to the behavior in the `1.*` versions ([#295](https://github.com/python-pendulum/pendulum/pull/295))
 - `Duration.in_words()` will now return `0 milliseconds` for empty durations.
 
 ### Fixed
 
-- Fixed various issues with timezone transitions for some edge cases ([#321](https://github.com/sdispater/pendulum/pull/321), ([#350](https://github.com/sdispater/pendulum/pull/350))).
-- Fixed out of bound detection for `nth_of("month")` ([#357](https://github.com/sdispater/pendulum/pull/357)).
-- Fixed an error where extra text was accepted in `from_format()` ([#372](https://github.com/sdispater/pendulum/pull/372)).
-- Fixed a recursion error when adding time to a `DateTime` with a fixed timezone ([#431](https://github.com/sdispater/pendulum/pull/431)).
-- Fixed errors where `Period` instances were not properly compared to other classes, especially `timedelta` instances ([#427](https://github.com/sdispater/pendulum/pull/427)).
-- Fixed deprecation warnings due to internal regexps ([#427](https://github.com/sdispater/pendulum/pull/427)).
-- Fixed an error where the `test()` helper would not unset the test instance when an exception was raised ([#445](https://github.com/sdispater/pendulum/pull/445)).
-- Fixed an error where the `week_of_month` attribute was not returning the correct value ([#446](https://github.com/sdispater/pendulum/pull/446)).
-- Fixed an error in the way the `Z` ISO-8601 UTC designator was not parsed as UTC ([#448](https://github.com/sdispater/pendulum/pull/448)).
+- Fixed various issues with timezone transitions for some edge cases ([#321](https://github.com/python-pendulum/pendulum/pull/321), ([#350](https://github.com/python-pendulum/pendulum/pull/350))).
+- Fixed out of bound detection for `nth_of("month")` ([#357](https://github.com/python-pendulum/pendulum/pull/357)).
+- Fixed an error where extra text was accepted in `from_format()` ([#372](https://github.com/python-pendulum/pendulum/pull/372)).
+- Fixed a recursion error when adding time to a `DateTime` with a fixed timezone ([#431](https://github.com/python-pendulum/pendulum/pull/431)).
+- Fixed errors where `Period` instances were not properly compared to other classes, especially `timedelta` instances ([#427](https://github.com/python-pendulum/pendulum/pull/427)).
+- Fixed deprecation warnings due to internal regexps ([#427](https://github.com/python-pendulum/pendulum/pull/427)).
+- Fixed an error where the `test()` helper would not unset the test instance when an exception was raised ([#445](https://github.com/python-pendulum/pendulum/pull/445)).
+- Fixed an error where the `week_of_month` attribute was not returning the correct value ([#446](https://github.com/python-pendulum/pendulum/pull/446)).
+- Fixed an error in the way the `Z` ISO-8601 UTC designator was not parsed as UTC ([#448](https://github.com/python-pendulum/pendulum/pull/448)).
 
 ### Locales
 
@@ -200,15 +219,16 @@
 
 
 
-[Unreleased]: https://github.com/sdispater/pendulum/compare/3.0.0...master
-[3.0.0]: https://github.com/sdispater/pendulum/releases/tag/3.0.0
-[3.0.0b1]: https://github.com/sdispater/pendulum/releases/tag/3.0.0b1
-[3.0.0a1]: https://github.com/sdispater/pendulum/releases/tag/3.0.0a1
-[2.1.1]: https://github.com/sdispater/pendulum/releases/tag/2.1.1
-[2.1.0]: https://github.com/sdispater/pendulum/releases/tag/2.1.0
-[2.0.5]: https://github.com/sdispater/pendulum/releases/tag/2.0.5
-[2.0.4]: https://github.com/sdispater/pendulum/releases/tag/2.0.4
-[2.0.3]: https://github.com/sdispater/pendulum/releases/tag/2.0.3
-[2.0.2]: https://github.com/sdispater/pendulum/releases/tag/2.0.2
-[2.0.1]: https://github.com/sdispater/pendulum/releases/tag/2.0.1
-[2.0.0]: https://github.com/sdispater/pendulum/releases/tag/2.0.0
+[Unreleased]: https://github.com/python-pendulum/pendulum/compare/3.1.0...master
+[3.1.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.1.0
+[3.0.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0
+[3.0.0b1]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0b1
+[3.0.0a1]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0a1
+[2.1.1]: https://github.com/python-pendulum/pendulum/releases/tag/2.1.1
+[2.1.0]: https://github.com/python-pendulum/pendulum/releases/tag/2.1.0
+[2.0.5]: https://github.com/python-pendulum/pendulum/releases/tag/2.0.5
+[2.0.4]: https://github.com/python-pendulum/pendulum/releases/tag/2.0.4
+[2.0.3]: https://github.com/python-pendulum/pendulum/releases/tag/2.0.3
+[2.0.2]: https://github.com/python-pendulum/pendulum/releases/tag/2.0.2
+[2.0.1]: https://github.com/python-pendulum/pendulum/releases/tag/2.0.1
+[2.0.0]: https://github.com/python-pendulum/pendulum/releases/tag/2.0.0
