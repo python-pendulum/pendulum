@@ -68,7 +68,9 @@ maturin = ">=1.0,<2.0"
 module-name = "pendulum._pendulum"
 features = ["pyo3/extension-module"]
 python-packages = ["pendulum"]
-
+include = [
+    { path = "LICENSE", format = "sdist" },
+]
 [tool.ruff]
 fix = true
 line-length = 88
