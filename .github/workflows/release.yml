@@ -116,7 +116,7 @@ jobs:
 
 
   Release:
-    needs: [ build, build_sdist, build_none ]
+    needs: [ build, build_sdist, build_no_ext ]
     if: success()
     runs-on: ubuntu-latest
     permissions:
