@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import datetime as _datetime
 
+from typing import Any
 from typing import Union
 from typing import cast
 from typing import overload
 
-from pendulum.__version__ import __version__
 from pendulum.constants import DAYS_PER_WEEK
 from pendulum.constants import HOURS_PER_DAY
 from pendulum.constants import MINUTES_PER_HOUR
@@ -343,6 +343,23 @@ travel = _traveller.travel
 travel_to = _traveller.travel_to
 travel_back = _traveller.travel_back
 
+
+def __getattr__(name: str) -> Any:
+    if name == "__version__":
+        import importlib.metadata
+        import warnings
+
+        warnings.warn(
+            "The '__version__' attribute is deprecated and will be removed in"
+            " Pendulum 3.4. Use 'importlib.metadata.version(\"pendulum\")' instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return importlib.metadata.version("pendulum")
+
+    raise AttributeError(name)
+
+
 __all__ = [
     "DAYS_PER_WEEK",
     "HOURS_PER_DAY",
@@ -364,7 +381,6 @@ __all__ = [
     "Time",
     "Timezone",
     "WeekDay",
-    "__version__",
     "date",
     "datetime",
     "duration",
