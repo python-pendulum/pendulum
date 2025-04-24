@@ -212,6 +212,10 @@ def _parse_iso8601_interval(text: str) -> _Interval:
         raise ParserError("Invalid interval")
 
     first, last = text.split("/")
+
+    if not first or not last:
+        raise ParserError("Invalid interval.")
+
     start = end = duration = None
 
     if first[:1] == "P":
