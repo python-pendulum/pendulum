@@ -90,7 +90,7 @@ def test_parse_iso8601(text: str, expected: date) -> None:
     assert parse_iso8601(text) == expected
 
 
-def test_parse_ios8601_invalid():
+def test_parse_iso8601_invalid():
     # Invalid month
     with pytest.raises(ValueError):
         parse_iso8601("20161306T123456")
@@ -193,7 +193,7 @@ def test_parse_ios8601_invalid():
         ("P2Y30M4DT5H6M7S", (2, 30, 0, 4, 5, 6, 7, 0)),
     ],
 )
-def test_parse_ios8601_duration(
+def test_parse_iso8601_duration(
     text: str, expected: tuple[int, int, int, int, int, int, int, int]
 ) -> None:
     parsed = parse_iso8601(text)
@@ -208,3 +208,9 @@ def test_parse_ios8601_duration(
         parsed.remaining_seconds,
         parsed.microseconds,
     ) == expected
+
+
+def test_parse_iso8601_duration_invalid():
+    # Must include at least one element
+    with pytest.raises(ValueError):
+        parse_iso8601("P")
