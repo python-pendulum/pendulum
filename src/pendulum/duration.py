@@ -238,11 +238,7 @@ class Duration(timedelta):
     def in_seconds(self) -> int:
         return int(self.total_seconds())
 
-    def in_words(
-        self,
-        locale: str | None = None,
-        separator: str = " ",
-    ) -> str:
+def in_words(self, locale: str | None = None, separator: str = " ") -> str:
         """
         Get the current interval in words in the current locale.
 
@@ -277,10 +273,8 @@ class Duration(timedelta):
 
         if not parts:
             count: int | str = 0
-            unit: str
             if self.microseconds != 0:
                 unit = f"units.second.{loaded_locale.plural(0)}"
-                microseconds = abs(self.microseconds) / 1e6
                 count = f"{abs(self.microseconds) / 1e6:.2f}"
             else:
                 unit = f"units.microsecond.{loaded_locale.plural(0)}"
