@@ -238,7 +238,7 @@ class Duration(timedelta):
     def in_seconds(self) -> int:
         return int(self.total_seconds())
 
-def in_words(self, locale: str | None = None, separator: str = " ") -> str:
+    def in_words(self, locale: str | None = None, separator: str = " ") -> str:
         """
         Get the current interval in words in the current locale.
 
