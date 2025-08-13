@@ -37,10 +37,10 @@ It returns the middle date between itself and the provided `DateTime` argument.
 '2019-12-31 23:59:59'
 
 >>> dt.start_of('century')
-'2000-01-01 00:00:00'
+'2001-01-01 00:00:00'
 
 >>> dt.end_of('century')
-'2099-12-31 23:59:59'
+'2100-12-31 23:59:59'
 
 >>> dt.start_of('week')
 '2012-01-30 00:00:00'
