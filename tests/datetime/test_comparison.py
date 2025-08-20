@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime
+import zoneinfo
 
-import pytz
+from datetime import datetime
 
 import pendulum
 
@@ -99,7 +99,7 @@ def test_greater_than_false():
 def test_greater_than_with_timezone_true():
     d1 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
     d2 = pendulum.datetime(2000, 1, 1, 8, 59, 59, tz="America/Vancouver")
-    d3 = pytz.timezone("America/Vancouver").localize(datetime(2000, 1, 1, 8, 59, 59))
+    d3 = datetime(2000, 1, 1, 8, 59, 59, tzinfo=zoneinfo.ZoneInfo("America/Vancouver"))
 
     assert d1 > d2
     assert d1 > d3
@@ -108,7 +108,7 @@ def test_greater_than_with_timezone_true():
 def test_greater_than_with_timezone_false():
     d1 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
     d2 = pendulum.datetime(2000, 1, 1, 9, 0, 1, tz="America/Vancouver")
-    d3 = pytz.timezone("America/Vancouver").localize(datetime(2000, 1, 1, 9, 0, 1))
+    d3 = datetime(2000, 1, 1, 9, 0, 1, tzinfo=zoneinfo.ZoneInfo("America/Vancouver"))
 
     assert not d1 > d2
     assert not d1 > d3
@@ -144,7 +144,7 @@ def test_greater_than_or_equal_false():
 def test_greater_than_or_equal_with_timezone_true():
     d1 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
     d2 = pendulum.datetime(2000, 1, 1, 8, 59, 59, tz="America/Vancouver")
-    d3 = pytz.timezone("America/Vancouver").localize(datetime(2000, 1, 1, 8, 59, 59))
+    d3 = datetime(2000, 1, 1, 8, 59, 59, tzinfo=zoneinfo.ZoneInfo("America/Vancouver"))
 
     assert d1 >= d2
     assert d1 >= d3
@@ -153,7 +153,7 @@ def test_greater_than_or_equal_with_timezone_true():
 def test_greater_than_or_equal_with_timezone_false():
     d1 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
     d2 = pendulum.datetime(2000, 1, 1, 9, 0, 1, tz="America/Vancouver")
-    d3 = pytz.timezone("America/Vancouver").localize(datetime(2000, 1, 1, 9, 0, 1))
+    d3 = datetime(2000, 1, 1, 9, 0, 1, tzinfo=zoneinfo.ZoneInfo("America/Vancouver"))
 
     assert not d1 >= d2
     assert not d1 >= d3
@@ -180,7 +180,7 @@ def test_less_than_false():
 def test_less_than_with_timezone_true():
     d1 = pendulum.datetime(2000, 1, 1, 8, 59, 59, tz="America/Vancouver")
     d2 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
-    d3 = pytz.timezone("America/Toronto").localize(datetime(2000, 1, 1, 12, 0, 0))
+    d3 = datetime(2000, 1, 1, 12, 0, 0, tzinfo=zoneinfo.ZoneInfo("America/Toronto"))
 
     assert d1 < d2
     assert d1 < d3
@@ -189,7 +189,7 @@ def test_less_than_with_timezone_true():
 def test_less_than_with_timezone_false():
     d1 = pendulum.datetime(2000, 1, 1, 9, 0, 1, tz="America/Vancouver")
     d2 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
-    d3 = pytz.timezone("America/Toronto").localize(datetime(2000, 1, 1, 12, 0, 0))
+    d3 = datetime(2000, 1, 1, 12, 0, 0, tzinfo=zoneinfo.ZoneInfo("America/Toronto"))
 
     assert not d1 < d2
     assert not d1 < d3
@@ -225,7 +225,7 @@ def test_less_than_or_equal_false():
 def test_less_than_or_equal_with_timezone_true():
     d1 = pendulum.datetime(2000, 1, 1, 8, 59, 59, tz="America/Vancouver")
     d2 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
-    d3 = pytz.timezone("America/Toronto").localize(datetime(2000, 1, 1, 12, 0, 0))
+    d3 = datetime(2000, 1, 1, 12, 0, 0, tzinfo=zoneinfo.ZoneInfo("America/Toronto"))
 
     assert d1 <= d2
     assert d1 <= d3
@@ -234,7 +234,7 @@ def test_less_than_or_equal_with_timezone_true():
 def test_less_than_or_equal_with_timezone_false():
     d1 = pendulum.datetime(2000, 1, 1, 9, 0, 1, tz="America/Vancouver")
     d2 = pendulum.datetime(2000, 1, 1, 12, 0, 0, tz="America/Toronto")
-    d3 = pytz.timezone("America/Toronto").localize(datetime(2000, 1, 1, 12, 0, 0))
+    d3 = datetime(2000, 1, 1, 12, 0, 0, tzinfo=zoneinfo.ZoneInfo("America/Toronto"))
 
     assert not d1 <= d2
     assert not d1 <= d3

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import zoneinfo
+
 from datetime import date
 from datetime import datetime
 from datetime import time
-
-import pytz
 
 from dateutil import tz
 
@@ -25,8 +25,8 @@ def test_instance_with_aware_datetime() -> None:
     assert now.timezone_name == "Europe/Paris"
 
 
-def test_instance_with_aware_datetime_pytz() -> None:
-    now = pendulum.instance(datetime.now(pytz.timezone("Europe/Paris")))
+def test_instance_with_aware_datetime_zoneinfo() -> None:
+    now = pendulum.instance(datetime.now(zoneinfo.ZoneInfo("Europe/Paris")))
     assert now.timezone_name == "Europe/Paris"
 
 
@@ -57,7 +57,7 @@ def test_instance_with_aware_time() -> None:
 
 
 def test_safe_timezone_with_tzinfo_objects() -> None:
-    tz = _safe_timezone(pytz.timezone("Europe/Paris"))
+    tz = _safe_timezone(zoneinfo.ZoneInfo("Europe/Paris"))
 
     assert isinstance(tz, Timezone)
     assert tz.name == "Europe/Paris"
