@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import zoneinfo
+
 from datetime import time
 from datetime import timedelta
 
 import pytest
-import pytz
 
 import pendulum
 
@@ -87,7 +88,7 @@ def test_subtract_time():
     t = Time(12, 34, 56)
     t1 = Time(1, 1, 1)
     t2 = time(1, 1, 1)
-    t3 = time(1, 1, 1, tzinfo=pytz.timezone("Europe/Paris"))
+    t3 = time(1, 1, 1, tzinfo=zoneinfo.ZoneInfo("Europe/Paris"))
 
     diff = t - t1
     assert isinstance(diff, pendulum.Duration)

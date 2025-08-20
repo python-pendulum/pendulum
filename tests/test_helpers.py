@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import zoneinfo
+
 from datetime import datetime
 
 import pytest
-import pytz
 
 import pendulum
 
@@ -102,18 +103,17 @@ def test_precise_diff_timezone() -> None:
     assert_diff(diff, days=1, hours=5)
     assert diff.total_days == 1
 
-    # pytz
-    paris_pytz = pytz.timezone("Europe/Paris")
-    toronto_pytz = pytz.timezone("America/Toronto")
+    paris_tz = zoneinfo.ZoneInfo("Europe/Paris")
+    toronto_tz = zoneinfo.ZoneInfo("America/Toronto")
 
-    dt1 = paris_pytz.localize(datetime(2013, 3, 31, 1, 30))
-    dt2 = paris_pytz.localize(datetime(2013, 4, 1, 1, 30))
+    dt1 = datetime(2013, 3, 31, 1, 30, tzinfo=paris_tz)
+    dt2 = datetime(2013, 4, 1, 1, 30, tzinfo=paris_tz)
 
     diff = precise_diff(dt1, dt2)
     assert_diff(diff, days=1, hours=0)
     assert diff.total_days == 1
 
-    dt2 = toronto_pytz.localize(datetime(2013, 4, 1, 1, 30))
+    dt2 = datetime(2013, 4, 1, 1, 30, tzinfo=toronto_tz)
 
     diff = precise_diff(dt1, dt2)
     assert_diff(diff, days=1, hours=5)

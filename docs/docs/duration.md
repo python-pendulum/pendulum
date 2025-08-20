@@ -11,10 +11,10 @@ It has many improvements over the base class.
 
     ```python
     >>> import pendulum
-    >>> from datetime import datetime
+    >>> import datetime
 
-    >>> d1 = datetime(2012, 1, 1, 1, 2, 3, tzinfo=pytz.UTC)
-    >>> d2 = datetime(2011, 12, 31, 22, 2, 3, tzinfo=pytz.UTC)
+    >>> d1 = datetime.datetime(2012, 1, 1, 1, 2, 3, tzinfo=datetime.UTC)
+    >>> d2 = datetime.datetime(2011, 12, 31, 22, 2, 3, tzinfo=datetime.UTC)
     >>> delta = d2 - d1
     >>> delta.days
     -1
