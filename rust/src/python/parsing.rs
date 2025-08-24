@@ -4,13 +4,11 @@ use pyo3::prelude::*;
 use pyo3::types::PyDate;
 use pyo3::types::PyDateTime;
 use pyo3::types::PyTime;
+use pyo3::IntoPyObjectExt;
 
 use crate::parsing::Parser;
 use crate::python::types::{Duration, FixedTimezone};
 
-// TODO: pyO3 v0.23 deprecates `ToPyObject`, function below must be migrated as per
-//       https://pyo3.rs/v0.23.0/migration
-#[allow(deprecated)]
 #[pyfunction]
 pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
     let parsed = Parser::new(input).parse();
@@ -31,12 +29,12 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             datetime.microsecond,
                             Some(
                                 Py::new(py, FixedTimezone::new(offset, datetime.tzname))?
-                                    .to_object(py)
+                                    .into_any()
                                     .downcast_bound(py)?,
                             ),
                         )?;
 
-                        Ok(dt.to_object(py))
+                        Ok(dt.into_any().unbind())
                     }
                     None => {
                         let dt = PyDateTime::new(
@@ -51,7 +49,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             None,
                         )?;
 
-                        Ok(dt.to_object(py))
+                        Ok(dt.into_any().unbind())
                     }
                 },
                 (true, false) => {
@@ -62,7 +60,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                         datetime.day as u8,
                     )?;
 
-                    Ok(dt.to_object(py))
+                    Ok(dt.into_any().unbind())
                 }
                 (false, true) => match datetime.offset {
                     Some(offset) => {
@@ -74,12 +72,12 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             datetime.microsecond,
                             Some(
                                 Py::new(py, FixedTimezone::new(offset, datetime.tzname))?
-                                    .to_object(py)
+                                    .into_any()
                                     .downcast_bound(py)?,
                             ),
                         )?;
 
-                        Ok(dt.to_object(py))
+                        Ok(dt.into_any().unbind())
                     }
                     None => {
                         let dt = PyTime::new(
@@ -91,7 +89,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             None,
                         )?;
 
-                        Ok(dt.to_object(py))
+                        Ok(dt.into_any().unbind())
                     }
                 },
                 (_, _) => Err(exceptions::PyValueError::new_err(
@@ -111,7 +109,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                     Some(duration.microseconds),
                 ),
             )?
-            .to_object(py)),
+            .into_py_any(py)?),
             (_, _, _) => Err(exceptions::PyValueError::new_err(
                 "Not yet implemented".to_string(),
             )),
