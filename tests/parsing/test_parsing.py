@@ -381,6 +381,19 @@ def test_iso8601_week_number():
     assert parsed.microsecond == 0
     assert parsed.tzinfo is None
 
+    # Test case for bug #916 - 2026W36 should parse correctly
+    text = "2026W36"
+    parsed = parse(text)
+
+    assert parsed.year == 2026
+    assert parsed.month == 8
+    assert parsed.day == 31
+    assert parsed.hour == 0
+    assert parsed.minute == 0
+    assert parsed.second == 0
+    assert parsed.microsecond == 0
+    assert parsed.tzinfo is None
+
 
 def test_iso8601_week_number_with_time():
     text = "2012-W05T09"

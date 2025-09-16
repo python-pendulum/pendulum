@@ -891,7 +891,7 @@ impl<'a> Parser<'a> {
         }
 
         for i in 1..14 {
-            if ord < MONTHS_OFFSETS[leap][i] {
+            if ord <= MONTHS_OFFSETS[leap][i] {
                 let day = ord as u32 - MONTHS_OFFSETS[leap][i - 1] as u32;
                 let month = (i - 1) as u32;
 
