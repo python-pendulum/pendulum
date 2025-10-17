@@ -194,7 +194,7 @@ class Interval(Duration, Generic[_T]):
 
     @property
     def weeks(self) -> int:
-        return abs(self._delta.days) // 7 * self._sign(self._delta.days)
+        return abs(self._days) // 7 * self._sign(self._days)
 
     @property
     def days(self) -> int:
@@ -202,15 +202,15 @@ class Interval(Duration, Generic[_T]):
 
     @property
     def remaining_days(self) -> int:
-        return abs(self._delta.days) % 7 * self._sign(self._days)
+        return abs(self._days) % 7 * self._sign(self._days)
 
     @property
     def hours(self) -> int:
-        return self._delta.hours
+        return abs(int(self.total_seconds()) // 3600 % 24) * self._sign(self.total_seconds())
 
     @property
     def minutes(self) -> int:
-        return self._delta.minutes
+        return abs(int(self.total_seconds()) // 60 % 60) * self._sign(self.total_seconds())
 
     @property
     def start(self) -> _T:
