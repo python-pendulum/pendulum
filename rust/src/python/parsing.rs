@@ -10,7 +10,7 @@ use crate::parsing::Parser;
 use crate::python::types::{Duration, FixedTimezone};
 
 #[pyfunction]
-pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
+pub fn parse_iso8601(py: Python, input: &str) -> PyResult<Py<PyAny>> {
     let parsed = Parser::new(input).parse();
 
     match parsed {
@@ -30,7 +30,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             Some(
                                 Py::new(py, FixedTimezone::new(offset, datetime.tzname))?
                                     .into_any()
-                                    .downcast_bound(py)?,
+                                    .cast_bound(py)?,
                             ),
                         )?;
 
@@ -73,7 +73,7 @@ pub fn parse_iso8601(py: Python, input: &str) -> PyResult<PyObject> {
                             Some(
                                 Py::new(py, FixedTimezone::new(offset, datetime.tzname))?
                                     .into_any()
-                                    .downcast_bound(py)?,
+                                    .cast_bound(py)?,
                             ),
                         )?;
 
