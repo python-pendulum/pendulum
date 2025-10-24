@@ -100,7 +100,7 @@ pub fn get_tz_name<'py>(dt: &Bound<'py, PyAny>) -> PyResult<String> {
     }
 
     if let Some(tzname_attr) = tzname_attr {
-        let tzname: &Bound<PyString> = tzname_attr.downcast()?;
+        let tzname: &Bound<PyString> = tzname_attr.cast()?;
         tzname.extract()
     } else {
         Ok(String::new())
@@ -118,7 +118,7 @@ pub fn get_offset(dt: &Bound<PyAny>) -> PyResult<i32> {
         return Ok(0);
     }
     let binding = tzinfo.call_method1("utcoffset", (dt,))?;
-    let offset: &Bound<PyDelta> = binding.downcast()?;
+    let offset: &Bound<PyDelta> = binding.cast()?;
 
     Ok(offset.get_days() * SECS_PER_DAY as i32 + offset.get_seconds())
 }
@@ -161,9 +161,9 @@ pub fn precise_diff<'py>(
     let dt1_tz = get_tz_name(dt1)?;
     let dt2_tz = get_tz_name(dt2)?;
     let mut dtinfo1 = DateTimeInfo {
-        year: dt1.downcast::<PyDate>()?.get_year(),
-        month: i32::from(dt1.downcast::<PyDate>()?.get_month()),
-        day: i32::from(dt1.downcast::<PyDate>()?.get_day()),
+        year: dt1.cast::<PyDate>()?.get_year(),
+        month: i32::from(dt1.cast::<PyDate>()?.get_month()),
+        day: i32::from(dt1.cast::<PyDate>()?.get_day()),
         hour: 0,
         minute: 0,
         second: 0,
@@ -174,9 +174,9 @@ pub fn precise_diff<'py>(
         is_datetime: PyDateTime::is_type_of(dt1),
     };
     let mut dtinfo2 = DateTimeInfo {
-        year: dt2.downcast::<PyDate>()?.get_year(),
-        month: i32::from(dt2.downcast::<PyDate>()?.get_month()),
-        day: i32::from(dt2.downcast::<PyDate>()?.get_day()),
+        year: dt2.cast::<PyDate>()?.get_year(),
+        month: i32::from(dt2.cast::<PyDate>()?.get_month()),
+        day: i32::from(dt2.cast::<PyDate>()?.get_day()),
         hour: 0,
         minute: 0,
         second: 0,
@@ -191,7 +191,7 @@ pub fn precise_diff<'py>(
         - helpers::day_number(dtinfo1.year, dtinfo1.month as u8, dtinfo1.day as u8);
 
     if dtinfo1.is_datetime {
-        let dt1dt: &Bound<PyDateTime> = dt1.downcast()?;
+        let dt1dt: &Bound<PyDateTime> = dt1.cast()?;
 
         dtinfo1.hour = i32::from(dt1dt.get_hour());
         dtinfo1.minute = i32::from(dt1dt.get_minute());
@@ -236,7 +236,7 @@ pub fn precise_diff<'py>(
     }
 
     if dtinfo2.is_datetime {
-        let dt2dt: &Bound<PyDateTime> = dt2.downcast()?;
+        let dt2dt: &Bound<PyDateTime> = dt2.cast()?;
 
         dtinfo2.hour = i32::from(dt2dt.get_hour());
         dtinfo2.minute = i32::from(dt2dt.get_minute());
