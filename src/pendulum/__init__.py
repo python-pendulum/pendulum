@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import datetime as _datetime
 
+from functools import cache
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Union
 from typing import cast
@@ -30,7 +32,6 @@ from pendulum.helpers import week_ends_at
 from pendulum.helpers import week_starts_at
 from pendulum.interval import Interval
 from pendulum.parser import parse as parse
-from pendulum.testing.traveller import Traveller
 from pendulum.time import Time
 from pendulum.tz import UTC
 from pendulum.tz import fixed_timezone
@@ -334,17 +335,43 @@ def interval(
     return Interval(start, end, absolute=absolute)
 
 
-# Testing
+if TYPE_CHECKING:
+    from pendulum.testing.traveller import Traveller
 
-_traveller = Traveller(DateTime)
+    _traveller = Traveller(DateTime)
+    freeze = _traveller.freeze
+    travel = _traveller.travel
+    travel_to = _traveller.travel_to
+    travel_back = _traveller.travel_back
+else:
+    # We do this in an if-not-typing block so we don't have to duplicate the function signatures.
+    @cache
+    def _traveller() -> Traveller:
+        # Lazy load this, so we don't eagerly load Pytest if we don't need to
+        from pendulum.testing.traveller import Traveller
 
-freeze = _traveller.freeze
-travel = _traveller.travel
-travel_to = _traveller.travel_to
-travel_back = _traveller.travel_back
+        return Traveller(DateTime)
+
+    def freeze(*args, **kwargs) -> Traveller:
+        return _traveller().freeze(*args, **kwargs)
+
+    def travel(*args, **kwargs):
+        return _traveller().travel(*args, **kwargs)
+
+    def travel_to(*args, **kwargs):
+        return _traveller().travel_to(*args, **kwargs)
+
+    def travel_back(*args, **kwargs):
+        return _traveller().travel_back(*args, **kwargs)
 
 
 def __getattr__(name: str) -> Any:
+    if name == "Traveller":
+        # This wasn't in `__all__`, but it was defined before, so keep it for back compat
+        from pendulum.testing.traveller import Traveller
+
+        return Traveller
+
     if name == "__version__":
         import importlib.metadata
         import warnings

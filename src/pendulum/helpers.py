@@ -6,8 +6,10 @@ import struct
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from functools import cache
 from math import copysign
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import TypeVar
 from typing import overload
 
@@ -15,13 +17,15 @@ import pendulum
 
 from pendulum.constants import DAYS_PER_MONTHS
 from pendulum.day import WeekDay
-from pendulum.formatting.difference_formatter import DifferenceFormatter
 from pendulum.locales.locale import Locale
 
 
 if TYPE_CHECKING:
     # Prevent import cycles
     from pendulum.duration import Duration
+
+    # LazyLoaded
+    from pendulum.formatting.difference_formatter import DifferenceFormatter
 
 with_extensions = os.getenv("PENDULUM_EXTENSIONS", "1") == "1"
 
@@ -48,7 +52,7 @@ except ImportError:
     from pendulum._helpers import precise_diff  # type: ignore[assignment]
     from pendulum._helpers import week_day
 
-difference_formatter = DifferenceFormatter()
+difference_formatter: DifferenceFormatter
 
 
 @overload
@@ -164,7 +168,7 @@ def format_diff(
     if locale is None:
         locale = get_locale()
 
-    return difference_formatter.format(diff, is_now, absolute, locale)
+    return _difference_formatter().format(diff, is_now, absolute, locale)
 
 
 def _sign(x: float) -> int:
@@ -200,6 +204,19 @@ def week_ends_at(wday: WeekDay) -> None:
         raise ValueError("Invalid day of week")
 
     pendulum._WEEK_ENDS_AT = wday
+
+
+@cache
+def _difference_formatter() -> DifferenceFormatter:
+    from pendulum.formatting.difference_formatter import DifferenceFormatter
+
+    return DifferenceFormatter()
+
+
+def __getattr__(name: str) -> Any:
+    if name == "difference_formatter":
+        return _difference_formatter()
+    raise AttributeError(name)
 
 
 __all__ = [

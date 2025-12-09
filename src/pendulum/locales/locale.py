@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 
-from importlib import import_module, resources
 from pathlib import Path
 from typing import Any
 from typing import ClassVar
@@ -24,6 +23,8 @@ class Locale:
 
     @classmethod
     def load(cls, locale: str | Locale) -> Locale:
+        from importlib import import_module, resources
+
         if isinstance(locale, Locale):
             return locale
 
