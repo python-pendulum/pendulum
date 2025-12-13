@@ -67,11 +67,11 @@ if not PYPY:
 
                 self._started: bool = False
                 self._traveller: time_machine.travel | None = None
-                self._coordinates: time_machine.Coordinates | None = None
+                self._coordinates: time_machine.Traveller | None = None
 
             def freeze(self) -> Self:
                 if self._started:
-                    cast("time_machine.Coordinates", self._coordinates).move_to(
+                    cast("time_machine.Traveller", self._coordinates).move_to(
                         self._datetime_class.now(), tick=False
                     )
                 else:
@@ -105,7 +105,7 @@ if not PYPY:
             ) -> Self:
                 self._start(freeze=freeze)
 
-                cast("time_machine.Coordinates", self._coordinates).move_to(
+                cast("time_machine.Traveller", self._coordinates).move_to(
                     self._datetime_class.now().add(
                         years=years,
                         months=months,
@@ -123,7 +123,7 @@ if not PYPY:
             def travel_to(self, dt: DateTime, *, freeze: bool = False) -> Self:
                 self._start(freeze=freeze)
 
-                cast("time_machine.Coordinates", self._coordinates).move_to(dt)
+                cast("time_machine.Traveller", self._coordinates).move_to(dt)
 
                 return self
 
