@@ -66,12 +66,12 @@ if not PYPY:
                 super().__init__(datetime_class)
 
                 self._started: bool = False
-                self._traveller: time_machine.travel | None = None
-                self._coordinates: time_machine.Traveller | None = None
+                self._travel: time_machine.travel | None = None
+                self._traveller: time_machine.Traveller | None = None
 
             def freeze(self) -> Self:
                 if self._started:
-                    cast("time_machine.Traveller", self._coordinates).move_to(
+                    cast("time_machine.Traveller", self._traveller).move_to(
                         self._datetime_class.now(), tick=False
                     )
                 else:
@@ -83,9 +83,9 @@ if not PYPY:
                 if not self._started:
                     return self
 
-                cast("time_machine.travel", self._traveller).stop()
-                self._coordinates = None
+                cast("time_machine.travel", self._travel).stop()
                 self._traveller = None
+                self._travel = None
                 self._started = False
 
                 return self
@@ -105,7 +105,7 @@ if not PYPY:
             ) -> Self:
                 self._start(freeze=freeze)
 
-                cast("time_machine.Traveller", self._coordinates).move_to(
+                cast("time_machine.Traveller", self._traveller).move_to(
                     self._datetime_class.now().add(
                         years=years,
                         months=months,
@@ -123,7 +123,7 @@ if not PYPY:
             def travel_to(self, dt: DateTime, *, freeze: bool = False) -> Self:
                 self._start(freeze=freeze)
 
-                cast("time_machine.Traveller", self._coordinates).move_to(dt)
+                cast("time_machine.Traveller", self._traveller).move_to(dt)
 
                 return self
 
@@ -131,12 +131,12 @@ if not PYPY:
                 if self._started:
                     return
 
-                if not self._traveller:
-                    self._traveller = time_machine.travel(
+                if not self._travel:
+                    self._travel = time_machine.travel(
                         self._datetime_class.now(), tick=not freeze
                     )
 
-                self._coordinates = self._traveller.start()
+                self._traveller = self._travel.start()
 
                 self._started = True
 
