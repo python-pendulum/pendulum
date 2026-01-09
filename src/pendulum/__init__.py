@@ -5,7 +5,6 @@ import datetime as _datetime
 from functools import cache
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Union
 from typing import cast
 from typing import overload
 
@@ -92,13 +91,13 @@ def _safe_timezone(
     Creates a timezone instance
     from a string, Timezone, TimezoneInfo or integer offset.
     """
-    if isinstance(obj, (Timezone, FixedTimezone)):
+    if isinstance(obj, Timezone | FixedTimezone):
         return obj
 
     if obj is None or obj == "local":
         return local_timezone()
 
-    if isinstance(obj, (int, float)):
+    if isinstance(obj, int | float):
         obj = int(obj * 60 * 60)
     elif isinstance(obj, _datetime.tzinfo):
         # zoneinfo
@@ -117,7 +116,7 @@ def _safe_timezone(
 
             obj = int(offset.total_seconds())
 
-    obj = cast("Union[str, int]", obj)
+    obj = cast("str | int", obj)
 
     return timezone(obj)
 
@@ -227,7 +226,7 @@ def instance(
     """
     Create a DateTime/Date/Time instance from a datetime/date/time native one.
     """
-    if isinstance(obj, (DateTime, Date, Time)):
+    if isinstance(obj, DateTime | Date | Time):
         return obj
 
     if isinstance(obj, _datetime.date) and not isinstance(obj, _datetime.datetime):

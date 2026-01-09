@@ -192,7 +192,7 @@ translations = {{}}
         for k, v in d.items():
             v = (
                 self.format_dict(v, tab + 1)
-                if isinstance(v, (dict, LocaleDataDict))
+                if isinstance(v, dict | LocaleDataDict)
                 else repr(v)
             )
 

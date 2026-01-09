@@ -381,7 +381,7 @@ class Duration(timedelta):
     def __floordiv__(self, other: int) -> Self: ...
 
     def __floordiv__(self, other: int | timedelta) -> int | Duration:
-        if not isinstance(other, (int, timedelta)):
+        if not isinstance(other, int | timedelta):
             return NotImplemented
 
         usec = self._to_microseconds()
@@ -407,7 +407,7 @@ class Duration(timedelta):
     def __truediv__(self, other: float) -> Self: ...
 
     def __truediv__(self, other: int | float | timedelta) -> Self | float:
-        if not isinstance(other, (int, float, timedelta)):
+        if not isinstance(other, int | float | timedelta):
             return NotImplemented
 
         usec = self._to_microseconds()

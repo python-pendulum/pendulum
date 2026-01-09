@@ -6,9 +6,7 @@ import traceback
 
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Callable
 from typing import ClassVar
-from typing import Optional
 from typing import cast
 from typing import overload
 
@@ -42,7 +40,9 @@ from pendulum.tz.timezone import Timezone
 
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from collections.abc import Callable
+    from typing import Literal
+
     from typing_extensions import Self
     from typing_extensions import SupportsIndex
 
@@ -268,7 +268,7 @@ class DateTime(datetime.datetime, Date):
 
     @property
     def timezone(self) -> Timezone | FixedTimezone | None:
-        if not isinstance(self.tzinfo, (Timezone, FixedTimezone)):
+        if not isinstance(self.tzinfo, Timezone | FixedTimezone):
             return None
 
         return self.tzinfo
@@ -1006,7 +1006,7 @@ class DateTime(datetime.datetime, Date):
         if unit not in ["month", "quarter", "year"]:
             raise ValueError(f'Invalid unit "{unit}" for first_of()')
 
-        dt = cast("Optional[Self]", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
+        dt = cast("Self | None", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
         if not dt:
             raise PendulumException(
                 f"Unable to find occurrence {nth}"

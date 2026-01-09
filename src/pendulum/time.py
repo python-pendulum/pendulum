@@ -5,7 +5,6 @@ import datetime
 from datetime import time
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from typing import Optional
 from typing import cast
 from typing import overload
 
@@ -21,7 +20,8 @@ from pendulum.tz.timezone import UTC
 
 
 if TYPE_CHECKING:
-    from typing_extensions import Literal
+    from typing import Literal
+
     from typing_extensions import Self
     from typing_extensions import SupportsIndex
 
@@ -174,7 +174,7 @@ class Time(FormattableMixin, time):
     def __sub__(self, other: datetime.timedelta) -> Time: ...
 
     def __sub__(self, other: time | datetime.timedelta) -> pendulum.Duration | Time:
-        if not isinstance(other, (Time, time, timedelta)):
+        if not isinstance(other, Time | time | timedelta):
             return NotImplemented
 
         if isinstance(other, timedelta):
@@ -197,7 +197,7 @@ class Time(FormattableMixin, time):
     def __rsub__(self, other: datetime.timedelta) -> Time: ...
 
     def __rsub__(self, other: time | datetime.timedelta) -> pendulum.Duration | Time:
-        if not isinstance(other, (Time, time)):
+        if not isinstance(other, Time | time):
             return NotImplemented
 
         if isinstance(other, time):
@@ -284,7 +284,7 @@ class Time(FormattableMixin, time):
             minute,
             second,
             microsecond,
-            tzinfo=cast("Optional[datetime.tzinfo]", tzinfo),
+            tzinfo=cast("datetime.tzinfo | None", tzinfo),
             fold=fold,
         )
         return self.__class__(
