@@ -13,8 +13,8 @@ jobs:
   benchmarks:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: "3.9"
 
@@ -39,7 +39,8 @@ jobs:
           poetry run python -c 'import pendulum._pendulum'
 
       - name: Run benchmarks
-        uses: CodSpeedHQ/action@v3
+        uses: CodSpeedHQ/action@dbda7111f8ac363564b0c51b992d4ce76bb89f2f # v4.5.2
         with:
+          mode: simulation
           token: ${{ secrets.CODSPEED_TOKEN }}
           run: poetry run pytest tests/ --codspeed
