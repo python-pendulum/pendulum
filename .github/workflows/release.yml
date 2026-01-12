@@ -21,14 +21,14 @@ jobs:
             platform: linux
           - os: windows
             ls: dir
-            interpreter: 3.9 3.10 3.11 3.12 3.13 3.14 pypy3.9 pypy3.10
+            interpreter: 3.10 3.11 3.12 3.13 3.14 pypy3.10
           - os: windows
             ls: dir
             target: aarch64
             interpreter: 3.11 3.12 3.13 3.14
           - os: macos
             target: aarch64
-            interpreter: 3.9 3.10 3.11 3.12 3.13 3.14 pypy3.9 pypy3.10
+            interpreter: 3.10 3.11 3.12 3.13 3.14 pypy3.10
           - os: ubuntu
             platform: linux
             target: aarch64
@@ -44,11 +44,11 @@ jobs:
           - os: ubuntu
             platform: linux
             target: ppc64le
-            interpreter: 3.9 3.10 3.11 3.12 3.13 3.14
+            interpreter: 3.10 3.11 3.12 3.13 3.14
           - os: ubuntu
             platform: linux
             target: s390x
-            interpreter: 3.9 3.10 3.11 3.12 3.13 3.14
+            interpreter: 3.10 3.11 3.12 3.13 3.14
 
     runs-on: ${{ matrix.os }}-latest
     steps:
@@ -66,7 +66,7 @@ jobs:
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux || 'auto' }}
           container: ${{ matrix.container }}
-          args: --release --out dist --interpreter ${{ matrix.interpreter || '3.9 3.10 3.11 3.12 3.13 pypy3.9 pypy3.10' }} ${{ matrix.extra-build-args }}
+          args: --release --out dist --interpreter ${{ matrix.interpreter || '3.10 3.11 3.12 3.13 pypy3.10' }} ${{ matrix.extra-build-args }}
           rust-toolchain: stable
           docker-options: -e CI
 
