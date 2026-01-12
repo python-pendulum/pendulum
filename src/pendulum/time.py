@@ -174,7 +174,7 @@ class Time(FormattableMixin, time):
     def __sub__(self, other: datetime.timedelta) -> Time: ...
 
     def __sub__(self, other: time | datetime.timedelta) -> pendulum.Duration | Time:
-        if not isinstance(other, Time | time | timedelta):
+        if not isinstance(other, (Time, time, timedelta)):
             return NotImplemented
 
         if isinstance(other, timedelta):
@@ -197,7 +197,7 @@ class Time(FormattableMixin, time):
     def __rsub__(self, other: datetime.timedelta) -> Time: ...
 
     def __rsub__(self, other: time | datetime.timedelta) -> pendulum.Duration | Time:
-        if not isinstance(other, Time | time):
+        if not isinstance(other, (Time, time)):
             return NotImplemented
 
         if isinstance(other, time):

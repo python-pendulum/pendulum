@@ -268,7 +268,7 @@ class DateTime(datetime.datetime, Date):
 
     @property
     def timezone(self) -> Timezone | FixedTimezone | None:
-        if not isinstance(self.tzinfo, Timezone | FixedTimezone):
+        if not isinstance(self.tzinfo, (Timezone, FixedTimezone)):
             return None
 
         return self.tzinfo
