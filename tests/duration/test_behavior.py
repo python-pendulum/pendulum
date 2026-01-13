@@ -5,6 +5,8 @@ import pickle
 from copy import deepcopy
 from datetime import timedelta
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_duration
@@ -24,9 +26,15 @@ def test_comparison_to_timedelta() -> None:
     assert duration < timedelta(days=4)
 
 
-def test_deepcopy() -> None:
-    duration = pendulum.duration(months=1)
+@pytest.mark.parametrize(
+    "duration, expected",
+    [
+        (pendulum.duration(months=1), {"months": 1}),
+        (pendulum.Duration(days=9), {"weeks": 1, "days": 2}),
+    ],
+)
+def test_deepcopy(duration, expected) -> None:
     copied_duration = deepcopy(duration)
 
     assert copied_duration == duration
-    assert_duration(copied_duration, months=1)
+    assert_duration(copied_duration, **expected)

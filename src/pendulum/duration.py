@@ -467,6 +467,7 @@ class Duration(timedelta):
             hours=self.hours,
             years=self.years,
             months=self.months,
+            weeks=self.weeks,
         )
 
 
