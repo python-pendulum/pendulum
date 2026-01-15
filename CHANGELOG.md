@@ -1,5 +1,7 @@
 # Change Log
 
+- Dropped support for Python 3.9 [#930](https://github.com/python-pendulum/pendulum/pull/930)
+
 ## [3.1.0] - 2025-04-19
 
 ### Added
