@@ -1,5 +1,32 @@
 # Change Log
 
+## [3.2.0] - 2026-01-29
+
+### Added
+- Added support for Python 3.14 [#923](https://github.com/python-pendulum/pendulum/pull/923)
+- Added upper limit to `time-machine` dependency [#931](https://github.com/python-pendulum/pendulum/pull/931)
+
+### Changed
+- Optimize usage of `re.` methods [#741](https://github.com/python-pendulum/pendulum/pull/741)
+- Fixed `pendulum.parse` not being marked as exported [#693](https://github.com/python-pendulum/pendulum/pull/693)
+- Fixed `pendulum.parse('now', tz='...')` ignoring the timezone [#701](https://github.com/python-pendulum/pendulum/pull/701)
+- Use `pathlib` to read Unix TZ data [#742](https://github.com/python-pendulum/pendulum/pull/742)
+- Fixed `Interval` deepcopying [#850](https://github.com/python-pendulum/pendulum/pull/850)
+- Fixed typo in `end_of('century')` docs [#910](https://github.com/python-pendulum/pendulum/pull/910)
+- Bumped PyO3 to 0.27 [#922](https://github.com/python-pendulum/pendulum/pull/922)
+- Fixed incorrect date offset calculation in Rust extensions [#918](https://github.com/python-pendulum/pendulum/pull/918)
+- Changed locales and `pytest` to be lazy loaded [#926](https://github.com/python-pendulum/pendulum/pull/926)
+- Fixed error of `Duration` deepcopy not including weeks [#933](https://github.com/python-pendulum/pendulum/pull/933)
+- Fixed empty `Duration`s not being an error in Python ISO8601 parser implementation [#903](https://github.com/python-pendulum/pendulum/pull/903)
+- Fixed parsing invalid interval string [#860](https://github.com/python-pendulum/pendulum/pull/860)
+- Fixed pluralization bug in `Duration.in_words()` [#826](https://github.com/python-pendulum/pendulum/pull/826)
+
+### Locales
+- Added HI (Hindi) locale [#902](https://github.com/python-pendulum/pendulum/pull/902)
+
+### Removed
+- Removed dependency on `pytz` [#911](https://github.com/python-pendulum/pendulum/pull/911)
+
 ## [3.1.0] - 2025-04-19
 
 ### Added
@@ -220,6 +247,8 @@
 
 
 [Unreleased]: https://github.com/python-pendulum/pendulum/compare/3.1.0...master
+[3.2.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.2.0
+[3.1.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.1.0
 [3.1.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.1.0
 [3.0.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0
 [3.0.0b1]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0b1
