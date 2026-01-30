@@ -1,12 +1,13 @@
 # Change Log
 
-## [3.2.0] - 2026-01-29
+## [3.2.0] - 2026-01-30
 
 ### Added
 - Added support for Python 3.14 [#923](https://github.com/python-pendulum/pendulum/pull/923)
 - Added upper limit to `time-machine` dependency [#931](https://github.com/python-pendulum/pendulum/pull/931)
 
 ### Changed
+- **Dropped support for PyPy below PyPy3.11** [#937](https://github.com/python-pendulum/pendulum/pull/937)
 - Optimize usage of `re.` methods [#741](https://github.com/python-pendulum/pendulum/pull/741)
 - Fixed `pendulum.parse` not being marked as exported [#693](https://github.com/python-pendulum/pendulum/pull/693)
 - Fixed `pendulum.parse('now', tz='...')` ignoring the timezone [#701](https://github.com/python-pendulum/pendulum/pull/701)
