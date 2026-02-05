@@ -5,7 +5,6 @@ import datetime as _datetime
 from functools import cache
 from typing import TYPE_CHECKING
 from typing import Any
-from typing import Union
 from typing import cast
 from typing import overload
 
@@ -117,7 +116,7 @@ def _safe_timezone(
 
             obj = int(offset.total_seconds())
 
-    obj = cast("Union[str, int]", obj)
+    obj = cast("str | int", obj)
 
     return timezone(obj)
 

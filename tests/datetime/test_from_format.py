@@ -38,7 +38,7 @@ def test_from_format_with_timezone():
 
 
 def test_from_format_with_square_bracket_in_timezone():
-    with pytest.raises(ValueError, match="^String does not match format"):
+    with pytest.raises(ValueError, match=r"^String does not match format"):
         pendulum.from_format(
             "1975-05-21 22:32:11 Eu[rope/London",
             "YYYY-MM-DD HH:mm:ss z",
