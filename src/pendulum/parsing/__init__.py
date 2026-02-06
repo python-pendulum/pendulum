@@ -9,7 +9,6 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from typing import Any
-from typing import Optional
 from typing import cast
 
 from dateutil import parser
@@ -90,7 +89,7 @@ def _normalize(
         return parsed
 
     if isinstance(parsed, time):
-        now = cast("Optional[datetime]", options["now"]) or datetime.now()
+        now = cast("datetime | None", options["now"]) or datetime.now()
 
         return datetime(
             now.year,

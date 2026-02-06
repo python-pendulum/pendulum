@@ -13,7 +13,7 @@ Pendulum
 
 Python datetimes made easy.
 
-Supports Python **3.9 and newer**.
+Supports Python **3.10 and newer**.
 
 
 .. code-block:: python
