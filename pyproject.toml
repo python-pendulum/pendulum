@@ -23,7 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    'time-machine>=2.6.0,<3.0.0; implementation_name != "pypy"',
+    'time-machine>=3.0.0; implementation_name != "pypy"',
 ]
 
 [project.urls]
@@ -34,7 +34,7 @@ Repository = "https://github.com/sdispater/pendulum"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.1.2"
-time-machine = ">=2.16.0"
+time-machine = ">=3.0.0"
 pytest-benchmark = "^4.0.0"
 
 [tool.poetry.group.doc.dependencies]
