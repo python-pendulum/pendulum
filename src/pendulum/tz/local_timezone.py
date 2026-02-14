@@ -150,6 +150,9 @@ else:
 
 
 def _get_darwin_timezone() -> Timezone:
+    if tzenv := os.environ.get("TZ"):
+        with contextlib.suppress(ValueError):
+            return _tz_from_env(tzenv)
     # link will be something like /usr/share/zoneinfo/America/Los_Angeles.
     link = os.readlink("/etc/localtime")
     tzname = link[link.rfind("zoneinfo/") + 9 :]
