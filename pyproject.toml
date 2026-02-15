@@ -23,7 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    'time-machine>=3.0.0; implementation_name != "pypy"',
+    'time-machine>=3.0.0,<4.0.0; implementation_name != "pypy"',
 ]
 
 [project.urls]
