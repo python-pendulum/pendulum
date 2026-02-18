@@ -45,23 +45,24 @@ converts the time in the appropriate timezone.
 ```python
 >>> import pendulum
 
->>> dt = pendulum.datetime(2013, 3, 31, 2, 30)
->>> print(dt)
+>>> dt0 = pendulum.datetime(2013, 3, 31, 2, 30)
+>>> print(dt0)
 '2013-03-31T02:30:00+00:00'
 
->>> dt = dt.set(tz='Europe/Paris')
+>>> # Paris started DST on that exact day, so 2h30 local time doesn't exist. It immediately rolls over to 3h30. 
+>>> dt = dt0.set(tz='Europe/Paris')
 >>> print(dt)
 '2013-03-31T03:30:00+02:00'
 
->>> dt = dt.in_tz('Europe/Paris')
+>>> dt = dt0.in_tz('Europe/Paris')
 >>> print(dt)
 '2013-03-31T04:30:00+02:00'
 
->>> dt = dt.set(tz='Europe/Paris').set(tz='UTC')
+>>> dt = dt0.set(tz='Europe/Paris').set(tz='UTC')
 >>> print(dt)
 '2013-03-31T03:30:00+00:00'
 
->>> dt = dt.in_tz('Europe/Paris').in_tz('UTC')
+>>> dt = dt0.in_tz('Europe/Paris').in_tz('UTC')
 >>> print(dt)
 '2013-03-31T02:30:00+00:00'
 ```
