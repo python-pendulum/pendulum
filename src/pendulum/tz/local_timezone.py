@@ -150,9 +150,17 @@ else:
 
 
 def _get_darwin_timezone() -> Timezone:
-    # link will be something like /usr/share/zoneinfo/America/Los_Angeles.
-    link = os.readlink("/etc/localtime")
-    tzname = link[link.rfind("zoneinfo/") + 9 :]
+    try:
+        # link will be something like /usr/share/zoneinfo/America/Los_Angeles.
+        link = os.readlink("/etc/localtime")
+        tzname = link[link.rfind("zoneinfo/") + 9 :]
+    except Exception:
+        warnings.warn(
+            "Unable to find any timezone configuration, defaulting to UTC.",
+            stacklevel=1,
+        )
+
+        return UTC
 
     return Timezone(tzname)
 
