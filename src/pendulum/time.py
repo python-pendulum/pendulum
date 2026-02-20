@@ -226,11 +226,11 @@ class Time(FormattableMixin, time):
 
         us1 = (
             self.hour * SECS_PER_HOUR + self.minute * SECS_PER_MIN + self.second
-        ) * USECS_PER_SEC
+        ) * USECS_PER_SEC + self.microsecond
 
         us2 = (
             dt.hour * SECS_PER_HOUR + dt.minute * SECS_PER_MIN + dt.second
-        ) * USECS_PER_SEC
+        ) * USECS_PER_SEC + dt.microsecond
 
         klass = Duration
         if abs:
