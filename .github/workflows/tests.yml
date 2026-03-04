@@ -18,14 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
-        with:
-          python-version: "3.11"
-      - name: "Install pre-commit"
-        run: pip install pre-commit
       - name: "Install Rust toolchain"
         run: rustup component add rustfmt clippy
-      - run: pre-commit run --all-files
+      - uses: j178/prek-action@0bb87d7f00b0c99306c8bcb8b8beba1eb581c037 # v1.1.1
 
   Tests:
     name: ${{ matrix.os }} / ${{ matrix.python-version }}
