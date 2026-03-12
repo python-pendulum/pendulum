@@ -82,6 +82,16 @@ except ImportError:
             "2016-10-06T12:34:56.123456789+05:30",
             datetime(2016, 10, 6, 12, 34, 56, 123456, FixedTimezone(+19800)),
         ),
+        # Subsecond with more than 9 digits (truncated to microseconds).
+        # Regression test for https://github.com/sdispater/pendulum/issues/935
+        (
+            "2001-01-01T12:34:56.1234567890Z",
+            datetime(2001, 1, 1, 12, 34, 56, 123456, FixedTimezone(0)),
+        ),
+        (
+            "2001-01-01T12:34:56.12345678901234567890Z",
+            datetime(2001, 1, 1, 12, 34, 56, 123456, FixedTimezone(0)),
+        ),
         # Week date with time
         ("2008-W39-6T09", datetime(2008, 9, 27, 9, 0, 0, 0)),
     ],

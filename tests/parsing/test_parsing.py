@@ -156,6 +156,24 @@ def test_rfc_3339_extended_nanoseconds():
     assert parsed.utcoffset().total_seconds() == 19800
 
 
+def test_parse_subsecond_more_than_nine_digits():
+    """Subsecond with more than 9 digits should be truncated to microseconds.
+
+    Regression test for https://github.com/sdispater/pendulum/issues/935
+    """
+    # 10 digits
+    parsed = parse("2001-01-01T12:34:56.1234567890Z")
+    assert parsed.microsecond == 123456
+
+    # 20 digits
+    parsed = parse("2001-01-01T12:34:56.12345678901234567890Z")
+    assert parsed.microsecond == 123456
+
+    # Common format (space separator) with 10+ digits
+    parsed = parse("2001-01-01 12:34:56.1234567890")
+    assert parsed.microsecond == 123456
+
+
 def test_iso_8601_date():
     text = "2012"
 
