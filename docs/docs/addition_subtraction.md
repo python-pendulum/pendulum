@@ -51,9 +51,9 @@ Each method returns a new `DateTime` instance.
 >>> dt = dt.add(hours=24)
 '2012-01-29 00:00:00'
 >>> dt = dt.add(hours=1)
-'2012-02-25 01:00:00'
+'2012-01-29 01:00:00'
 >>> dt = dt.subtract(hours=1)
-'2012-02-29 00:00:00'
+'2012-01-29 00:00:00'
 >>> dt = dt.subtract(hours=24)
 '2012-01-28 00:00:00'
 
@@ -64,7 +64,7 @@ Each method returns a new `DateTime` instance.
 >>> dt = dt.subtract(minutes=1)
 '2012-01-28 01:01:00'
 >>> dt = dt.subtract(minutes=24)
-'2012-01-28 00:00:00'
+'2012-01-28 00:37:00'
 
 >>> dt = dt.add(seconds=61)
 '2012-01-28 00:01:01'
