@@ -143,10 +143,10 @@ def parse_datetime(text: str, **options: t.Any) -> DateTime:
 
     :param text: The string to parse.
     """
-    result = parse(text, **options)
-    if not isinstance(result, DateTime):
+    parsed = parse(text, **options)
+    if not isinstance(parsed, DateTime):
         raise ValueError(f"Invalid datetime string: {text}")
-    return result
+    return parsed
 
 
 def parse_date(text: str, **options: t.Any) -> Date:
@@ -155,10 +155,10 @@ def parse_date(text: str, **options: t.Any) -> Date:
 
     :param text: The string to parse.
     """
-    result = parse(text, **options)
-    if not isinstance(result, Date):
+    parsed = parse(text, **options)
+    if not isinstance(parsed, Date):
         raise ValueError(f"Invalid date string: {text}")
-    return result
+    return parsed
 
 
 def parse_time(text: str, **options: t.Any) -> Time:
@@ -167,10 +167,10 @@ def parse_time(text: str, **options: t.Any) -> Time:
 
     :param text: The string to parse.
     """
-    result = parse(text, **options)
-    if not isinstance(result, Time):
+    parsed = parse(text, **options)
+    if not isinstance(parsed, Time):
         raise ValueError(f"Invalid time string: {text}")
-    return result
+    return parsed
 
 
 def parse_duration(text: str, **options: t.Any) -> Duration:
@@ -179,7 +179,7 @@ def parse_duration(text: str, **options: t.Any) -> Duration:
 
     :param text: The string to parse.
     """
-    result = parse(text, **options)
-    if not isinstance(result, Duration):
+    parsed = parse(text, **options)
+    if not isinstance(parsed, Duration):
         raise ValueError(f"Invalid duration string: {text}")
-    return result
+    return parsed
