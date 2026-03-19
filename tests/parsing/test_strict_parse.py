@@ -19,6 +19,9 @@ def test_parse_datetime_accepts_date() -> None:
     dt = parse_datetime("2026-03-19")
     assert dt.hour == 0
 
+def test_parse_datetime_rejects_duration() -> None:
+    with pytest.raises(ValueError):
+        parse_datetime("PT2H")
 
 def test_parse_datetime_rejects_interval() -> None:
     with pytest.raises(ValueError):
@@ -46,6 +49,14 @@ def test_parse_date_rejects_time() -> None:
     with pytest.raises(ValueError):
         parse_date("11:28:37")
 
+def test_parse_date_rejects_duration() -> None:
+    with pytest.raises(ValueError):
+        parse_date("PT2H")
+
+def test_parse_date_rejects_intervals() -> None:
+    with pytest.raises(ValueError):
+        parse_date("2026-03-19T12:00:00/2026-03-19T13:00:00")
+
 
 # tests for parse_time
 
@@ -62,6 +73,14 @@ def test_parse_time_accepts_datetime() -> None:
 def test_parse_time_rejects_date() -> None:
     with pytest.raises(ValueError):
         parse_time("2026-03-19")
+
+def test_parse_time_rejects_duration() -> None:
+    with pytest.raises(ValueError):
+        parse_time("PT2H")
+
+def test_parse_time_rejects_interval() -> None:
+    with pytest.raises(ValueError):
+        parse_time("2026-03-19T12:00:00/2026-03-19T13:00:00")
 
 # tests for parse_duration
 
