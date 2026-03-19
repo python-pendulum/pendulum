@@ -6,6 +6,7 @@ import typing as t
 
 import pendulum
 
+from pendulum._pendulum import is_leap
 from pendulum.duration import Duration
 from pendulum.parsing import _Interval
 from pendulum.parsing import parse as base_parse
@@ -169,4 +170,16 @@ def parse_time(text: str, **options: t.Any) -> Time:
     result = parse(text, **options)
     if not isinstance(result, Time):
         raise ValueError(f"Invalid time string: {text}")
+    return result
+
+
+def parse_duration(text: str, **options: t.Any) -> Duration:
+    """
+    Parses a string into a Duration.
+
+    :param text: The string to parse.
+    """
+    result = parse(text, **options)
+    if not isinstance(result, Duration):
+        raise ValueError(f"Invalid duration string: {text}")
     return result
