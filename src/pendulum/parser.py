@@ -158,3 +158,15 @@ def parse_date(text: str, **options: t.Any) -> Date:
     if not isinstance(result, Date):
         raise ValueError(f"Invalid date string: {text}")
     return result
+
+
+def parse_time(text: str, **options: t.Any) -> Time:
+    """
+    Parses a string into a Time.
+
+    :param text: The string to parse.
+    """
+    result = parse(text, **options)
+    if not isinstance(result, Time):
+        raise ValueError(f"Invalid time string: {text}")
+    return result
