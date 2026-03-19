@@ -40,3 +40,13 @@ def test_parse_time_valid() -> None:
 def test_parse_time_rejects_datetime() -> None:
     with pytest.raises(ValueError):
         parse_time("2026-03-19T11:28:37")
+
+# tests for parse_duration
+
+def test_parse_duration_valid() -> None:
+    dur = parse_duration("PT2H")
+    assert dur.hours == 2
+
+def test_parse_duration_rejects_datetime() -> None:
+    with pytest.raises(ValueError):
+        parse_duration("2026-03-19T11:28:37")
