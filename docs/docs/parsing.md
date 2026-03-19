@@ -7,7 +7,7 @@ The library natively supports the RFC 3339 format, most ISO 8601 formats and som
 
 >>> dt = pendulum.parse('1975-05-21T22:00:00')
 >>> print(dt)
-'1975-05-21T22:00:00+00:00
+'1975-05-21T22:00:00+00:00'
 
 # You can pass a tz keyword to specify the timezone
 >>> dt = pendulum.parse('1975-05-21T22:00:00', tz='Europe/Paris')
@@ -112,3 +112,21 @@ When passing only time information the date will default to today.
     >>> pendulum.parse('12:04:23', exact=True)
     Time(12, 04, 23)
     ```
+### Strict parsing helpers
+
+Pendulum also provides helper functions for strict parsing of specific types:
+
+```python
+>>> import pendulum
+
+>>> pendulum.parse_datetime("2016-10-16T12:34:56")
+DateTime(...)
+
+>>> pendulum.parse_date("2016-10-16")
+Date(2016, 10, 16)
+
+>>> pendulum.parse_time("12:34:56")
+Time(12, 34, 56)
+
+>>> pendulum.parse_duration("PT2H")
+Duration(...)
