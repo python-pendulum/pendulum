@@ -146,14 +146,9 @@ def parse_datetime(text: str, **options: t.Any) -> DateTime:
 
     :param text: The string to parse.
     """
-    if "T" not in text and " " not in text:
-        raise ValueError(f"Invalid datetime string: {text}")
-
     parsed = parse(text, **options)
-
     if not isinstance(parsed, DateTime):
         raise ValueError(f"Invalid datetime string: {text}")
-
     return parsed
 
 
@@ -163,15 +158,11 @@ def parse_date(text: str, **options: t.Any) -> Date:
 
     :param text: The string to parse.
     """
-    if "T" in text or ":" in text:
-        raise ValueError(f"Invalid date string: {text}")
-
-    parsed = parse(text, **options)
+    parsed = parse(text, exact = True, **options)
     if not isinstance(parsed, Date):
         if isinstance(parsed, DateTime):
             return parsed.date()
         raise ValueError(f"Invalid date string: {text}")
-
     return parsed
 
 
@@ -181,9 +172,7 @@ def parse_time(text: str, **options: t.Any) -> Time:
 
     :param text: The string to parse.
     """
-    if ":" not in text or "-" in text:
-        raise ValueError(f"Invalid time string: {text}")
-    parsed = parse(text, **options)
+    parsed = parse(text, exact = True, **options)
     if not isinstance(parsed, Time):
         if isinstance(parsed, DateTime):
             return parsed.time()
