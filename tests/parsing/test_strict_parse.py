@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import pytest
 
-from pendulum.parser import (
-    parse_datetime,
-    parse_date,
-    parse_time,
-    parse_duration,
-)
+from pendulum.parser import parse_date
+from pendulum.parser import parse_datetime
+from pendulum.parser import parse_duration
+from pendulum.parser import parse_time
+
 
 # tests for parse_datetime
 

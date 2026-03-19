@@ -6,21 +6,17 @@ import typing as t
 
 import pendulum
 
-from pendulum._pendulum import is_leap
-from pendulum.datetime import DateTime
 from pendulum.date import Date
-from pendulum.time import Time
+from pendulum.datetime import DateTime
 from pendulum.duration import Duration
 from pendulum.parsing import _Interval
 from pendulum.parsing import parse as base_parse
+from pendulum.time import Time
 from pendulum.tz.timezone import UTC
 
 
 if t.TYPE_CHECKING:
-    from pendulum.date import Date
-    from pendulum.datetime import DateTime
     from pendulum.interval import Interval
-    from pendulum.time import Time
 
 with_extensions = os.getenv("PENDULUM_EXTENSIONS", "1") == "1"
 
