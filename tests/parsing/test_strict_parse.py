@@ -42,6 +42,10 @@ def test_parse_date_accepts_datetime() -> None:
     d = parse_date("2026-03-19T11:28:37")
     assert d.day == 19
 
+def test_parse_date_rejects_time() -> None:
+    with pytest.raises(ValueError):
+        parse_date("11:28:37")
+
 
 # tests for parse_time
 
@@ -55,6 +59,9 @@ def test_parse_time_accepts_datetime() -> None:
     t = parse_time("2026-03-19T11:28:37")
     assert t.minute  == 28
 
+def test_parse_time_rejects_date() -> None:
+    with pytest.raises(ValueError):
+        parse_time("2026-03-19")
 
 # tests for parse_duration
 
