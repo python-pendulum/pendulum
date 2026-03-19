@@ -15,18 +15,28 @@ def test_parse_datetime_valid() -> None:
 
 def test_parse_datetime_rejects_date() -> None:
     with pytest.raises(ValueError):
-        dt = parse_datetime("2026-03-19")
+        parse_datetime("2026-03-19")
 
 def test_parse_datetime_rejects_interval() -> None:
     with pytest.raises(ValueError):
-        dt = parse_datetime("2026-03-19T12:00:00/2026-03-19T13:00:00")
+        parse_datetime("2026-03-19T12:00:00/2026-03-19T13:00:00")
 
 # tests for parse_date
 
 def test_parse_date_valid() -> None:
-    dt = parse_date("2026-03-19")
-    assert dt.year == 2026
+    d = parse_date("2026-03-19")
+    assert d.day == 19
 
 def test_parse_date_rejects_datetime() -> None:
     with pytest.raises(ValueError):
-        dt = parse_date("2026-03-19T11:28:37")
+        parse_date("2026-03-19T11:28:37")
+
+# tests for parse_time
+
+def test_parse_time_valid() -> None:
+    t = parse_time("11:28:37")
+    assert t.hour == 11
+
+def test_parse_time_rejects_datetime() -> None:
+    with pytest.raises(ValueError):
+        parse_time("2026-03-19T11:28:37")
