@@ -134,3 +134,15 @@ def _parse(
         )
 
     raise NotImplementedError
+
+
+def parse_datetime(text: str, **options: t.Any) -> DateTime:
+    """
+    Parses a string into a DateTime.
+
+    :param text: The string to parse.
+    """
+    result = parse(text, **options)
+    if not isinstance(result, DateTime):
+        raise ValueError(f"Invalid datetime string: {text}")
+    return result
