@@ -7,6 +7,9 @@ import typing as t
 import pendulum
 
 from pendulum._pendulum import is_leap
+from pendulum.datetime import DateTime
+from pendulum.date import Date
+from pendulum.time import Time
 from pendulum.duration import Duration
 from pendulum.parsing import _Interval
 from pendulum.parsing import parse as base_parse

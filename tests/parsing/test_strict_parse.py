@@ -21,6 +21,10 @@ def test_parse_datetime_rejects_interval() -> None:
     with pytest.raises(ValueError):
         parse_datetime("2026-03-19T12:00:00/2026-03-19T13:00:00")
 
+def test_parse_datetime_accepts_only_year() -> None:
+    dt = parse_datetime("2026")
+    assert dt.year == 2026
+
 # tests for parse_date
 
 def test_parse_date_valid() -> None:
