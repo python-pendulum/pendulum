@@ -8,7 +8,7 @@ use helpers::{days_in_year, is_leap, is_long_year, local_time, precise_diff, wee
 use parsing::parse_iso8601;
 use types::{Duration, PreciseDiff};
 
-#[pymodule]
+#[pymodule(gil_used = false)]
 pub fn _pendulum(_py: Python<'_>, m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(days_in_year, m)?)?;
     m.add_function(wrap_pyfunction!(is_leap, m)?)?;
