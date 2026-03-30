@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix:
         os: [Ubuntu, MacOS, Windows]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.13t", "3.14t"]
     defaults:
       run:
         shell: bash
@@ -73,16 +73,23 @@ jobs:
 
       - name: Install runtime, testing, and typing dependencies
         run: poetry install --only main --only test --only typing --only build --no-root -vvv
+        if: ${{ !endsWith(matrix.python-version, 't') }}
+
+      - name: Install runtime and testing dependencies (free-threaded)
+        run: poetry install --only main --only test --only build --no-root -vvv
+        if: ${{ endsWith(matrix.python-version, 't') }}
 
       - name: Install project
         run: poetry run maturin develop
 
       - name: Run type checking
         run: poetry run mypy
+        if: ${{ !endsWith(matrix.python-version, 't') }}
 
       - name: Uninstall typing dependencies
         # This ensures pendulum runs without typing_extensions installed
         run: poetry sync --only main --only test --only build --no-root -vvv
+        if: ${{ !endsWith(matrix.python-version, 't') }}
 
       - name: Test Pure Python
         run: |

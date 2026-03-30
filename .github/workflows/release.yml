@@ -70,6 +70,16 @@ jobs:
           rust-toolchain: stable
           docker-options: -e CI
 
+      - name: build free-threaded wheels
+        uses: PyO3/maturin-action@86b9d133d34bc1b40018696f782949dac11bd380 # v1.49.4
+        if: ${{ !contains(matrix.interpreter || '', 'pypy') }}
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux || 'auto' }}
+          args: --release --out dist --interpreter 3.13t 3.14t
+          rust-toolchain: stable
+          docker-options: -e CI
+
       - run: ${{ matrix.ls || 'ls -lh' }} dist/
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
