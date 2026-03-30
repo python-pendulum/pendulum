@@ -184,7 +184,7 @@ pub fn precise_diff<'py>(
         total_seconds: 0,
         tz: dt2_tz.as_str(),
         offset: get_offset(dt2)?,
-        is_datetime: PyDateTime::is_exact_type_of(dt2),
+        is_datetime: PyDateTime::is_type_of(dt2),
     };
     let in_same_tz: bool = dtinfo1.tz == dtinfo2.tz && !dtinfo1.tz.is_empty();
     let mut total_days = helpers::day_number(dtinfo2.year, dtinfo2.month as u8, dtinfo2.day as u8)
