@@ -44,7 +44,7 @@ pygments = "^2.2"
 markdown-include = "^0.8.1"
 
 [tool.poetry.group.lint.dependencies]
-pre-commit = "^3.0.0"
+prek = ">=0.3.4"
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1.3.0"
