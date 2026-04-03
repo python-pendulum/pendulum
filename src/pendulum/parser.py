@@ -6,17 +6,17 @@ import typing as t
 
 import pendulum
 
+from pendulum.date import Date
+from pendulum.datetime import DateTime
 from pendulum.duration import Duration
 from pendulum.parsing import _Interval
 from pendulum.parsing import parse as base_parse
+from pendulum.time import Time
 from pendulum.tz.timezone import UTC
 
 
 if t.TYPE_CHECKING:
-    from pendulum.date import Date
-    from pendulum.datetime import DateTime
     from pendulum.interval import Interval
-    from pendulum.time import Time
 
 with_extensions = os.getenv("PENDULUM_EXTENSIONS", "1") == "1"
 
@@ -134,3 +134,55 @@ def _parse(
         )
 
     raise NotImplementedError
+
+
+def parse_datetime(text: str, **options: t.Any) -> DateTime:
+    """
+    Parses a string into a DateTime.
+
+    :param text: The string to parse.
+    """
+    parsed = parse(text, **options)
+    if not isinstance(parsed, DateTime):
+        raise ValueError(f"Invalid datetime string: {text}")
+    return parsed
+
+
+def parse_date(text: str, **options: t.Any) -> Date:
+    """
+    Parses a string into a Date.
+
+    :param text: The string to parse.
+    """
+    parsed = parse(text, exact=True, **options)
+    if not isinstance(parsed, Date):
+        if isinstance(parsed, DateTime):
+            return parsed.date()
+        raise ValueError(f"Invalid date string: {text}")
+    return parsed
+
+
+def parse_time(text: str, **options: t.Any) -> Time:
+    """
+    Parses a string into a Time.
+
+    :param text: The string to parse.
+    """
+    parsed = parse(text, exact=True, **options)
+    if not isinstance(parsed, Time):
+        if isinstance(parsed, DateTime):
+            return parsed.time()
+        raise ValueError(f"Invalid time string: {text}")
+    return parsed
+
+
+def parse_duration(text: str, **options: t.Any) -> Duration:
+    """
+    Parses a string into a Duration.
+
+    :param text: The string to parse.
+    """
+    parsed = parse(text, **options)
+    if not isinstance(parsed, Duration):
+        raise ValueError(f"Invalid duration string: {text}")
+    return parsed
