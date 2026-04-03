@@ -53,7 +53,11 @@ class Locale:
         if m:
             return f"{m.group(1).lower()}_{m.group(2).lower()}"
         else:
-            return locale.lower()
+            lower = locale.lower()
+            if lower == 'ua':
+                # Backward compatibility. Ukrainian was 'ua' initially.
+                lower = 'uk'
+            return lower
 
     def get(self, key: str, default: Any | None = None) -> Any:
         if key in self._key_cache:
