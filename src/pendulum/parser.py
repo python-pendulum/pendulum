@@ -154,7 +154,7 @@ def parse_date(text: str, **options: t.Any) -> Date:
 
     :param text: The string to parse.
     """
-    parsed = parse(text, exact = True, **options)
+    parsed = parse(text, exact=True, **options)
     if not isinstance(parsed, Date):
         if isinstance(parsed, DateTime):
             return parsed.date()
@@ -168,7 +168,7 @@ def parse_time(text: str, **options: t.Any) -> Time:
 
     :param text: The string to parse.
     """
-    parsed = parse(text, exact = True, **options)
+    parsed = parse(text, exact=True, **options)
     if not isinstance(parsed, Time):
         if isinstance(parsed, DateTime):
             return parsed.time()
