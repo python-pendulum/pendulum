@@ -709,6 +709,13 @@ class DateTime(datetime.datetime, Date):
         if dt is None:
             dt = self.now(self.tz)
 
+        if (
+            isinstance(dt, datetime.datetime)
+            and not isinstance(dt, DateTime)
+            and dt.tzinfo is None
+        ):
+            dt = pendulum.instance(dt, tz=None)
+
         return Interval(self, dt, absolute=abs)
 
     def diff_for_humans(  # type: ignore[override]
