@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from typing import Any
 from typing import ClassVar
-from typing import Dict
 from typing import cast
 
 
@@ -23,12 +22,15 @@ class Locale:
 
     @classmethod
     def load(cls, locale: str | Locale) -> Locale:
-        from importlib import import_module, resources
+        from importlib import import_module
+        from importlib import resources
 
         if isinstance(locale, Locale):
             return locale
 
         locale = cls.normalize_locale(locale)
+        if locale == "uk":
+            locale = "ua"
         if locale in cls._cache:
             return cls._cache[locale]
 
@@ -93,7 +95,7 @@ class Locale:
         if value not in translations.values():
             return None
 
-        return cast(Dict[str, str], {v: k for k, v in translations.items()}[value])
+        return cast(dict[str, str], {v: k for k, v in translations.items()}[value])
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self._locale}')"
