@@ -16,7 +16,7 @@ def diff_for_humans():
     assert d.diff_for_humans(locale=locale) == "кілька секунд тому"
 
     # Backward compatibility.
-    assert d.diff_for_humans(locale=locale) == d.diff_for_humans(locale='ua')
+    assert d.diff_for_humans(locale=locale) == d.diff_for_humans(locale="ua")
 
     d = pendulum.now().subtract(seconds=2)
     assert d.diff_for_humans(locale=locale) == "кілька секунд тому"
@@ -53,6 +53,9 @@ def diff_for_humans():
 
     d = pendulum.now().subtract(days=2)
     assert d.diff_for_humans(locale=locale) == "2 дні тому"
+
+    d = pendulum.now().subtract(days=5)
+    assert d.diff_for_humans(locale=locale) == "5 днів тому"
 
     d = pendulum.now().subtract(weeks=1)
     assert d.diff_for_humans(locale=locale) == "1 тиждень тому"
@@ -102,7 +105,9 @@ def diff_for_humans():
 
 def test_format():
     d = pendulum.datetime(2026, 4, 3, 1, 2, 5, 123456)
-    assert d.format("dddd", locale=locale) == "пʼятницю" # Suboptimal, should be п'ятниця, but clock defines it like that.
+    assert (
+        d.format("dddd", locale=locale) == "пʼятницю"
+    )  # Suboptimal, should be п'ятниця, but clock defines it like that.
     assert d.format("ddd", locale=locale) == "пт"
     assert d.format("MMMM", locale=locale) == "квітня"
     assert d.format("MMM", locale=locale) == "квіт."
@@ -116,4 +121,6 @@ def test_format():
     assert d.format("L", locale=locale) == "03.04.2026"
     assert d.format("LL", locale=locale) == "3 квітня 2026"
     assert d.format("LLL", locale=locale) == "3 квітня 2026, 01:02"
-    assert d.format("LLLL", locale=locale) == "пт, 3 квітня 2026, 01:02" # See note about dddd above.
+    assert (
+        d.format("LLLL", locale=locale) == "пт, 3 квітня 2026, 01:02"
+    )  # See note about dddd above.
