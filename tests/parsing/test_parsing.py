@@ -684,6 +684,11 @@ def test_invalid():
         parse(text)
 
 
+def test_parse_empty_string():
+    with pytest.raises(ParserError):
+        parse("")
+
+
 def test_exif_edge_case():
     text = "2016:12:26 15:45:28"
 

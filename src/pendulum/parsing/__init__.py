@@ -145,7 +145,7 @@ def _parse_common(text: str, **options: Any) -> datetime | date | time:
     month = 1
     day = 1
 
-    if not m:
+    if not m or not (m.group("date") or m.group("time")):
         raise ParserError("Invalid datetime string")
 
     if m.group("date"):
