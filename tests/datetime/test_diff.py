@@ -198,6 +198,18 @@ def test_diff_in_seconds_with_timezones():
     assert dt_ottawa.diff(dt_vancouver).in_seconds() == 3 * 60 * 60
 
 
+def test_diff_naive_with_naive_stdlib_datetime():
+    # A naive DateTime diffed against a naive stdlib datetime should not
+    # force the latter to UTC, which used to make it offset-aware and raise
+    # "can't compare offset-naive and offset-aware datetimes". See #880.
+    dt = pendulum.naive(2016, 7, 5, 12, 0, 0)
+    other = datetime(2016, 7, 5, 13, 0, 0)
+
+    assert dt.diff(other).in_seconds() == 3600
+    assert dt.diff(other, False).in_seconds() == 3600
+    assert other.tzinfo is None
+
+
 def test_diff_for_humans_now_and_second():
     with pendulum.travel_to(pendulum.datetime(2012, 1, 1, 1, 2, 3), freeze=True):
         assert pendulum.now().diff_for_humans() == "a few seconds ago"
