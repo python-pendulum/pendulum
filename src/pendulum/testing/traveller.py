@@ -46,7 +46,7 @@ class BaseTraveller:
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
-        exc_tb: TracebackType,
+        exc_tb: TracebackType | None,
     ) -> None: ...
 
     def _not_implemented(self) -> NotImplementedError:
@@ -149,7 +149,7 @@ if not PYPY:
                 self,
                 exc_type: type[BaseException] | None,
                 exc_val: BaseException | None,
-                exc_tb: TracebackType,
+                exc_tb: TracebackType | None,
             ) -> None:
                 self.travel_back()
 
