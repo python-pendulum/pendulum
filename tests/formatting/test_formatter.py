@@ -250,6 +250,13 @@ def test_date_formats():
     assert f.format(d, "LLL", locale="fr") == "28 août 2016 07:03"
     assert f.format(d, "LLLL", locale="fr") == "dimanche 28 août 2016 07:03"
 
+    assert f.format(d, "LT", locale="ja") == "07:03"
+    assert f.format(d, "LTS", locale="ja") == "07:03:06"
+    assert f.format(d, "L", locale="ja") == "2016/08/28"
+    assert f.format(d, "LL", locale="ja") == "2016年8月28日"
+    assert f.format(d, "LLL", locale="ja") == "2016年8月28日 07:03"
+    assert f.format(d, "LLLL", locale="ja") == "2016年8月28日 日曜日 07:03"
+
 
 def test_escape():
     f = Formatter()

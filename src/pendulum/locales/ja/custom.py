@@ -13,11 +13,11 @@ translations = {
     "before": "{0} 前",
     # Date formats
     "date_formats": {
-        "LTS": "h:mm:ss A",
-        "LT": "h:mm A",
-        "L": "MM/DD/YYYY",
-        "LL": "MMMM D, YYYY",
-        "LLL": "MMMM D, YYYY h:mm A",
-        "LLLL": "dddd, MMMM D, YYYY h:mm A",
+        "LTS": "HH:mm:ss",
+        "LT": "HH:mm",
+        "L": "YYYY/MM/DD",
+        "LL": "YYYY年M月D日",
+        "LLL": "YYYY年M月D日 HH:mm",
+        "LLLL": "YYYY年M月D日 dddd HH:mm",
     },
 }
