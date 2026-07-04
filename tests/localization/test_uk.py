@@ -15,9 +15,6 @@ def diff_for_humans():
     d = pendulum.now().subtract(seconds=1)
     assert d.diff_for_humans(locale=locale) == "кілька секунд тому"
 
-    # Backward compatibility.
-    assert d.diff_for_humans(locale=locale) == d.diff_for_humans(locale="ua")
-
     d = pendulum.now().subtract(seconds=2)
     assert d.diff_for_humans(locale=locale) == "кілька секунд тому"
 
