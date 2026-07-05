@@ -95,7 +95,14 @@ class Duration(timedelta):
         )
 
         # Intuitive normalization
-        total = self.total_seconds() - (years * 365 + months * 30) * SECONDS_PER_DAY
+        # Use timedelta's own total_seconds() rather than self.total_seconds():
+        # on PyPy the latter is overridden to read _days/_seconds/... which are
+        # not populated yet at this point, which would zero out the duration
+        # (see issue #876).
+        total = (
+            timedelta.total_seconds(self)
+            - (years * 365 + months * 30) * SECONDS_PER_DAY
+        )
         self._total = total
 
         m = 1

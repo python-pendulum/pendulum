@@ -97,3 +97,16 @@ def test_float_years_and_months():
 
     with pytest.raises(ValueError):
         pendulum.duration(months=1.5)
+
+
+def test_new_does_not_depend_on_total_seconds_override(monkeypatch):
+    # __new__ must derive the duration's total from the underlying timedelta,
+    # not from a (possibly overridden) total_seconds(). On PyPy, total_seconds()
+    # is overridden to read _days/_seconds/... which are not populated yet during
+    # __new__, which zeroed out full-day durations (issue #876).
+    from pendulum.duration import Duration
+
+    monkeypatch.setattr(Duration, "total_seconds", lambda self: 0.0)
+
+    assert pendulum.duration(days=1)._total == 86400.0
+    assert pendulum.duration(hours=23)._total == 82800.0
