@@ -150,6 +150,7 @@ exclude = [
 module = [
     "pendulum.mixins.default",
     "tests.test_parsing",
+    "tests.test_thread_safety",
     "tests.date.test_add",
     "tests.date.test_behavior",
     "tests.date.test_construct",
