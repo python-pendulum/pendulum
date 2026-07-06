@@ -5,6 +5,9 @@ import zoneinfo
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
+
+import pytest
 
 from dateutil import tz
 
@@ -34,6 +37,18 @@ def test_instance_with_aware_datetime_any_tzinfo() -> None:
     dt = datetime(2016, 8, 7, 12, 34, 56, tzinfo=tz.gettz("Europe/Paris"))
     now = pendulum.instance(dt)
     assert now.timezone_name == "+02:00"
+
+
+def test_instance_with_pytz_fixed_offset() -> None:
+    # ``pytz.FixedOffset`` has a ``localize`` method but no ``zone`` name,
+    # which used to raise ``AttributeError`` in ``_safe_timezone`` (#807).
+    pytz = pytest.importorskip("pytz")
+
+    dt = pendulum.instance(datetime(2021, 2, 3, tzinfo=pytz.FixedOffset(60)))
+    assert dt.utcoffset() == timedelta(minutes=60)
+
+    dt = pendulum.instance(datetime(2021, 2, 3, tzinfo=pytz.FixedOffset(-330)))
+    assert dt.utcoffset() == timedelta(minutes=-330)
 
 
 def test_instance_with_date() -> None:

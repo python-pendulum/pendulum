@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+### Changed
+- Fixed `pendulum.instance()` raising `AttributeError` for datetimes with a `pytz.FixedOffset` timezone [#981](https://github.com/python-pendulum/pendulum/pull/981)
+
 ## [3.2.0] - 2026-01-30
 
 ### Added
