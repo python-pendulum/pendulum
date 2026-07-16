@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+### Changed
+- Renamed the Ukrainian locale from `ua` (an ISO 3166 country code) to the correct ISO 639-1 language code `uk` [#955](https://github.com/python-pendulum/pendulum/issues/955)
+
 ## [3.2.0] - 2026-01-30
 
 ### Added
