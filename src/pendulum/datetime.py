@@ -692,9 +692,7 @@ class DateTime(datetime.datetime, Date):
         Remove timedelta duration from the instance.
         """
         if isinstance(delta, pendulum.Duration):
-            return self.subtract(
-                years=delta.years, months=delta.months, seconds=delta._total
-            )
+            return self.subtract(**delta._signature)  # type: ignore[attr-defined]
 
         return self.subtract(seconds=delta.total_seconds())
 
