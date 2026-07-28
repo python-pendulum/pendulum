@@ -355,6 +355,14 @@ class Formatter:
                 key += ".am"
 
             return cast("str", locale.get(key))
+        elif token == "a":
+            key = "translations.day_periods"
+            if dt.hour >= 12:
+                key += ".pm"
+            else:
+                key += ".am"
+
+            return cast("str", locale.get(key)).lower()
         else:
             return token
 
