@@ -6,8 +6,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-
-import pytest
+from datetime import tzinfo
 
 from dateutil import tz
 
@@ -39,15 +38,32 @@ def test_instance_with_aware_datetime_any_tzinfo() -> None:
     assert now.timezone_name == "+02:00"
 
 
-def test_instance_with_pytz_fixed_offset() -> None:
+class PytzLikeFixedOffset(tzinfo):
+    zone: str | None = None
+
+    def __init__(self, minutes: int) -> None:
+        self._offset = timedelta(minutes=minutes)
+
+    def localize(self, dt: datetime) -> datetime:
+        return dt.replace(tzinfo=self)
+
+    def utcoffset(self, dt: datetime | None) -> timedelta:
+        return self._offset
+
+    def dst(self, dt: datetime | None) -> timedelta:
+        return timedelta(0)
+
+    def tzname(self, dt: datetime | None) -> str:
+        return str(self._offset)
+
+
+def test_instance_with_pytz_like_fixed_offset() -> None:
     # ``pytz.FixedOffset`` has a ``localize`` method but no ``zone`` name,
     # which used to raise ``AttributeError`` in ``_safe_timezone`` (#807).
-    pytz = pytest.importorskip("pytz")
-
-    dt = pendulum.instance(datetime(2021, 2, 3, tzinfo=pytz.FixedOffset(60)))
+    dt = pendulum.instance(datetime(2021, 2, 3, tzinfo=PytzLikeFixedOffset(60)))
     assert dt.utcoffset() == timedelta(minutes=60)
 
-    dt = pendulum.instance(datetime(2021, 2, 3, tzinfo=pytz.FixedOffset(-330)))
+    dt = pendulum.instance(datetime(2021, 2, 3, tzinfo=PytzLikeFixedOffset(-330)))
     assert dt.utcoffset() == timedelta(minutes=-330)
 
 
