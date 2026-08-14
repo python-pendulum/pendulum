@@ -9,6 +9,7 @@ import pendulum
 from pendulum.duration import Duration
 from pendulum.parsing import _Interval
 from pendulum.parsing import parse as base_parse
+from pendulum.parsing.exceptions import ParserError
 from pendulum.tz.timezone import UTC
 
 
@@ -109,14 +110,21 @@ def _parse(
                 dt,
             )
 
-        return pendulum.interval(
-            pendulum.instance(
-                t.cast("datetime.datetime", parsed.start), tz=options.get("tz", UTC)
-            ),
-            pendulum.instance(
-                t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
-            ),
-        )
+        try:
+            return pendulum.interval(
+                pendulum.instance(
+                    t.cast("datetime.datetime", parsed.start), tz=options.get("tz", UTC)
+                ),
+                pendulum.instance(
+                    t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
+                ),
+            )
+        except TypeError as e:
+            # An interval whose ends are not both dates or both datetimes (e.g.
+            # "2020-01-01/12:30:00", a date and a bare time) has an undefined
+            # difference; report it as an invalid string instead of letting a
+            # TypeError escape parse().
+            raise ParserError(f"Invalid interval string: {text!r}") from e
 
     if isinstance(parsed, Duration):
         return parsed

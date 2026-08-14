@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
+from pendulum.parsing.exceptions import ParserError
 from tests.conftest import assert_date
 from tests.conftest import assert_datetime
 from tests.conftest import assert_duration
@@ -125,6 +128,18 @@ def test_parse_interval() -> None:
     assert interval.start.offset == 0
     assert_datetime(interval.end, 2008, 5, 11, 15, 30, 0, 0)
     assert interval.end.offset == 0
+
+
+def test_parse_interval_mismatched_ends() -> None:
+    # An interval whose ends are not both dates or both datetimes has an
+    # undefined difference; this used to raise a bare TypeError.
+    for text in (
+        "2020-01-01/12:30:00",
+        "12:30:00/2020-01-01",
+        "12:00:00/13:00:00",
+    ):
+        with pytest.raises(ParserError):
+            pendulum.parse(text)
 
 
 def test_parse_now() -> None:
