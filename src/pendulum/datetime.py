@@ -826,7 +826,19 @@ class DateTime(datetime.datetime, Date):
         """
         Reset the time to 00:00:00.
         """
-        return self.at(0, 0, 0, 0)
+        dt = self.at(0, 0, 0, 0)
+
+        # In zones that spring forward exactly at midnight, 00:00:00 does not
+        # exist. When ``fold`` is 0, resolving that nonexistent time shifts it
+        # backward into the previous day, which is not the start of this day.
+        # Detect that the day changed and rebuild the first valid instant of
+        # the day by resolving forward (fold=1) instead.
+        if dt.day != self.day:
+            dt = self.__class__.create(
+                self.year, self.month, self.day, 0, 0, 0, 0, tz=self.tz, fold=1
+            )
+
+        return dt
 
     def _end_of_day(self) -> Self:
         """
