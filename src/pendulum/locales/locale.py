@@ -16,6 +16,13 @@ class Locale:
 
     _cache: ClassVar[dict[str, Locale]] = {}
 
+    # Mapping of deprecated/incorrect locale codes to their correct
+    # replacement, kept for backwards compatibility.
+    _ALIASES: ClassVar[dict[str, str]] = {
+        "ua": "uk",  # Ukrainian: "ua" is an ISO 3166 country code (Ukraine),
+        # not the correct ISO 639 language code, which is "uk".
+    }
+
     def __init__(self, locale: str, data: Any) -> None:
         self._locale: str = locale
         self._data: Any = data
@@ -33,7 +40,7 @@ class Locale:
             return cls._cache[locale]
 
         # Checking locale existence
-        actual_locale = locale
+        actual_locale = cls._ALIASES.get(locale, locale)
         locale_path = cast(Path, resources.files(__package__).joinpath(actual_locale))
         while not locale_path.exists():
             if actual_locale == locale:
