@@ -112,3 +112,36 @@ When passing only time information the date will default to today.
     >>> pendulum.parse('12:04:23', exact=True)
     Time(12, 04, 23)
     ```
+
+## Typed helpers
+
+Because `parse()` can return a `DateTime`, `Date`, `Time` or `Duration` depending on the
+input, its return type is a union, which is awkward in type-checked code. If you know which
+type you expect, you can use one of the typed helpers instead. Each one returns that single
+type and raises a `ParserError` if the string represents something else.
+
+```python
+>>> import pendulum
+
+>>> pendulum.parse_datetime('2012-05-03T12:04:23')
+DateTime(2012, 5, 3, 12, 4, 23, tzinfo=Timezone('UTC'))
+
+>>> pendulum.parse_datetime('P2Y3M4DT5H6M7S')
+Traceback (most recent call last):
+...
+ParserError: Text 'P2Y3M4DT5H6M7S' does not represent a datetime, got Duration
+```
+
+`parse_date()` and `parse_time()` expect the string to represent that exact type, so pass
+`exact=True` as you would to `parse()`:
+
+```python
+>>> pendulum.parse_date('2012-05-03', exact=True)
+Date(2012, 5, 3)
+
+>>> pendulum.parse_time('12:04:23', exact=True)
+Time(12, 4, 23)
+
+>>> pendulum.parse_duration('P2Y3M4DT5H6M7S')
+Duration(years=2, months=3, days=4, hours=5, minutes=6, seconds=7)
+```
