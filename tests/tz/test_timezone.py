@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pickle
 import zoneinfo
 
 from datetime import datetime
@@ -462,3 +463,48 @@ def test_repr():
     tz = timezone("Europe/Paris")
 
     assert repr(tz) == "Timezone('Europe/Paris')"
+
+
+def _paris_tzif_bytes() -> bytes:
+    # tzdata bundles the same IANA zoneinfo files the system copy under
+    # /usr/share/zoneinfo would have, in a location that works on every
+    # platform pendulum supports (including Windows, which has no system
+    # zoneinfo directory at all).
+    from importlib import resources
+
+    return resources.files("tzdata.zoneinfo").joinpath("Europe", "Paris").read_bytes()
+
+
+def test_from_file_without_a_key_can_be_pickled():
+    # get_local_timezone()'s last-resort fallback (no /etc/timezone, no
+    # readable /etc/localtime symlink to derive a name from) reads the raw
+    # zoneinfo file and builds a Timezone this same way, with no key.
+    from io import BytesIO
+
+    import pendulum.tz.timezone as timezone_module
+
+    tz = timezone_module.Timezone.from_file(BytesIO(_paris_tzif_bytes()))
+
+    assert tz.key is None
+
+    unpickled = pickle.loads(pickle.dumps(tz))
+
+    assert unpickled.key is None
+    dt = datetime(2024, 7, 1, 12, tzinfo=unpickled)
+    assert dt.utcoffset() == timedelta(hours=2)  # CEST, matches Europe/Paris in July
+    dt = datetime(2024, 1, 1, 12, tzinfo=unpickled)
+    assert dt.utcoffset() == timedelta(hours=1)  # CET, matches Europe/Paris in January
+
+
+def test_from_file_with_a_key_still_pickles_by_key():
+    from io import BytesIO
+
+    import pendulum.tz.timezone as timezone_module
+
+    tz = timezone_module.Timezone.from_file(
+        BytesIO(_paris_tzif_bytes()), key="Europe/Paris"
+    )
+
+    unpickled = pickle.loads(pickle.dumps(tz))
+
+    assert unpickled.key == "Europe/Paris"

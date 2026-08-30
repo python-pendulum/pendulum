@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import datetime as _datetime
+import io
 import zoneinfo
 
 from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import TypeVar
 from typing import cast
 
@@ -16,6 +18,9 @@ from pendulum.tz.exceptions import NonExistingTime
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from zoneinfo._common import _IOBytes
+
     from typing_extensions import Self
 
 POST_TRANSITION = "post"
@@ -60,11 +65,45 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
     >>> tz = Timezone('Europe/Paris')
     """
 
+    _file_bytes: bytes | None = None
+
     def __new__(cls, key: str) -> Self:
         try:
             return super().__new__(cls, key)  # type: ignore[call-arg]
         except zoneinfo.ZoneInfoNotFoundError:
             raise InvalidTimezone(key)
+
+    @classmethod
+    def from_file(cls, fobj: _IOBytes, /, key: str | None = None) -> Self:
+        # The underlying zoneinfo.ZoneInfo.from_file() refuses to pickle any
+        # instance built this way, key or no key, since it has no record of
+        # which file it came from to reconstruct on unpickling. That's the
+        # path get_local_timezone() falls back to when the system's local
+        # timezone can't be identified by name (no /etc/timezone, no readable
+        # /etc/localtime symlink, etc.), so keep the raw TZif bytes around and
+        # use them to rebuild an equivalent instance if this ever needs to be
+        # pickled instead.
+        data = fobj.read(-1)
+        instance = cast("Self", super().from_file(io.BytesIO(data), key=key))
+        instance._file_bytes = data
+
+        return instance
+
+    def __reduce__(
+        self,
+    ) -> (
+        tuple[Callable[[bytes, str | None], Self], tuple[bytes, str | None]]
+        | str
+        | tuple[Any, ...]
+    ):
+        if self._file_bytes is None:
+            return super().__reduce__()
+
+        return self.__class__._from_pickled_file, (self._file_bytes, self.key)
+
+    @classmethod
+    def _from_pickled_file(cls, data: bytes, key: str | None) -> Self:
+        return cls.from_file(io.BytesIO(data), key=key)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Timezone) and self.key == other.key
