@@ -288,6 +288,51 @@ def test_parse_duration_invalid_order():
         parse("PT1S1H")
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "P1Y2Y",
+        "P12M4M",
+        "P1W2W",
+        "P1D2D",
+        "PT1H2H",
+        "PT12M3M1M",
+        "PT1S2S",
+        "P0Y0Y",
+        "P0M0M",
+        "P0W0W",
+        "P0D0D",
+        "PT0H0H",
+        "PT0M0M",
+        "PT0S0S",
+        "P0M1Y",
+        "P0D1M",
+        "P0D1Y",
+        "PT0M1H",
+        "PT0S1M",
+        "PT0S1H",
+    ],
+)
+def test_parse_duration_repeated_or_reordered_components(text: str) -> None:
+    with pytest.raises(ParserError):
+        parse(text)
+
+
+@pytest.mark.parametrize("text", ["P0Y0M0DT0H0M0S", "P0W"])
+def test_parse_duration_zero_components(text: str) -> None:
+    parsed = parse(text)
+    assert (
+        parsed.years,
+        parsed.months,
+        parsed.weeks,
+        parsed.remaining_days,
+        parsed.hours,
+        parsed.minutes,
+        parsed.remaining_seconds,
+        parsed.microseconds,
+    ) == (0, 0, 0, 0, 0, 0, 0, 0)
+
+
 def test_parse_duration_invalid():
     with pytest.raises(ParserError):
         parse("P1Dasdfasdf")
