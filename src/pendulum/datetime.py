@@ -1273,7 +1273,19 @@ class DateTime(datetime.datetime, Date):
         return cls.instance(datetime.datetime.combine(date, time), tz=tzinfo)
 
     def astimezone(self, tz: datetime.tzinfo | None = None) -> Self:
-        dt = super().astimezone(tz)
+        # Timezone implementations may do arithmetic in fromutc(), which must
+        # use datetime's rules rather than Pendulum's duration arithmetic.
+        dt = datetime.datetime(
+            self.year,
+            self.month,
+            self.day,
+            self.hour,
+            self.minute,
+            self.second,
+            self.microsecond,
+            tzinfo=self.tzinfo,
+            fold=self.fold,
+        ).astimezone(tz)
 
         return self.__class__(
             dt.year,
