@@ -247,7 +247,7 @@ class Time(FormattableMixin, time):
         """
         Get the difference in a human readable format in the current locale.
 
-        :param dt: The time to subtract from
+        :param other: The time to compare to (defaults to now)
         :param absolute: removes time difference modifiers ago, after, etc
         :param locale: The locale to use for localization
         """
