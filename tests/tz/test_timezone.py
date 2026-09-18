@@ -59,6 +59,21 @@ def test_equal_timezones_are_interchangeable_mapping_keys(name):
     assert len({first, second}) == 1
 
 
+@pytest.mark.parametrize("name", ["UTC", "Europe/Paris", "America/New_York"])
+def test_timezone_subclasses_are_interchangeable_mapping_keys(name):
+    class CustomTimezone(pendulum.Timezone):
+        pass
+
+    base = pendulum.Timezone.no_cache(name)
+    derived = CustomTimezone.no_cache(name)
+
+    assert base == derived
+    assert derived == base
+    assert hash(base) == hash(derived)
+    assert {base: "value"}[derived] == "value"
+    assert len({base, derived}) == 1
+
+
 def test_distinct_timezones_are_distinct_mapping_keys():
     paris = timezone("Europe/Paris")
     berlin = timezone("Europe/Berlin")
