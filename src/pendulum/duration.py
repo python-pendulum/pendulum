@@ -80,6 +80,23 @@ class Duration(timedelta):
         years: float = 0,
         months: float = 0,
     ) -> Self:
+        # bool is a subclass of int; reject so years=True does not become 1 year
+        for name, value in (
+            ("days", days),
+            ("seconds", seconds),
+            ("microseconds", microseconds),
+            ("milliseconds", milliseconds),
+            ("minutes", minutes),
+            ("hours", hours),
+            ("weeks", weeks),
+            ("years", years),
+            ("months", months),
+        ):
+            if isinstance(value, bool):
+                raise TypeError(
+                    f"{name} must be a number, not bool (got {value!r})."
+                )
+
         if not isinstance(years, int) or not isinstance(months, int):
             raise ValueError("Float year and months are not supported")
 

@@ -750,6 +750,13 @@ class Date(FormattableMixin, date):
         month: SupportsIndex | None = None,
         day: SupportsIndex | None = None,
     ) -> Self:
+        # bool is a subclass of int; reject so year=True does not become year 1
+        for name, value in (("year", year), ("month", month), ("day", day)):
+            if isinstance(value, bool):
+                raise TypeError(
+                    f"{name} must be an integer, not bool (got {value!r})."
+                )
+
         year = year if year is not None else self.year
         month = month if month is not None else self.month
         day = day if day is not None else self.day
