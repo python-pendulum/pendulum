@@ -1253,11 +1253,23 @@ class DateTime(datetime.datetime, Date):
     def fromtimestamp(cls, t: float, tz: datetime.tzinfo | None = None) -> Self:
         tzinfo = pendulum._safe_timezone(tz)
 
-        return cls.instance(datetime.datetime.fromtimestamp(t, tz=tzinfo), tz=tzinfo)
+        try:
+            dt = datetime.datetime.fromtimestamp(t, tz=tzinfo)
+        except (OSError, OverflowError):
+            dt = (cls._EPOCH + datetime.timedelta(seconds=t)).astimezone(tzinfo)
+
+        return cls.instance(dt, tz=tzinfo)
 
     @classmethod
     def utcfromtimestamp(cls, t: float) -> Self:
-        return cls.instance(datetime.datetime.utcfromtimestamp(t), tz=None)
+        try:
+            dt = datetime.datetime.utcfromtimestamp(t)
+        except (OSError, OverflowError):
+            # Match datetime.datetime.utcfromtimestamp(), which returns a
+            # naive datetime representing UTC.
+            dt = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=t)
+
+        return cls.instance(dt, tz=None)
 
     @classmethod
     def fromordinal(cls, n: int) -> Self:
