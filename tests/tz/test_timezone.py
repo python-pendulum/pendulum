@@ -47,6 +47,44 @@ def test_equality():
     assert timezone("Europe/Paris") != timezone("Europe/Berlin")
 
 
+@pytest.mark.parametrize("name", ["UTC", "Europe/Paris", "America/New_York"])
+def test_equal_timezones_are_interchangeable_mapping_keys(name):
+    first = pendulum.Timezone.no_cache(name)
+    second = pendulum.Timezone.no_cache(name)
+
+    assert first is not second
+    assert first == second
+    assert hash(first) == hash(second)
+    assert {first: "value"}[second] == "value"
+    assert len({first, second}) == 1
+
+
+@pytest.mark.parametrize("name", ["UTC", "Europe/Paris", "America/New_York"])
+def test_timezone_subclasses_are_interchangeable_mapping_keys(name):
+    class CustomTimezone(pendulum.Timezone):
+        pass
+
+    base = pendulum.Timezone.no_cache(name)
+    derived = CustomTimezone.no_cache(name)
+
+    assert base == derived
+    assert derived == base
+    assert hash(base) == hash(derived)
+    assert {base: "value"}[derived] == "value"
+    assert len({base, derived}) == 1
+
+
+def test_distinct_timezones_are_distinct_mapping_keys():
+    paris = timezone("Europe/Paris")
+    berlin = timezone("Europe/Berlin")
+
+    values = {paris: "Paris", berlin: "Berlin"}
+
+    assert len(values) == 2
+    assert values[pendulum.Timezone.no_cache("Europe/Paris")] == "Paris"
+    assert values[pendulum.Timezone.no_cache("Europe/Berlin")] == "Berlin"
+
+
 def test_skipped_time_with_pre_rule():
     dt = datetime(2013, 3, 31, 2, 30, 45, 123456, fold=0)
     tz = timezone("Europe/Paris")
