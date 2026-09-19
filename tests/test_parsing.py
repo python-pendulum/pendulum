@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
+from pendulum.parsing.exceptions import ParserError
 from tests.conftest import assert_date
 from tests.conftest import assert_datetime
 from tests.conftest import assert_duration
@@ -147,3 +150,74 @@ def test_parse_with_utc_timezone() -> None:
     dt = pendulum.parse("2020-02-05T20:05:37.364951Z")
 
     assert dt.to_iso8601_string() == "2020-02-05T20:05:37.364951Z"
+
+
+def test_parse_datetime() -> None:
+    dt = pendulum.parse_datetime("2016-10-16T12:34:56.123456+01:30")
+
+    assert isinstance(dt, pendulum.DateTime)
+    assert_datetime(dt, 2016, 10, 16, 12, 34, 56, 123456)
+    assert dt.offset == 5400
+
+    # A date string still parses to a DateTime by default.
+    dt = pendulum.parse_datetime("2016-10-16")
+
+    assert isinstance(dt, pendulum.DateTime)
+    assert_datetime(dt, 2016, 10, 16, 0, 0, 0, 0)
+
+    # Options are forwarded to parse().
+    dt = pendulum.parse_datetime("2016-10-16T12:34:56", tz="Europe/Paris")
+
+    assert dt.tz is not None
+    assert dt.tz.name == "Europe/Paris"
+
+
+def test_parse_datetime_raises_for_other_types() -> None:
+    with pytest.raises(ParserError):
+        pendulum.parse_datetime("P2Y3M4DT5H6M7S")
+
+    with pytest.raises(ParserError):
+        pendulum.parse_datetime("2016-10-16", exact=True)
+
+
+def test_parse_date() -> None:
+    d = pendulum.parse_date("2016-10-16", exact=True)
+
+    assert isinstance(d, pendulum.Date)
+    assert_date(d, 2016, 10, 16)
+
+
+def test_parse_date_raises_for_other_types() -> None:
+    # A datetime must not pass as a date, even though DateTime subclasses Date.
+    with pytest.raises(ParserError):
+        pendulum.parse_date("2016-10-16")
+
+    with pytest.raises(ParserError):
+        pendulum.parse_date("12:34:56", exact=True)
+
+
+def test_parse_time() -> None:
+    t = pendulum.parse_time("12:34:56.123456", exact=True)
+
+    assert isinstance(t, pendulum.Time)
+    assert_time(t, 12, 34, 56, 123456)
+
+
+def test_parse_time_raises_for_other_types() -> None:
+    with pytest.raises(ParserError):
+        pendulum.parse_time("2016-10-16", exact=True)
+
+
+def test_parse_duration_helper() -> None:
+    duration = pendulum.parse_duration("P2Y3M4DT5H6M7S")
+
+    assert isinstance(duration, pendulum.Duration)
+    assert_duration(duration, 2, 3, 0, 4, 5, 6, 7)
+
+
+def test_parse_duration_raises_for_other_types() -> None:
+    with pytest.raises(ParserError):
+        pendulum.parse_duration("2016-10-16")
+
+    with pytest.raises(ParserError):
+        pendulum.parse_duration("2008-05-11T15:30:00Z/2008-05-11T16:30:00Z")

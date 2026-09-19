@@ -31,6 +31,10 @@ from pendulum.helpers import week_ends_at
 from pendulum.helpers import week_starts_at
 from pendulum.interval import Interval
 from pendulum.parser import parse as parse
+from pendulum.parser import parse_date as parse_date
+from pendulum.parser import parse_datetime as parse_datetime
+from pendulum.parser import parse_duration as parse_duration
+from pendulum.parser import parse_time as parse_time
 from pendulum.time import Time
 from pendulum.tz import UTC
 from pendulum.tz import fixed_timezone
@@ -423,6 +427,10 @@ __all__ = [
     "naive",
     "now",
     "parse",
+    "parse_date",
+    "parse_datetime",
+    "parse_duration",
+    "parse_time",
     "set_local_timezone",
     "set_locale",
     "test_local_timezone",
