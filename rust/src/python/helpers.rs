@@ -87,17 +87,15 @@ pub fn get_tz_name<'py>(dt: &Bound<'py, PyAny>) -> PyResult<String> {
         return Ok(String::new());
     }
 
-    let tzname_attr: Option<Bound<'py, PyAny>>;
-
-    if tzinfo.hasattr("key")? {
-        tzname_attr = Some(tzinfo.getattr("key")?);
+    let tzname_attr: Option<Bound<'py, PyAny>> = if tzinfo.hasattr("key")? {
+        Some(tzinfo.getattr("key")?)
     } else if tzinfo.hasattr("name")? {
-        tzname_attr = Some(tzinfo.getattr("name")?);
+        Some(tzinfo.getattr("name")?)
     } else if tzinfo.hasattr("zone")? {
-        tzname_attr = Some(tzinfo.getattr("zone")?);
+        Some(tzinfo.getattr("zone")?)
     } else {
-        tzname_attr = None;
-    }
+        None
+    };
 
     if let Some(tzname_attr) = tzname_attr {
         let tzname: &Bound<PyString> = tzname_attr.cast()?;
