@@ -18,6 +18,26 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
+def _timedelta_parts(td: timedelta) -> tuple[int, int, int]:
+    """Read a timedelta's normalized integer fields without going through float."""
+    return (
+        timedelta.days.__get__(td, type(td)),
+        timedelta.seconds.__get__(td, type(td)),
+        timedelta.microseconds.__get__(td, type(td)),
+    )
+
+
+def _signed_duration_parts(total_us: int) -> tuple[int, int, int]:
+    """Split a signed microsecond count into days, seconds, microseconds."""
+    sign = -1 if total_us < 0 else 1
+    abs_us = abs(total_us)
+    microseconds = (abs_us % US_PER_SECOND) * sign
+    total_seconds = abs_us // US_PER_SECOND
+    seconds = (total_seconds % SECONDS_PER_DAY) * sign
+    days = (total_seconds // SECONDS_PER_DAY) * sign
+    return days, seconds, microseconds
+
+
 def _divide_and_round(a: float, b: float) -> int:
     """divide a by b and round result to the nearest integer
 
@@ -94,18 +114,17 @@ class Duration(timedelta):
             weeks,
         )
 
-        # Intuitive normalization
-        total = self.total_seconds() - (years * 365 + months * 30) * SECONDS_PER_DAY
-        self._total = total
+        # Intuitive normalization. timedelta.total_seconds() is a float and
+        # drops microseconds on large values, so split from the integer fields.
+        extra_days = years * 365 + months * 30
+        td_days, td_seconds, td_microseconds = _timedelta_parts(self)
+        total_us = (
+            (td_days - extra_days) * SECONDS_PER_DAY + td_seconds
+        ) * US_PER_SECOND + td_microseconds
+        self._total = total_us / US_PER_SECOND
 
-        m = 1
-        if total < 0:
-            m = -1
-
-        self._microseconds = round(total % m * 1e6)
-        self._seconds = abs(int(total)) % SECONDS_PER_DAY * m
-
-        _days = abs(int(total)) // SECONDS_PER_DAY * m
+        m = -1 if total_us < 0 else 1
+        _days, self._seconds, self._microseconds = _signed_duration_parts(total_us)
         self._days = _days
         self._remaining_days = abs(_days) % 7 * m
         self._weeks = abs(_days) // 7 * m
@@ -502,18 +521,18 @@ class AbsoluteDuration(Duration):
             cls, days, seconds, microseconds, milliseconds, minutes, hours, weeks
         )
 
-        # We need to compute the total_seconds() value
-        # on a native timedelta object
         delta = timedelta(
             days, seconds, microseconds, milliseconds, minutes, hours, weeks
         )
+        td_days, td_seconds, td_microseconds = _timedelta_parts(delta)
+        total_us = (
+            td_days * SECONDS_PER_DAY + td_seconds
+        ) * US_PER_SECOND + td_microseconds
+        self._total = total_us / US_PER_SECOND
 
-        # Intuitive normalization
-        self._total = delta.total_seconds()
-        total = abs(self._total)
-
-        self._microseconds = round(total % 1 * 1e6)
-        days, self._seconds = divmod(int(total), SECONDS_PER_DAY)
+        abs_us = abs(total_us)
+        self._microseconds = abs_us % US_PER_SECOND
+        days, self._seconds = divmod(abs_us // US_PER_SECOND, SECONDS_PER_DAY)
         self._days = abs(days + years * 365 + months * 30)
         self._weeks, self._remaining_days = divmod(days, 7)
         self._months = abs(months)
