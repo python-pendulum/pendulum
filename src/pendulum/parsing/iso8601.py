@@ -268,6 +268,11 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
     if not m or (not m.group("w") and not m.group("ymd") and not m.group("hms")):
         return None
 
+    if m.group("timesep") and not any(
+        m.group(unit) for unit in ("hours", "minutes", "seconds")
+    ):
+        return None
+
     years = 0
     months = 0
     weeks = 0
