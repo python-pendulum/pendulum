@@ -278,3 +278,12 @@ def test_interval_over_midnight_tz():
     new_end = start + interval
 
     assert new_end == end
+
+
+def test_add_rejects_bool():
+    dt = pendulum.datetime(2020, 5, 15, 12, 30, 45)
+    for key in ("years", "months", "weeks", "days", "hours", "minutes", "seconds", "microseconds"):
+        with pytest.raises(TypeError, match=key):
+            dt.add(**{key: True})
+        with pytest.raises(TypeError, match=key):
+            dt.add(**{key: False})

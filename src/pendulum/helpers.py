@@ -94,6 +94,22 @@ def add_duration(
     """
     Adds a duration to a date/datetime instance.
     """
+    # bool is a subclass of int; reject so days=True does not add 1 day
+    for name, value in (
+        ("years", years),
+        ("months", months),
+        ("weeks", weeks),
+        ("days", days),
+        ("hours", hours),
+        ("minutes", minutes),
+        ("seconds", seconds),
+        ("microseconds", microseconds),
+    ):
+        if isinstance(value, bool):
+            raise TypeError(
+                f"{name} must be an integer, not bool (got {value!r})."
+            )
+
     days += weeks * 7
 
     if (

@@ -208,6 +208,21 @@ class DateTime(datetime.datetime, Date):
         microsecond: int | None = None,
         tz: str | float | Timezone | FixedTimezone | datetime.tzinfo | None = None,
     ) -> Self:
+        # bool is a subclass of int; reject so year=True does not become year 1
+        for name, value in (
+            ("year", year),
+            ("month", month),
+            ("day", day),
+            ("hour", hour),
+            ("minute", minute),
+            ("second", second),
+            ("microsecond", microsecond),
+        ):
+            if isinstance(value, bool):
+                raise TypeError(
+                    f"{name} must be an integer, not bool (got {value!r})."
+                )
+
         if year is None:
             year = self.year
         if month is None:
@@ -1299,6 +1314,23 @@ class DateTime(datetime.datetime, Date):
         tzinfo: bool | datetime.tzinfo | Literal[True] | None = True,
         fold: int | None = None,
     ) -> Self:
+        # bool is a subclass of int; reject so year=True does not become year 1
+        # (tzinfo=True remains the sentinel for "keep current timezone")
+        for name, value in (
+            ("year", year),
+            ("month", month),
+            ("day", day),
+            ("hour", hour),
+            ("minute", minute),
+            ("second", second),
+            ("microsecond", microsecond),
+            ("fold", fold),
+        ):
+            if isinstance(value, bool):
+                raise TypeError(
+                    f"{name} must be an integer, not bool (got {value!r})."
+                )
+
         if year is None:
             year = self.year
         if month is None:

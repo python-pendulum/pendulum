@@ -86,3 +86,12 @@ def test_addition_invalid_type():
 
     with pytest.raises(TypeError):
         3 + d
+
+
+def test_add_rejects_bool():
+    import pytest
+
+    d = pendulum.date(2020, 5, 15)
+    for key in ("years", "months", "weeks", "days"):
+        with pytest.raises(TypeError, match=key):
+            d.add(**{key: True})
