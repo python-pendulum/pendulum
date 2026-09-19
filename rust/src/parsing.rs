@@ -597,6 +597,7 @@ impl<'a> Parser<'a> {
 
         let mut duration: ParsedDuration = ParsedDuration::new();
         let mut got_t: bool = false;
+        let mut has_time_component = false;
         let mut last_had_fraction = false;
 
         loop {
@@ -683,6 +684,7 @@ impl<'a> Parser<'a> {
                                 )
                             }
                         }
+                        has_time_component = true;
                     } else {
                         match self.current {
                             'Y' => {
@@ -789,6 +791,10 @@ impl<'a> Parser<'a> {
             if self.end() {
                 break;
             }
+        }
+
+        if got_t && !has_time_component {
+            return Err(self.parse_error("Missing time component in duration".to_string()));
         }
 
         parsed.duration = Some(duration);
