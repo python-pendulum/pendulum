@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_date
@@ -125,6 +127,19 @@ def test_parse_interval() -> None:
     assert interval.start.offset == 0
     assert_datetime(interval.end, 2008, 5, 11, 15, 30, 0, 0)
     assert interval.end.offset == 0
+
+
+def test_parse_interval_mixed_types():
+    error = 'Both start and end of an Interval must have the same type'
+
+    # date / time is not allowed in ISO 8601
+    with pytest.raises(ValueError, match=error):
+        pendulum.parse('2007-12-13/14:30')
+
+    # datetime / time is allowed in some lenient ISO 8601 implementations (e.g. aniso8601 package).
+    # Not allowed in pendulum for strictness and consistency.
+    with pytest.raises(ValueError, match=error):
+        pendulum.parse('2007-12-13T14:30/15:45')
 
 
 def test_parse_now() -> None:
