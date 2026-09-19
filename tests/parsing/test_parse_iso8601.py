@@ -82,6 +82,10 @@ except ImportError:
             "2016-10-06T12:34:56.123456789+05:30",
             datetime(2016, 10, 6, 12, 34, 56, 123456, FixedTimezone(+19800)),
         ),
+        # More fractional digits than microsecond precision (truncated)
+        ("2016-10-06T12:34:56.123456789012", datetime(2016, 10, 6, 12, 34, 56, 123456)),
+        ("12:34:56.123456789012", time(12, 34, 56, 123456)),
+        ("20161006T123456,123456789012", datetime(2016, 10, 6, 12, 34, 56, 123456)),
         # Week date with time
         ("2008-W39-6T09", datetime(2008, 9, 27, 9, 0, 0, 0)),
     ],
