@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from datetime import datetime
+from datetime import timezone as datetime_timezone
 
 import pytest
 
@@ -41,7 +42,7 @@ def test_creates_an_instance_default_to_utcnow():
 def test_setting_timezone():
     tz = "Australia/Brisbane"
     dtz = timezone(tz)
-    dt = datetime.utcnow()
+    dt = datetime.now(datetime_timezone.utc).replace(tzinfo=None)
     offset = dtz.convert(dt).utcoffset().total_seconds() / 3600
 
     p = pendulum.datetime(dt.year, dt.month, dt.day, tz=dtz)
@@ -52,7 +53,7 @@ def test_setting_timezone():
 def test_setting_timezone_with_string():
     tz = "Australia/Brisbane"
     dtz = timezone(tz)
-    dt = datetime.utcnow()
+    dt = datetime.now(datetime_timezone.utc).replace(tzinfo=None)
     offset = dtz.convert(dt).utcoffset().total_seconds() / 3600
 
     p = pendulum.datetime(dt.year, dt.month, dt.day, tz=tz)

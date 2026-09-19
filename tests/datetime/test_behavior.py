@@ -7,6 +7,7 @@ from copy import deepcopy
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timezone as datetime_timezone
 
 import pytest
 
@@ -102,9 +103,37 @@ def test_fromtimestamp():
 
 def test_utcfromtimestamp():
     p = pendulum.DateTime.utcfromtimestamp(0)
-    dt = datetime.utcfromtimestamp(0)
+    dt = datetime.fromtimestamp(0, tz=datetime_timezone.utc).replace(tzinfo=None)
 
     assert p == dt
+
+
+def test_utcfromtimestamp_known_value():
+    p = pendulum.DateTime.utcfromtimestamp(1577836800)
+
+    assert p.year == 2020
+    assert p.month == 1
+    assert p.day == 1
+    assert p.hour == 0
+    assert p.minute == 0
+    assert p.second == 0
+    assert p.microsecond == 0
+
+
+def test_utcfromtimestamp_preserves_microseconds():
+    p = pendulum.DateTime.utcfromtimestamp(1577836800.123456)
+
+    assert p.year == 2020
+    assert p.month == 1
+    assert p.day == 1
+    assert p.microsecond == 123456
+
+
+def test_utcfromtimestamp_returns_naive_pendulum_datetime():
+    p = pendulum.DateTime.utcfromtimestamp(1577836800)
+
+    assert isinstance(p, pendulum.DateTime)
+    assert p.tzinfo is None
 
 
 def test_fromordinal():

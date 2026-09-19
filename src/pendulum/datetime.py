@@ -1257,7 +1257,12 @@ class DateTime(datetime.datetime, Date):
 
     @classmethod
     def utcfromtimestamp(cls, t: float) -> Self:
-        return cls.instance(datetime.datetime.utcfromtimestamp(t), tz=None)
+        return cls.instance(
+            datetime.datetime.fromtimestamp(t, tz=datetime.timezone.utc).replace(
+                tzinfo=None
+            ),
+            tz=None,
+        )
 
     @classmethod
     def fromordinal(cls, n: int) -> Self:
