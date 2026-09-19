@@ -1343,7 +1343,7 @@ class DateTime(datetime.datetime, Date):
 
     def _getstate(
         self, protocol: SupportsIndex = 3
-    ) -> tuple[int, int, int, int, int, int, int, datetime.tzinfo | None]:
+    ) -> tuple[int, int, int, int, int, int, int, datetime.tzinfo | None, int]:
         return (
             self.year,
             self.month,
@@ -1353,6 +1353,7 @@ class DateTime(datetime.datetime, Date):
             self.second,
             self.microsecond,
             self.tzinfo,
+            self.fold,
         )
 
     def __reduce__(
@@ -1369,7 +1370,7 @@ class DateTime(datetime.datetime, Date):
         type[Self],
         tuple[int, int, int, int, int, int, int, datetime.tzinfo | None],
     ]:
-        return self.__class__, self._getstate(protocol)
+        return self.create, self._getstate(protocol)
 
     def __deepcopy__(self, _: dict[int, Self]) -> Self:
         return self.__class__(
