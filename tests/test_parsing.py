@@ -127,6 +127,24 @@ def test_parse_interval() -> None:
     assert interval.end.offset == 0
 
 
+def test_parse_interval_with_date_and_duration() -> None:
+    # The interval endpoint is a date-only value, so it parses to a
+    # datetime.date rather than a datetime.datetime. See
+    # https://github.com/python-pendulum/pendulum/issues/881
+    interval = pendulum.parse("2021-01-01/P1DT1H")
+
+    assert isinstance(interval, pendulum.Interval)
+    assert_datetime(interval.start, 2021, 1, 1, 0, 0, 0, 0)
+    assert_datetime(interval.end, 2021, 1, 2, 1, 0, 0, 0)
+
+    # The reverse form (duration then a date endpoint) goes through subtract().
+    interval = pendulum.parse("P1Y/2021-01-01")
+
+    assert isinstance(interval, pendulum.Interval)
+    assert_datetime(interval.start, 2020, 1, 1, 0, 0, 0, 0)
+    assert_datetime(interval.end, 2021, 1, 1, 0, 0, 0, 0)
+
+
 def test_parse_now() -> None:
     assert pendulum.parse("now").timezone_name == "UTC"
     assert (
