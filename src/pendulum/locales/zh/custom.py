@@ -6,8 +6,8 @@ from __future__ import annotations
 
 translations = {
     # Relative time
-    "after": "{time}后",
-    "before": "{time}前",
+    "after": "{0}后",
+    "before": "{0}前",
     # Date formats
     "date_formats": {
         "LTS": "Ah点m分s秒",
