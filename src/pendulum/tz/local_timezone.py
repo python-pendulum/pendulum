@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import contextlib
 import os
-import re
 import sys
 import warnings
 
@@ -158,63 +157,26 @@ def _get_darwin_timezone() -> Timezone:
 
 
 def _get_unix_timezone(_root: str = "/") -> Timezone:
-    tzenv = os.environ.get("TZ")
-    if tzenv:
+    if tzenv := os.environ.get("TZ"):
         with contextlib.suppress(ValueError):
             return _tz_from_env(tzenv)
 
-    # Now look for distribution specific configuration files
-    # that contain the timezone name.
-    tzpath = Path(_root) / "etc" / "timezone"
-    if tzpath.is_file():
-        tzfile_data = tzpath.read_bytes()
-        # Issue #3 was that /etc/timezone was a zoneinfo file.
-        # That's a misconfiguration, but we need to handle it gracefully:
-        if not tzfile_data.startswith(b"TZif2"):
-            etctz = tzfile_data.strip().decode()
-            # Get rid of host definitions and comments:
-            etctz, _, _ = etctz.partition(" ")
-            etctz, _, _ = etctz.partition("#")
-            return Timezone(etctz.replace(" ", "_"))
+    localtime = Path(_root) / "etc" / "localtime"
 
-    # CentOS has a ZONE setting in /etc/sysconfig/clock,
-    # OpenSUSE has a TIMEZONE setting in /etc/sysconfig/clock and
-    # Gentoo has a TIMEZONE setting in /etc/conf.d/clock
-    # We look through these files for a timezone:
-    zone_re = re.compile(r'\s*(TIME)?ZONE\s*=\s*"([^"]+)?"')
-
-    for filename in ("etc/sysconfig/clock", "etc/conf.d/clock"):
-        tzpath = Path(_root) / filename
-        if tzpath.is_file():
-            data = tzpath.read_text().splitlines()
-            for line in data:
-                # Look for the ZONE= or TIMEZONE= setting.
-                match = zone_re.match(line)
-                if match:
-                    etctz = match.group(2)
-                    parts = list(reversed(etctz.replace(" ", "_").split(os.path.sep)))
-                    tzpath_parts: list[str] = []
-                    while parts:
-                        tzpath_parts.insert(0, parts.pop(0))
-                        with contextlib.suppress(InvalidTimezone):
-                            return Timezone(os.path.sep.join(tzpath_parts))
-
-    # systemd distributions use symlinks that include the zone name,
-    # see manpage of localtime(5) and timedatectl(1)
-    tzpath = Path(_root) / "etc" / "localtime"
-    if tzpath.is_file() and tzpath.is_symlink():
-        parts = [p.replace(" ", "_") for p in reversed(tzpath.resolve().parts)]
-        tzpath_parts: list[str] = []  # type: ignore[no-redef]
-        while parts:
-            tzpath_parts.insert(0, parts.pop(0))
+    # Symlink → IANA name
+    if localtime.is_symlink() and localtime.is_file():
+        parts = [p.replace(" ", "_") for p in localtime.resolve().parts]
+        for i in range(1, len(parts) + 1):
             with contextlib.suppress(InvalidTimezone):
-                return Timezone(os.path.sep.join(tzpath_parts))
+                return Timezone(os.path.sep.join(parts[-i:]))
 
-    # No explicit setting existed. Use localtime
-    for filename in ("etc/localtime", "usr/local/etc/localtime"):
-        tzpath = Path(_root) / filename
-        if tzpath.is_file():
-            with tzpath.open("rb") as f:
+    # Fallback: read tzfile data
+    for tzfile in (
+        localtime,
+        Path(_root) / "usr/local/etc/localtime",
+    ):
+        if tzfile.is_file():
+            with tzfile.open("rb") as f:
                 return Timezone.from_file(f)
 
     warnings.warn(
