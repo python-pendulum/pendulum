@@ -47,5 +47,5 @@ def test_parse_iso8601() -> None:
     parse_iso8601("2009-W53-7")
     parse_iso8601("2009-W01-1")
 
-    # Week date wth time
+    # Week date with time
     parse_iso8601("2008-W39-6T09")
