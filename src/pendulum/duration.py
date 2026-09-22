@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from typing import cast
 from typing import overload
 
 import pendulum
@@ -356,6 +355,14 @@ class Duration(timedelta):
     def _to_microseconds(self) -> int:
         return (self._days * (24 * 3600) + self._seconds) * 1000000 + self._microseconds
 
+    @staticmethod
+    def _timedelta_microseconds(delta: timedelta) -> int:
+        if isinstance(delta, Duration):
+            return delta._to_microseconds()
+        return (
+            delta.days * SECONDS_PER_DAY + delta.seconds
+        ) * US_PER_SECOND + delta.microseconds
+
     def __mul__(self, other: int | float) -> Self:
         if isinstance(other, int):
             return self.__class__(
@@ -386,10 +393,7 @@ class Duration(timedelta):
 
         usec = self._to_microseconds()
         if isinstance(other, timedelta):
-            return cast(
-                "int",
-                usec // other._to_microseconds(),  # type: ignore[attr-defined]
-            )
+            return usec // self._timedelta_microseconds(other)
 
         if isinstance(other, int):
             return self.__class__(
@@ -412,10 +416,7 @@ class Duration(timedelta):
 
         usec = self._to_microseconds()
         if isinstance(other, timedelta):
-            return cast(
-                "float",
-                usec / other._to_microseconds(),  # type: ignore[attr-defined]
-            )
+            return usec / self._timedelta_microseconds(other)
 
         if isinstance(other, int):
             return self.__class__(
@@ -441,7 +442,7 @@ class Duration(timedelta):
 
     def __mod__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
-            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined]
+            r = self._to_microseconds() % self._timedelta_microseconds(other)
 
             return self.__class__(0, 0, r)
 
@@ -451,7 +452,7 @@ class Duration(timedelta):
         if isinstance(other, timedelta):
             q, r = divmod(
                 self._to_microseconds(),
-                other._to_microseconds(),  # type: ignore[attr-defined]
+                self._timedelta_microseconds(other),
             )
 
             return q, self.__class__(0, 0, r)
