@@ -1,8 +1,21 @@
 from __future__ import annotations
 
+from datetime import timedelta
+
 import pendulum
 
 from tests.conftest import assert_duration
+
+
+def test_arithmetic_with_standard_timedelta():
+    start = pendulum.datetime(2019, 1, 1)
+    interval = pendulum.interval(start, start.add(hours=25))
+    day = timedelta(days=1)
+
+    assert interval / day == 25 / 24
+    assert interval // day == 1
+    assert interval % day == timedelta(hours=1)
+    assert divmod(interval, day) == (1, timedelta(hours=1))
 
 
 def test_multiply():
