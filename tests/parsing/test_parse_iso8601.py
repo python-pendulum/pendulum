@@ -153,6 +153,14 @@ def test_parse_iso8601_invalid():
     with pytest.raises(ValueError):
         parse_iso8601("2009-05-19 14:39:22+0:6:00")
 
+    # Offset out of range (>= 24h)
+    with pytest.raises(ValueError):
+        parse_iso8601("2016-10-16T12:34:56+99:59")
+    with pytest.raises(ValueError):
+        parse_iso8601("2016-10-16T12:34:56-2400")
+    with pytest.raises(ValueError):
+        parse_iso8601("2016-10-16T12:34:56+2400")
+
     # Missing time separator
     with pytest.raises(ValueError):
         parse_iso8601("2009-05-1914:39")
