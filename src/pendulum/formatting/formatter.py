@@ -607,6 +607,9 @@ class Formatter:
 
             offset = ((int(off_hour) * 60) + int(off_minute)) * 60
 
+            if abs(offset) >= 24 * 3600:
+                raise ValueError("Invalid date")
+
             if negative:
                 offset = -1 * offset
 
