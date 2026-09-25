@@ -95,17 +95,24 @@ class Duration(timedelta):
         )
 
         # Intuitive normalization
-        total = self.total_seconds() - (years * 365 + months * 30) * SECONDS_PER_DAY
+        # Use exact integer microseconds to avoid total_seconds() float precision loss.
+        total_microseconds = (
+            (timedelta.days.__get__(self) - (years * 365 + months * 30))
+            * SECONDS_PER_DAY
+            + timedelta.seconds.__get__(self)
+        ) * US_PER_SECOND + timedelta.microseconds.__get__(self)
+        total = total_microseconds / US_PER_SECOND
         self._total = total
 
         m = 1
-        if total < 0:
+        if total_microseconds < 0:
             m = -1
 
-        self._microseconds = round(total % m * 1e6)
-        self._seconds = abs(int(total)) % SECONDS_PER_DAY * m
+        abs_microseconds = abs(total_microseconds)
+        self._microseconds = abs_microseconds % US_PER_SECOND * m
+        self._seconds = abs_microseconds // US_PER_SECOND % SECONDS_PER_DAY * m
 
-        _days = abs(int(total)) // SECONDS_PER_DAY * m
+        _days = abs_microseconds // US_PER_SECOND // SECONDS_PER_DAY * m
         self._days = _days
         self._remaining_days = abs(_days) % 7 * m
         self._weeks = abs(_days) // 7 * m
@@ -509,11 +516,15 @@ class AbsoluteDuration(Duration):
         )
 
         # Intuitive normalization
-        self._total = delta.total_seconds()
-        total = abs(self._total)
+        # Use exact integer microseconds to avoid total_seconds() float precision loss.
+        total_microseconds = (
+            delta.days * SECONDS_PER_DAY + delta.seconds
+        ) * US_PER_SECOND + delta.microseconds
+        self._total = total_microseconds / US_PER_SECOND
+        abs_microseconds = abs(total_microseconds)
 
-        self._microseconds = round(total % 1 * 1e6)
-        days, self._seconds = divmod(int(total), SECONDS_PER_DAY)
+        self._microseconds = abs_microseconds % US_PER_SECOND
+        days, self._seconds = divmod(abs_microseconds // US_PER_SECOND, SECONDS_PER_DAY)
         self._days = abs(days + years * 365 + months * 30)
         self._weeks, self._remaining_days = divmod(days, 7)
         self._months = abs(months)

@@ -97,3 +97,14 @@ def test_float_years_and_months():
 
     with pytest.raises(ValueError):
         pendulum.duration(months=1.5)
+
+
+def test_large_microseconds_keep_precision():
+    micro = 8999999999999999
+    pi = pendulum.duration(microseconds=micro)
+    expected = timedelta(microseconds=micro)
+    assert pi.microseconds == expected.microseconds
+    assert pi.microseconds == 999999
+
+    ai = AbsoluteDuration(microseconds=micro)
+    assert ai.microseconds == expected.microseconds == 999999
