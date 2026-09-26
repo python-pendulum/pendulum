@@ -251,7 +251,7 @@ def parse_iso8601(
             offset = ((int(off_hour) * 60) + int(off_minute)) * 60
 
             if abs(offset) >= 24 * 3600:
-                raise ParserError(f"Invalid date string: {text}")
+                raise ParserError("Invalid ISO 8601 timezone offset")
 
             if negative:
                 offset = -1 * offset
