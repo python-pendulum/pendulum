@@ -64,6 +64,9 @@ There is also the `now()` method.
 'Europe/London'
 ```
 
+`now()` also accepts standard library `datetime.tzinfo` objects, including
+`datetime.timezone.utc` and `zoneinfo.ZoneInfo`.
+
 To accompany `now()`, a few other static instantiation helpers exist to create known instances.
 The only thing to really notice here is that `today()`, `tomorrow()` and `yesterday()`,
 besides behaving as expected, all accept a timezone parameter

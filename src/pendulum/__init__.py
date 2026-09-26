@@ -238,28 +238,28 @@ def instance(
     return DateTime.instance(obj, tz=tz)
 
 
-def now(tz: str | Timezone | None = None) -> DateTime:
+def now(tz: str | _datetime.tzinfo | None = None) -> DateTime:
     """
     Get a DateTime instance for the current date and time.
     """
     return DateTime.now(tz)
 
 
-def today(tz: str | Timezone = "local") -> DateTime:
+def today(tz: str | _datetime.tzinfo = "local") -> DateTime:
     """
     Create a DateTime instance for today.
     """
     return now(tz).start_of("day")
 
 
-def tomorrow(tz: str | Timezone = "local") -> DateTime:
+def tomorrow(tz: str | _datetime.tzinfo = "local") -> DateTime:
     """
     Create a DateTime instance for tomorrow.
     """
     return today(tz).add(days=1)
 
 
-def yesterday(tz: str | Timezone = "local") -> DateTime:
+def yesterday(tz: str | _datetime.tzinfo = "local") -> DateTime:
     """
     Create a DateTime instance for yesterday.
     """
