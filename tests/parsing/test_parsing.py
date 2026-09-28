@@ -156,6 +156,41 @@ def test_rfc_3339_extended_nanoseconds():
     assert parsed.utcoffset().total_seconds() == 19800
 
 
+def test_rfc_3339_extended_beyond_nanoseconds():
+    # A subsecond part longer than 9 digits (i.e. finer than nanoseconds) is
+    # unusual but not invalid ISO 8601: it should still be accepted and
+    # truncated to microsecond precision, the same as `datetime.fromisoformat`
+    # does, instead of raising a ParserError.
+    text = "2016-10-06T12:34:56.1234567890123+05:30"
+
+    parsed = parse(text)
+
+    assert parsed.year == 2016
+    assert parsed.month == 10
+    assert parsed.day == 6
+    assert parsed.hour == 12
+    assert parsed.minute == 34
+    assert parsed.second == 56
+    assert parsed.microsecond == 123456
+    assert parsed.utcoffset().total_seconds() == 19800
+
+
+def test_common_format_extended_beyond_nanoseconds():
+    # Same as `test_rfc_3339_extended_beyond_nanoseconds()` but for the
+    # "common" datetime format (handled separately from the ISO 8601 parser).
+    text = "2016/10/06 12:34:56.1234567890123"
+
+    parsed = parse(text)
+
+    assert parsed.year == 2016
+    assert parsed.month == 10
+    assert parsed.day == 6
+    assert parsed.hour == 12
+    assert parsed.minute == 34
+    assert parsed.second == 56
+    assert parsed.microsecond == 123456
+
+
 def test_iso_8601_date():
     text = "2012"
 

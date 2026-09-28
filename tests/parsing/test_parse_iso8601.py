@@ -214,3 +214,18 @@ def test_parse_iso8601_duration_invalid():
     # Must include at least one element
     with pytest.raises(ValueError):
         parse_iso8601("P")
+
+
+def test_parse_iso8601_subsecond_beyond_nanoseconds_pure_python():
+    # Regression test for the pure-Python ISO 8601 parser (used as a fallback
+    # when the compiled extension is unavailable): a subsecond part longer
+    # than 9 digits used to raise a ParserError instead of being truncated to
+    # microsecond precision like `datetime.fromisoformat` does. Imported
+    # directly so the check runs regardless of whether the Rust extension is
+    # built, since `pendulum.parsing.parse_iso8601` prefers the extension
+    # when it's available.
+    from pendulum.parsing.iso8601 import parse_iso8601 as py_parse_iso8601
+
+    parsed = py_parse_iso8601("2016-10-06T12:34:56.1234567890123+05:30")
+
+    assert parsed == datetime(2016, 10, 6, 12, 34, 56, 123456, FixedTimezone(19800))
