@@ -49,7 +49,7 @@ ISO8601_DT = re.compile(
     # Subsecond part (optional)
     "    (?P<subsecondsection>"
     "        (?:[.,])"  # Subsecond separator (optional)
-    r"        (?P<subsecond>\d{1,9})"  # Subsecond
+    r"        (?P<subsecond>\d+)"  # Subsecond (any number of digits; truncated to microseconds below)
     "    )?"
     # Timezone offset
     "    (?P<tz>"
