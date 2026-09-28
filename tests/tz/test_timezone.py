@@ -47,6 +47,18 @@ def test_equality():
     assert timezone("Europe/Paris") != timezone("Europe/Berlin")
 
 
+def test_hashable():
+    # Timezones are hashable and can be used as dict keys / set members.
+    # __eq__ and __hash__ must stay consistent: equal timezones hash equally.
+    assert hash(timezone("Europe/Paris")) == hash(timezone("Europe/Paris"))
+    assert timezone("Europe/Paris") in {timezone("Europe/Paris")}
+    assert len({timezone("Europe/Paris"), timezone("Europe/Berlin")}) == 2
+
+    assert hash(fixed_timezone(3600)) == hash(fixed_timezone(3600))
+    assert fixed_timezone(3600) in {fixed_timezone(3600)}
+    assert len({fixed_timezone(3600), fixed_timezone(7200)}) == 2
+
+
 def test_skipped_time_with_pre_rule():
     dt = datetime(2013, 3, 31, 2, 30, 45, 123456, fold=0)
     tz = timezone("Europe/Paris")

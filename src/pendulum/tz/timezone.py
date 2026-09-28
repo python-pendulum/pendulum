@@ -69,6 +69,9 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Timezone) and self.key == other.key
 
+    def __hash__(self) -> int:
+        return hash((self.__class__, self.key))
+
     @property
     def name(self) -> str:
         return self.key
@@ -177,6 +180,9 @@ class FixedTimezone(_datetime.tzinfo, PendulumTimezone):
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, FixedTimezone) and self._offset == other._offset
+
+    def __hash__(self) -> int:
+        return hash((self.__class__, self._offset))
 
     @property
     def name(self) -> str:
