@@ -7,6 +7,7 @@ from datetime import time
 import pytest
 
 from pendulum.parsing import parse_iso8601
+from pendulum.parsing.iso8601 import parse_iso8601 as parse_iso8601_python
 
 
 try:
@@ -214,3 +215,26 @@ def test_parse_iso8601_duration_invalid():
     # Must include at least one element
     with pytest.raises(ValueError):
         parse_iso8601("P")
+
+
+@pytest.mark.parametrize(
+    ["text", "expected"],
+    [
+        # 10 and more fractional-second digits (issue #935)
+        (
+            "2001-01-01T12:34:56.1234567890",
+            datetime(2001, 1, 1, 12, 34, 56, 123456),
+        ),
+        (
+            "2001-01-01T12:34:56.123456789012",
+            datetime(2001, 1, 1, 12, 34, 56, 123456),
+        ),
+        ("12:34:56.1234567890", time(12, 34, 56, 123456)),
+    ],
+)
+def test_parse_iso8601_subsecond_more_than_nine_digits(text, expected):
+    # The pure-Python ISO 8601 parser must accept fractional seconds with more
+    # than 9 digits and truncate to microsecond resolution, matching the Rust
+    # parser and datetime.fromisoformat, instead of failing to parse.
+    # https://github.com/python-pendulum/pendulum/issues/935
+    assert parse_iso8601_python(text) == expected
