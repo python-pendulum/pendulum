@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
+from pendulum.parsing import ParserError
 from tests.conftest import assert_date
 from tests.conftest import assert_datetime
 from tests.conftest import assert_duration
@@ -93,6 +96,31 @@ def test_parse_duration() -> None:
 
     assert isinstance(duration, pendulum.Duration)
     assert_duration(duration, 0, 0, 2, 0, 0, 0, 0)
+
+
+@pytest.mark.parametrize("text", ["PT", "P1DT", "P0DT", "P1Y2MT", "P1.5DT"])
+def test_parse_duration_without_time_components(text: str) -> None:
+    with pytest.raises(ParserError):
+        pendulum.parse(text, strict=True)
+
+
+@pytest.mark.parametrize(
+    ["text", "days", "seconds"],
+    [
+        ("PT0H", 0, 0),
+        ("PT0M", 0, 0),
+        ("PT0S", 0, 0),
+        ("PT0.0S", 0, 0),
+        ("P0D", 0, 0),
+        ("P1DT0S", 1, 0),
+        ("P1DT2S", 1, 2),
+    ],
+)
+def test_parse_duration_time_components(text: str, days: int, seconds: int) -> None:
+    duration = pendulum.parse(text, strict=True)
+
+    assert isinstance(duration, pendulum.Duration)
+    assert_duration(duration, 0, 0, 0, days, 0, 0, seconds)
 
 
 def test_parse_interval() -> None:

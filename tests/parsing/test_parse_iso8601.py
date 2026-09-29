@@ -191,6 +191,14 @@ def test_parse_iso8601_invalid():
         ("PT1.5H", (0, 0, 0, 0, 1, 30, 0, 0)),
         ("PT1,5H", (0, 0, 0, 0, 1, 30, 0, 0)),
         ("P2Y30M4DT5H6M7S", (2, 30, 0, 4, 5, 6, 7, 0)),
+        ("PT0H", (0, 0, 0, 0, 0, 0, 0, 0)),
+        ("PT0M", (0, 0, 0, 0, 0, 0, 0, 0)),
+        ("PT0S", (0, 0, 0, 0, 0, 0, 0, 0)),
+        ("PT0.0S", (0, 0, 0, 0, 0, 0, 0, 0)),
+        ("P0D", (0, 0, 0, 0, 0, 0, 0, 0)),
+        ("P1DT0S", (0, 0, 0, 1, 0, 0, 0, 0)),
+        ("P1Y2MT0H", (1, 2, 0, 0, 0, 0, 0, 0)),
+        ("P1DT2S", (0, 0, 0, 1, 0, 0, 2, 0)),
     ],
 )
 def test_parse_iso8601_duration(
@@ -210,7 +218,8 @@ def test_parse_iso8601_duration(
     ) == expected
 
 
-def test_parse_iso8601_duration_invalid():
-    # Must include at least one element
+@pytest.mark.parametrize("text", ["P", "PT", "P1DT", "P0DT", "P1Y2MT", "P1.5DT"])
+def test_parse_iso8601_duration_invalid(text: str) -> None:
+    # Durations need a component, and T must be followed by a time component.
     with pytest.raises(ValueError):
-        parse_iso8601("P")
+        parse_iso8601(text)
