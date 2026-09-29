@@ -13,6 +13,7 @@ from pendulum import timezone
 from pendulum.tz import fixed_timezone
 from pendulum.tz.exceptions import AmbiguousTime
 from pendulum.tz.exceptions import NonExistingTime
+from pendulum.tz.timezone import FixedTimezone
 from tests.conftest import assert_datetime
 
 
@@ -45,6 +46,11 @@ def test_basic_convert():
 def test_equality():
     assert timezone("Europe/Paris") == timezone("Europe/Paris")
     assert timezone("Europe/Paris") != timezone("Europe/Berlin")
+
+
+def test_hash():
+    assert hash(timezone("Europe/Paris")) == hash(timezone("Europe/Paris"))
+    assert len({timezone("Europe/Paris"), timezone("Europe/Paris")}) == 1
 
 
 def test_skipped_time_with_pre_rule():
@@ -407,6 +413,14 @@ def test_fixed_timezone():
 def test_fixed_equality():
     assert fixed_timezone(19800) == fixed_timezone(19800)
     assert fixed_timezone(19800) != fixed_timezone(19801)
+
+
+def test_fixed_hash():
+    assert hash(fixed_timezone(19800)) == hash(fixed_timezone(19800))
+    assert fixed_timezone(19800) == FixedTimezone(19800, name="custom"), (
+        "Pre-condition: name ignored for FixedTimezone"
+    )
+    assert len({fixed_timezone(19800), FixedTimezone(19800, name="custom")}) == 1
 
 
 def test_just_before_last_transition():
