@@ -2,7 +2,7 @@
 use pyo3::prelude::*;
 use pyo3::types::{PyDelta, PyDict, PyTzInfo};
 
-#[pyclass(module = "_pendulum", extends = PyTzInfo)]
+#[pyclass(module = "_pendulum", extends = PyTzInfo, from_py_object)]
 #[derive(Clone)]
 pub struct FixedTimezone {
     offset: i32,
