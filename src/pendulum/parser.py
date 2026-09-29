@@ -36,6 +36,18 @@ def parse(text: str, **options: t.Any) -> Date | Time | DateTime | Duration:
     return _parse(text, **options)
 
 
+def _as_datetime(value: datetime.date) -> datetime.datetime:
+    # An interval endpoint parsed from a date-only ISO 8601 value (e.g. the
+    # "2021-01-01" in "2021-01-01/P1D") is a datetime.date. Promote it to a
+    # midnight datetime so the interval has DateTime endpoints and so
+    # DateTime.add/subtract accepts the duration's time components below
+    # (Date.add/subtract does not take hours/minutes/seconds/microseconds).
+    if isinstance(value, datetime.datetime):
+        return value
+
+    return datetime.datetime(value.year, value.month, value.day)
+
+
 def _parse(
     text: str, **options: t.Any
 ) -> Date | DateTime | Time | Duration | Interval[DateTime]:
@@ -75,7 +87,9 @@ def _parse(
             duration = parsed.duration
 
             if parsed.start is not None:
-                dt = pendulum.instance(parsed.start, tz=options.get("tz", UTC))
+                dt = pendulum.instance(
+                    _as_datetime(parsed.start), tz=options.get("tz", UTC)
+                )
 
                 return pendulum.interval(
                     dt,
@@ -91,9 +105,7 @@ def _parse(
                     ),
                 )
 
-            dt = pendulum.instance(
-                t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
-            )
+            dt = pendulum.instance(_as_datetime(parsed.end), tz=options.get("tz", UTC))
 
             return pendulum.interval(
                 dt.subtract(
