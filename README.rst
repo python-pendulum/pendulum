@@ -24,6 +24,11 @@ Supports Python **3.10 and newer**.
    >>> now_in_paris
    '2016-07-04T00:49:58.502116+02:00'
 
+   # Standard library timezone objects work too
+   >>> from datetime import timezone as datetime_timezone
+   >>> pendulum.now(datetime_timezone.utc).is_utc()
+   True
+
    # Seamless timezone switching
    >>> now_in_paris.in_timezone('UTC')
    '2016-07-03T22:49:58.502116+00:00'

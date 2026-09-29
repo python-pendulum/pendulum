@@ -5,6 +5,7 @@ import zoneinfo
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timezone as datetime_timezone
 
 from dateutil import tz
 
@@ -13,6 +14,27 @@ import pendulum
 from pendulum import _safe_timezone
 from pendulum import timezone
 from pendulum.tz.timezone import Timezone
+
+
+def test_now_helpers_accept_stdlib_timezone() -> None:
+    for value in (
+        pendulum.now(datetime_timezone.utc),
+        pendulum.today(datetime_timezone.utc),
+        pendulum.tomorrow(datetime_timezone.utc),
+        pendulum.yesterday(datetime_timezone.utc),
+    ):
+        assert value.timezone_name == "UTC"
+
+
+def test_now_helpers_accept_zoneinfo_timezone() -> None:
+    paris = zoneinfo.ZoneInfo("Europe/Paris")
+    for value in (
+        pendulum.now(paris),
+        pendulum.today(paris),
+        pendulum.tomorrow(paris),
+        pendulum.yesterday(paris),
+    ):
+        assert value.timezone_name == "Europe/Paris"
 
 
 def test_instance_with_naive_datetime_defaults_to_utc() -> None:
