@@ -9,6 +9,7 @@ import pendulum
 from pendulum.duration import Duration
 from pendulum.parsing import _Interval
 from pendulum.parsing import parse as base_parse
+from pendulum.parsing.exceptions import ParserError
 from pendulum.tz.timezone import UTC
 
 
@@ -34,6 +35,68 @@ def parse(text: str, **options: t.Any) -> Date | Time | DateTime | Duration:
     options["now"] = options.get("now")
 
     return _parse(text, **options)
+
+
+def parse_datetime(text: str, **options: t.Any) -> DateTime:
+    """Parse a string and return a ``DateTime``.
+
+    Accepts the same options as ``parse()`` but raises a ``ParserError`` if the
+    string represents something else (a date, a time, a duration, ...).
+    """
+    parsed = parse(text, **options)
+    if not isinstance(parsed, pendulum.DateTime):
+        raise _wrong_type(text, "a datetime", parsed)
+
+    return parsed
+
+
+def parse_date(text: str, **options: t.Any) -> Date:
+    """Parse a string and return a ``Date``.
+
+    Accepts the same options as ``parse()`` but raises a ``ParserError`` if the
+    string represents something else. Note that ``parse()`` yields a ``DateTime``
+    for a date string unless ``exact=True`` is passed.
+    """
+    parsed = parse(text, **options)
+    # DateTime is a subclass of Date, so a datetime must not pass as a date.
+    if not isinstance(parsed, pendulum.Date) or isinstance(parsed, pendulum.DateTime):
+        raise _wrong_type(text, "a date", parsed)
+
+    return parsed
+
+
+def parse_time(text: str, **options: t.Any) -> Time:
+    """Parse a string and return a ``Time``.
+
+    Accepts the same options as ``parse()`` but raises a ``ParserError`` if the
+    string represents something else. Note that ``parse()`` yields a ``DateTime``
+    for a time string unless ``exact=True`` is passed.
+    """
+    parsed = parse(text, **options)
+    if not isinstance(parsed, pendulum.Time):
+        raise _wrong_type(text, "a time", parsed)
+
+    return parsed
+
+
+def parse_duration(text: str, **options: t.Any) -> Duration:
+    """Parse a string and return a ``Duration``.
+
+    Accepts the same options as ``parse()`` but raises a ``ParserError`` if the
+    string represents something else.
+    """
+    parsed = parse(text, **options)
+    # Interval is a subclass of Duration, so an interval must not pass as one.
+    if not isinstance(parsed, Duration) or isinstance(parsed, pendulum.Interval):
+        raise _wrong_type(text, "a duration", parsed)
+
+    return parsed
+
+
+def _wrong_type(text: str, expected: str, parsed: object) -> ParserError:
+    return ParserError(
+        f"Text '{text}' does not represent {expected}, got {type(parsed).__name__}"
+    )
 
 
 def _parse(
