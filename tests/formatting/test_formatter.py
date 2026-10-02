@@ -140,6 +140,13 @@ def test_am_pm():
     assert f.format(d.set(hour=11), "A") == "AM"
 
 
+def test_lowercase_am_pm():
+    f = Formatter()
+    d = pendulum.datetime(2016, 8, 28, 23)
+    assert f.format(d, "a") == "pm"
+    assert f.format(d.set(hour=11), "a") == "am"
+
+
 def test_hour():
     f = Formatter()
     d = pendulum.datetime(2016, 8, 28, 7)
