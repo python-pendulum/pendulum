@@ -598,6 +598,7 @@ impl<'a> Parser<'a> {
         let mut duration: ParsedDuration = ParsedDuration::new();
         let mut got_t: bool = false;
         let mut last_had_fraction = false;
+        let mut last_unit = None;
 
         loop {
             match self.current {
@@ -609,6 +610,7 @@ impl<'a> Parser<'a> {
                     }
 
                     got_t = true;
+                    last_unit = None;
                 }
                 _c => {
                     let (value, op_fraction) = self.parse_duration_number_frac()?;
@@ -620,18 +622,18 @@ impl<'a> Parser<'a> {
                         last_had_fraction = true;
                     }
 
+                    let units = if got_t { "HMS" } else { "YMWD" };
+                    let unit = units.find(self.current).ok_or_else(|| {
+                        self.parse_error("Invalid duration time unit".to_string())
+                    })?;
+                    if last_unit.is_some_and(|last| unit <= last) {
+                        return Err(self.parse_error("Duration units out of order".to_string()));
+                    }
+                    last_unit = Some(unit);
+
                     if got_t {
                         match self.current {
                             'H' => {
-                                if duration.minutes != 0
-                                    || duration.seconds != 0
-                                    || duration.microseconds != 0
-                                {
-                                    return Err(
-                                        self.parse_error("Duration units out of order".to_string())
-                                    );
-                                }
-
                                 duration.hours += value;
 
                                 if let Some(fraction) = op_fraction {
@@ -650,12 +652,6 @@ impl<'a> Parser<'a> {
                                 }
                             }
                             'M' => {
-                                if duration.seconds != 0 || duration.microseconds != 0 {
-                                    return Err(
-                                        self.parse_error("Duration units out of order".to_string())
-                                    );
-                                }
-
                                 duration.minutes += value;
 
                                 if let Some(fraction) = op_fraction {
@@ -693,12 +689,6 @@ impl<'a> Parser<'a> {
                                     ));
                                 }
 
-                                if duration.months != 0 || duration.days != 0 {
-                                    return Err(
-                                        self.parse_error("Duration units out of order".to_string())
-                                    );
-                                }
-
                                 duration.years = value;
                             }
                             'M' => {
@@ -707,12 +697,6 @@ impl<'a> Parser<'a> {
                                         "Fractional months in duration are not supported"
                                             .to_string(),
                                     ));
-                                }
-
-                                if duration.days != 0 {
-                                    return Err(
-                                        self.parse_error("Duration units out of order".to_string())
-                                    );
                                 }
 
                                 duration.months = value;
