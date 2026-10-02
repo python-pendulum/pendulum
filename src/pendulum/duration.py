@@ -15,6 +15,8 @@ from pendulum.utils._compat import PYPY
 
 
 if TYPE_CHECKING:
+    from typing import SupportsIndex
+
     from typing_extensions import Self
 
 
@@ -469,6 +471,9 @@ class Duration(timedelta):
             months=self.months,
             weeks=self.weeks,
         )
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> tuple[object, ...]:
+        return (*super().__reduce_ex__(protocol), self.__dict__)
 
 
 Duration.min = Duration(days=-999999999)
