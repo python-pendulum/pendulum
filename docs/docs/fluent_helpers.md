@@ -65,3 +65,17 @@ converts the time in the appropriate timezone.
 >>> print(dt)
 '2013-03-31T02:30:00+00:00'
 ```
+
+## Replacing time attributes
+
+`Time.replace()` preserves `fold` unless you specify a new value, matching
+`datetime.time.replace()`. This keeps the selected occurrence of an ambiguous
+time when changing other attributes.
+
+```python
+>>> clock = pendulum.Time(1, 30, tzinfo=pendulum.timezone('America/New_York'), fold=1)
+>>> clock.replace(minute=45).fold
+1
+>>> clock.replace(fold=0).fold
+0
+```
