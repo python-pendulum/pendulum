@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from typing import SupportsIndex
 from typing import cast
 from typing import overload
 
@@ -457,6 +458,29 @@ class Duration(timedelta):
             return q, self.__class__(0, 0, r)
 
         return NotImplemented
+
+    def _restore_args(self) -> tuple[int, int, int, int, int, int, int, int, int]:
+        # Match __deepcopy__: calendar fields live beside the timedelta
+        # normalization, and timedelta's own reducer drops them.
+        return (
+            self.remaining_days,
+            self.remaining_seconds,
+            self.microseconds,
+            0,
+            self.minutes,
+            self.hours,
+            self.weeks,
+            self.years,
+            self.months,
+        )
+
+    def __reduce__(self) -> tuple[type[Self], tuple[int, ...]]:
+        return self.__reduce_ex__(2)
+
+    def __reduce_ex__(
+        self, protocol: SupportsIndex
+    ) -> tuple[type[Self], tuple[int, ...]]:
+        return self.__class__, self._restore_args()
 
     def __deepcopy__(self, _: dict[int, Self]) -> Self:
         return self.__class__(
