@@ -140,6 +140,7 @@ class Interval(Duration, Generic[_T]):
                         start.second,
                         start.microsecond,
                         tzinfo=start.tzinfo,
+                        fold=start.fold,
                     ),
                 )
             else:
@@ -166,6 +167,7 @@ class Interval(Duration, Generic[_T]):
                         end.second,
                         end.microsecond,
                         tzinfo=end.tzinfo,
+                        fold=end.fold,
                     ),
                 )
             else:
