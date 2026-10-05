@@ -62,7 +62,7 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
 
     def __new__(cls, key: str) -> Self:
         try:
-            return super().__new__(cls, key)  # type: ignore[call-arg]
+            return super().__new__(cls, key)
         except zoneinfo.ZoneInfoNotFoundError:
             raise InvalidTimezone(key)
 
