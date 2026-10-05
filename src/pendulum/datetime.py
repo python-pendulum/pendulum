@@ -570,11 +570,25 @@ class DateTime(datetime.datetime, Date):
         """
         Add a duration to the instance.
 
-        If we're adding units of variable length (i.e., years, months),
-        move forward from current time, otherwise move forward from utc, for accuracy
-        when moving across DST boundaries.
+        For timezone-aware datetimes, apply years, months, weeks and days
+        in local time first, then hours, minutes, seconds and microseconds
+        in UTC to handle DST boundaries accurately.
         """
         units_of_variable_length = any([years, months, weeks, days])
+
+        if (
+            units_of_variable_length
+            and self.tz is not None
+            and any([hours, minutes, seconds, microseconds])
+        ):
+            calendar_dt = self.add(years=years, months=months, weeks=weeks, days=days)
+
+            return calendar_dt.add(
+                hours=hours,
+                minutes=minutes,
+                seconds=seconds,
+                microseconds=microseconds,
+            )
 
         current_dt = datetime.datetime(
             self.year,
@@ -651,7 +665,7 @@ class DateTime(datetime.datetime, Date):
         microseconds: int = 0,
     ) -> Self:
         """
-        Remove duration from the instance.
+        Remove a duration, applying calendar units before fixed-length units.
         """
         return self.add(
             years=-years,
