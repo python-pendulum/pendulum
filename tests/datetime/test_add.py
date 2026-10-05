@@ -108,6 +108,15 @@ def test_add_timedelta():
     assert d.microsecond == 777777
 
 
+def test_add_timedelta_does_not_depend_on_caller_name():
+    def astimezone(d):
+        return d + timedelta(hours=24)
+
+    d = pendulum.datetime(2013, 3, 30, 12, tz="Europe/Paris")
+
+    assert_datetime(astimezone(d), 2013, 3, 31, 13)
+
+
 def test_add_duration():
     duration = pendulum.duration(
         years=2, months=3, days=6, seconds=45, microseconds=123456
