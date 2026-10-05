@@ -77,7 +77,7 @@ class Formatter:
         "Mo": None,
         "DDDo": None,
         "Do": lambda locale: tuple(
-            rf"\d+{o}" for o in locale.get("custom.ordinal").values()
+            rf"\d+{re.escape(o)}" for o in locale.get("custom.ordinal").values()
         ),
         "dddd": "days.wide",
         "ddd": "days.abbreviated",
@@ -88,12 +88,12 @@ class Formatter:
         "Wo": None,
         "wo": None,
         "A": lambda locale: (
-            locale.translation("day_periods.am"),
-            locale.translation("day_periods.pm"),
+            re.escape(locale.translation("day_periods.am")),
+            re.escape(locale.translation("day_periods.pm")),
         ),
         "a": lambda locale: (
-            locale.translation("day_periods.am").lower(),
-            locale.translation("day_periods.pm").lower(),
+            re.escape(locale.translation("day_periods.am").lower()),
+            re.escape(locale.translation("day_periods.pm").lower()),
         ),
     }
 
@@ -660,7 +660,7 @@ class Formatter:
             raise ValueError(f'Invalid token "{token}"')
 
         parsed[unit] = locale.match_translation(match, value)
-        if value is None:
+        if parsed[unit] is None:
             raise ValueError("Invalid date")
 
     def _replace_tokens(self, token: str, locale: Locale) -> str:
@@ -680,7 +680,8 @@ class Formatter:
                 candidates = values(locale)
             else:
                 candidates = tuple(
-                    locale.translation(
+                    re.escape(value)
+                    for value in locale.translation(
                         cast("str", self._LOCALIZABLE_TOKENS[token])
                     ).values()
                 )
