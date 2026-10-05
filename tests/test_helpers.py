@@ -160,6 +160,12 @@ def test_set_locale_malformed_locale(locale: str) -> None:
     pendulum.set_locale("en")
 
 
+@pytest.mark.parametrize("locale", ["..", "../tz", "en/../en"])
+def test_set_locale_path_is_invalid(locale: str) -> None:
+    with pytest.raises(ValueError):
+        pendulum.set_locale(locale)
+
+
 def test_week_starts_at() -> None:
     pendulum.week_starts_at(pendulum.SATURDAY)
 
