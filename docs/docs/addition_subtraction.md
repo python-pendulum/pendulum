@@ -4,6 +4,12 @@ To easily add and subtract time, you can use the `add()` and `subtract()`
 methods.
 Each method returns a new `DateTime` instance.
 
+For timezone-aware datetimes, years, months, weeks and days shift the local
+date and time, while hours, minutes, seconds and microseconds change elapsed
+time. When both kinds of units are passed in one call, the calendar shift is
+applied and normalized first, followed by the elapsed-time shift on the UTC
+timeline. This ordering applies to both `add()` and `subtract()`.
+
 ```python
 >>> import pendulum
 
@@ -85,3 +91,12 @@ Each method returns a new `DateTime` instance.
 
     Passing negative values to `add()` is also possible and will act exactly
     like `subtract()`
+
+For example, subtracting one calendar day and then one second across a
+spring-forward transition:
+
+```python
+>>> dt = pendulum.datetime(2024, 4, 1, 4, tz='Europe/Sofia')
+>>> dt.subtract(days=1, seconds=1).isoformat()
+'2024-03-31T02:59:59+02:00'
+```
