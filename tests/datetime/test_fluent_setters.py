@@ -179,3 +179,14 @@ def test_replace_tzinfo_dst_transitioning_off():
     assert new.is_dst()
     assert new.offset == 7200
     assert new.timezone_name == "Europe/Paris"
+
+
+def test_set_rejects_bool():
+    import pytest
+
+    dt = pendulum.datetime(2020, 5, 15, 12, 30, 45)
+    for key in ("year", "month", "day", "hour", "minute", "second", "microsecond"):
+        with pytest.raises(TypeError, match=key):
+            dt.set(**{key: True})
+        with pytest.raises(TypeError, match=key):
+            dt.set(**{key: False})

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_date
@@ -27,3 +29,12 @@ def test_fluid_day_setter():
 
     assert new.day == 9
     assert d.day == 2
+
+
+def test_replace_rejects_bool():
+    d = pendulum.date(2020, 5, 15)
+    for key in ("year", "month", "day"):
+        with pytest.raises(TypeError, match=key):
+            d.replace(**{key: True})
+        with pytest.raises(TypeError, match=key):
+            d.replace(**{key: False})

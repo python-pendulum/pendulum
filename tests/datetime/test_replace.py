@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_datetime
@@ -59,3 +61,19 @@ def test_replace_tzinfo_dst_transitioning_off():
     assert not in_paris.is_dst()
     assert in_paris.offset == 3600
     assert in_paris.timezone_name == "Europe/Paris"
+
+
+def test_replace_rejects_bool():
+    dt = pendulum.datetime(2020, 5, 15, 12, 30, 45)
+    for key in ("year", "month", "day", "hour", "minute", "second", "microsecond", "fold"):
+        with pytest.raises(TypeError, match=key):
+            dt.replace(**{key: True})
+        with pytest.raises(TypeError, match=key):
+            dt.replace(**{key: False})
+
+
+def test_replace_tzinfo_true_still_allowed():
+    # tzinfo=True is the documented sentinel for keeping the current timezone
+    dt = pendulum.datetime(2020, 5, 15, 12, 30, 45, tz="UTC")
+    replaced = dt.replace(tzinfo=True)
+    assert replaced.timezone_name == dt.timezone_name
