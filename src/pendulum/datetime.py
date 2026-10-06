@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import calendar
 import datetime
-import traceback
 
 from typing import TYPE_CHECKING
 from typing import Any
@@ -1238,10 +1237,6 @@ class DateTime(datetime.datetime, Date):
         if not isinstance(other, datetime.timedelta):
             return NotImplemented
 
-        caller = traceback.extract_stack(limit=2)[0].name
-        if caller == "astimezone":
-            return super().__add__(other)
-
         return self._add_timedelta_(other)
 
     def __radd__(self, other: datetime.timedelta) -> Self:
@@ -1278,7 +1273,20 @@ class DateTime(datetime.datetime, Date):
         return cls.instance(datetime.datetime.combine(date, time), tz=tzinfo)
 
     def astimezone(self, tz: datetime.tzinfo | None = None) -> Self:
-        dt = super().astimezone(tz)
+        # Convert a plain datetime: tzinfo.fromutc() implementations add
+        # timedeltas to the value they're given and expect the standard
+        # library's arithmetic, not the overridden __add__.
+        dt = datetime.datetime(
+            self.year,
+            self.month,
+            self.day,
+            self.hour,
+            self.minute,
+            self.second,
+            self.microsecond,
+            tzinfo=self.tzinfo,
+            fold=self.fold,
+        ).astimezone(tz)
 
         return self.__class__(
             dt.year,
