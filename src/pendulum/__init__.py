@@ -105,7 +105,17 @@ def _safe_timezone(
             obj = obj.key
         # pytz
         elif hasattr(obj, "localize"):
-            obj = obj.zone  # type: ignore[attr-defined]
+            # Named pytz zones expose a ``zone`` name, but fixed-offset zones
+            # (``pytz.FixedOffset``) have ``zone = None``; use their offset.
+            if obj.zone is not None:  # type: ignore[attr-defined]
+                obj = obj.zone  # type: ignore[attr-defined]
+            else:
+                offset = obj.utcoffset(dt)
+
+                if offset is None:
+                    offset = _datetime.timedelta(0)
+
+                obj = int(offset.total_seconds())
         elif obj.tzname(None) == "UTC":
             return UTC
         else:
