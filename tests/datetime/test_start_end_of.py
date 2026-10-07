@@ -323,3 +323,18 @@ def test_end_of_on_date_after_transition():
     assert d.end_of("day").offset == 3600
     assert d.end_of("month").offset == 3600
     assert d.end_of("year").offset == 3600
+
+
+def test_start_of_day_when_midnight_does_not_exist():
+    # Chile/Continental springs forward exactly at midnight on 2025-09-07,
+    # so 00:00:00 does not exist that day. start_of("day") must resolve to the
+    # first valid instant of the day (01:00:00-03:00), not fall back into the
+    # previous day. See issue #915.
+    d = pendulum.datetime(2025, 9, 6, 0, 0, tz="Chile/Continental").add(days=1)
+    new = d.start_of("day")
+
+    assert new.day == 7
+    assert_datetime(new, 2025, 9, 7, 1, 0, 0, 0)
+    assert new.offset == -3 * 3600
+    # start_of("day") must be idempotent even across the midnight gap.
+    assert new == new.start_of("day")
