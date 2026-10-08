@@ -1026,7 +1026,7 @@ class DateTime(datetime.datetime, Date):
         if day_of_week is None:
             return dt.set(day=1)
 
-        month = calendar.monthcalendar(dt.year, dt.month)
+        month = calendar.Calendar().monthdayscalendar(dt.year, dt.month)
 
         calendar_day = day_of_week
 
@@ -1049,7 +1049,7 @@ class DateTime(datetime.datetime, Date):
         if day_of_week is None:
             return dt.set(day=self.days_in_month)
 
-        month = calendar.monthcalendar(dt.year, dt.month)
+        month = calendar.Calendar().monthdayscalendar(dt.year, dt.month)
 
         calendar_day = day_of_week
 

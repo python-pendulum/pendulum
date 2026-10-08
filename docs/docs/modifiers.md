@@ -84,3 +84,7 @@ True
 # and that accept month, quarter and year units
 # first_of(), last_of(), nth_of()
 ```
+
+Weekday arguments to `first_of()`, `last_of()` and `nth_of()` use Pendulum's
+weekday constants, independently of the standard library's
+`calendar.setfirstweekday()` setting.

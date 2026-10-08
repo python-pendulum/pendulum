@@ -1,11 +1,76 @@
 from __future__ import annotations
 
+import calendar
+
+from datetime import date
+
 import pytest
 
 import pendulum
 
 from pendulum.exceptions import PendulumException
 from tests.conftest import assert_date
+
+
+@pytest.mark.parametrize("first_weekday", range(7))
+@pytest.mark.parametrize("date_type", [pendulum.Date, pendulum.DateTime])
+def test_weekday_modifiers_ignore_calendar_firstweekday(first_weekday, date_type):
+    original_first_weekday = calendar.firstweekday()
+    calendar.setfirstweekday(first_weekday)
+    try:
+        for year, month in [(2024, 2), (2025, 2), (2026, 10)]:
+            instance = date_type(year, month, 15)
+            if isinstance(instance, pendulum.DateTime):
+                instance = instance.set(
+                    hour=12,
+                    minute=34,
+                    second=56,
+                    microsecond=789012,
+                    tz="Europe/Paris",
+                )
+            for unit, first_month, last_month in [
+                ("month", month, month),
+                ("quarter", (month - 1) // 3 * 3 + 1, (month - 1) // 3 * 3 + 3),
+                ("year", 1, 12),
+            ]:
+                for weekday in pendulum.WeekDay:
+                    matches = [
+                        date(year, m, day)
+                        for m in range(first_month, last_month + 1)
+                        for day in range(1, calendar.monthrange(year, m)[1] + 1)
+                        if date(year, m, day).weekday() == weekday
+                    ]
+                    for result, expected in [
+                        (instance.first_of(unit, weekday), matches[0]),
+                        (instance.last_of(unit, weekday), matches[-1]),
+                        (instance.nth_of(unit, 1, weekday), matches[0]),
+                        (instance.nth_of(unit, 2, weekday), matches[1]),
+                    ]:
+                        assert_date(result, expected.year, expected.month, expected.day)
+                        assert isinstance(result, date_type)
+                        if isinstance(result, pendulum.DateTime):
+                            assert result.tzinfo is instance.tzinfo
+                            assert (
+                                result.hour
+                                == result.minute
+                                == result.second
+                                == result.microsecond
+                                == 0
+                            )
+                        assert calendar.firstweekday() == first_weekday
+                assert_date(instance.first_of(unit), year, first_month, 1)
+                assert_date(
+                    instance.last_of(unit),
+                    year,
+                    last_month,
+                    calendar.monthrange(year, last_month)[1],
+                )
+            for method in [instance.first_of, instance.last_of]:
+                with pytest.raises(IndexError):
+                    method("month", 7)
+                assert calendar.firstweekday() == first_weekday
+    finally:
+        calendar.setfirstweekday(original_first_weekday)
 
 
 def test_start_of_week():
