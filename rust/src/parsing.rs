@@ -144,6 +144,12 @@ impl<'a> Parser<'a> {
         }
     }
 
+    fn checked_duration_add(&mut self, current: u32, value: u32) -> Result<u32, ParseError> {
+        current
+            .checked_add(value)
+            .ok_or_else(|| self.parse_error("Duration value is too large".to_string()))
+    }
+
     fn unexpected_character_error(
         &mut self,
         field_name: &str,
@@ -632,7 +638,8 @@ impl<'a> Parser<'a> {
                                     );
                                 }
 
-                                duration.hours += value;
+                                duration.hours =
+                                    self.checked_duration_add(duration.hours, value)?;
 
                                 if let Some(fraction) = op_fraction {
                                     let extra_minutes = fraction * 60_f64;
@@ -656,7 +663,8 @@ impl<'a> Parser<'a> {
                                     );
                                 }
 
-                                duration.minutes += value;
+                                duration.minutes =
+                                    self.checked_duration_add(duration.minutes, value)?;
 
                                 if let Some(fraction) = op_fraction {
                                     let extra_seconds = fraction * 60_f64;
@@ -729,7 +737,10 @@ impl<'a> Parser<'a> {
                                 if let Some(fraction) = op_fraction {
                                     let extra_days = fraction * 7_f64;
                                     let extra_full_days = extra_days.trunc();
-                                    duration.days += extra_full_days as u32;
+                                    duration.days = self.checked_duration_add(
+                                        duration.days,
+                                        extra_full_days as u32,
+                                    )?;
                                     let extra_hours = (extra_days - extra_full_days) * 24.0;
                                     let extra_full_hours = extra_hours.trunc();
                                     duration.hours += extra_full_hours as u32;
@@ -755,7 +766,7 @@ impl<'a> Parser<'a> {
                                     ));
                                 }
 
-                                duration.days += value;
+                                duration.days = self.checked_duration_add(duration.days, value)?;
                                 if let Some(fraction) = op_fraction {
                                     let extra_hours = fraction * 24.0;
                                     let extra_full_hours = extra_hours.trunc();
@@ -820,8 +831,10 @@ impl<'a> Parser<'a> {
         };
 
         while let Some(digit) = self.inc().and_then(|ch| ch.to_digit(10)) {
-            value *= 10;
-            value += digit;
+            value = value
+                .checked_mul(10)
+                .and_then(|value| value.checked_add(digit))
+                .ok_or_else(|| self.parse_error("Duration value is too large".to_string()))?;
         }
 
         Ok(value)
