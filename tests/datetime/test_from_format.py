@@ -184,6 +184,9 @@ def test_from_format_with_locale(text, fmt, expected):
         ("invalid", "dd", "en"),
         ("invalid", "MMMM", "en"),
         ("invalid", "MMM", "en"),
+        ("févrX", "MMM", "fr"),
+        ("lunX", "ddd", "fr"),
+        ("1X", "Do", "nb"),
     ],
 )
 def test_from_format_error(text, fmt, locale):
