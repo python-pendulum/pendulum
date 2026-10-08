@@ -32,6 +32,10 @@ class Locale:
         if locale in cls._cache:
             return cls._cache[locale]
 
+        # A locale is a package name, not a path
+        if not re.fullmatch("[a-z]+(_[a-z0-9]+)*", locale):
+            raise ValueError(f"Locale [{locale}] does not exist.")
+
         # Checking locale existence
         actual_locale = locale
         locale_path = cast(Path, resources.files(__package__).joinpath(actual_locale))
