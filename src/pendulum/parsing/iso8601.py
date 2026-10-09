@@ -296,7 +296,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
         if "." in _weeks:
             _weeks, portion = _weeks.split(".")
             weeks = int(_weeks)
-            _days = int(portion) / 10 * 7
+            _days = int(portion) / 10 ** len(portion) * 7
             days, hours = int(_days // 1), int(_days % 1 * HOURS_PER_DAY)
         else:
             weeks = int(_weeks)
@@ -344,7 +344,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
 
                 _days, _hours = _days.split(".")
                 days = int(_days)
-                hours = int(_hours) / 10 * HOURS_PER_DAY
+                hours = int(_hours) / 10 ** len(_hours) * HOURS_PER_DAY
             else:
                 days = int(_days)
 
@@ -374,7 +374,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
 
                 _hours, _mins = _hours.split(".")
                 hours += int(_hours)
-                minutes += int(_mins) / 10 * MINUTES_PER_HOUR
+                minutes += int(_mins) / 10 ** len(_mins) * MINUTES_PER_HOUR
             else:
                 hours += int(_hours)
 
@@ -389,7 +389,7 @@ def _parse_iso8601_duration(text: str, **options: str) -> Duration | None:
 
                 _minutes, _secs = _minutes.split(".")
                 minutes += int(_minutes)
-                seconds += int(_secs) / 10 * SECONDS_PER_MINUTE
+                seconds += int(_secs) / 10 ** len(_secs) * SECONDS_PER_MINUTE
             else:
                 minutes += int(_minutes)
 
