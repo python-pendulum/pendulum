@@ -122,7 +122,7 @@ class Interval(Duration, Generic[_T]):
         _start: _T
         if not isinstance(start, pendulum.Date):
             if isinstance(start, datetime):
-                start = cast("_T", pendulum.instance(start))
+                start = cast("_T", pendulum.instance(start, tz=start.tzinfo))
             else:
                 start = cast("_T", pendulum.date(start.year, start.month, start.day))
 
@@ -148,7 +148,7 @@ class Interval(Duration, Generic[_T]):
         _end: _T
         if not isinstance(end, pendulum.Date):
             if isinstance(end, datetime):
-                end = cast("_T", pendulum.instance(end))
+                end = cast("_T", pendulum.instance(end, tz=end.tzinfo))
             else:
                 end = cast("_T", pendulum.date(end.year, end.month, end.day))
 
