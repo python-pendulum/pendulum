@@ -75,11 +75,7 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
 
     @classmethod
     def from_file(cls, fobj: _IOBytes, /, key: str | None = None) -> Self:
-        # zoneinfo.ZoneInfo.from_file() refuses to pickle any instance built this way,
-        # key or no key, since it has no record of which file it came from to
-        # reconstruct on unpickling. get_local_timezone() falls back to this when the
-        # system's local timezone name can't be identified, so keep the raw TZif bytes
-        # around to rebuild an equivalent instance if this ever needs to be pickled.
+        # zoneinfo.ZoneInfo can't pickle this, so keep the bytes to rebuild it.
         data = fobj.read(-1)
         instance = cast("Self", super().from_file(io.BytesIO(data), key=key))
         instance._file_bytes = data

@@ -480,19 +480,14 @@ def test_repr():
 
 
 def _paris_tzif_bytes() -> bytes:
-    # tzdata bundles the same IANA zoneinfo files the system copy under
-    # /usr/share/zoneinfo would have, in a location that works on every
-    # platform pendulum supports (including Windows, which has no system
-    # zoneinfo directory at all).
+    # tzdata works the same on every platform pendulum supports, unlike /usr/share/zoneinfo.
     from importlib import resources
 
     return resources.files("tzdata.zoneinfo").joinpath("Europe", "Paris").read_bytes()
 
 
 def test_from_file_without_a_key_can_be_pickled():
-    # get_local_timezone()'s last-resort fallback (no /etc/timezone, no
-    # readable /etc/localtime symlink to derive a name from) reads the raw
-    # zoneinfo file and builds a Timezone this same way, with no key.
+    # get_local_timezone()'s last-resort fallback builds a Timezone this same way, with no key.
     from io import BytesIO
 
     import pendulum.tz.timezone as timezone_module
