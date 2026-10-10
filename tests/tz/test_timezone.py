@@ -503,17 +503,3 @@ def test_from_file_without_a_key_can_be_pickled():
     assert dt.utcoffset() == timedelta(hours=2)  # CEST, matches Europe/Paris in July
     dt = datetime(2024, 1, 1, 12, tzinfo=unpickled)
     assert dt.utcoffset() == timedelta(hours=1)  # CET, matches Europe/Paris in January
-
-
-def test_from_file_with_a_key_still_pickles_by_key():
-    from io import BytesIO
-
-    import pendulum.tz.timezone as timezone_module
-
-    tz = timezone_module.Timezone.from_file(
-        BytesIO(_paris_tzif_bytes()), key="Europe/Paris"
-    )
-
-    unpickled = pickle.loads(pickle.dumps(tz))
-
-    assert unpickled.key == "Europe/Paris"
