@@ -31,6 +31,10 @@ if TYPE_CHECKING:
     from typing_extensions import SupportsIndex
 
 
+# Weekday modifiers always use Monday-based indices.
+_MONTH_CALENDAR = calendar.Calendar(firstweekday=calendar.MONDAY)
+
+
 class Date(FormattableMixin, date):
     _MODIFIERS_VALID_UNITS: ClassVar[list[str]] = [
         "day",
@@ -575,7 +579,7 @@ class Date(FormattableMixin, date):
         if day_of_week is None:
             return dt.set(day=1)
 
-        month = calendar.Calendar().monthdayscalendar(dt.year, dt.month)
+        month = _MONTH_CALENDAR.monthdayscalendar(dt.year, dt.month)
 
         calendar_day = day_of_week
 
@@ -600,7 +604,7 @@ class Date(FormattableMixin, date):
         if day_of_week is None:
             return dt.set(day=self.days_in_month)
 
-        month = calendar.Calendar().monthdayscalendar(dt.year, dt.month)
+        month = _MONTH_CALENDAR.monthdayscalendar(dt.year, dt.month)
 
         calendar_day = day_of_week
 

@@ -73,6 +73,18 @@ def test_weekday_modifiers_ignore_calendar_firstweekday(first_weekday, date_type
         calendar.setfirstweekday(original_first_weekday)
 
 
+@pytest.mark.parametrize("date_type", [pendulum.Date, pendulum.DateTime])
+def test_weekday_modifiers_reuse_calendar(date_type, monkeypatch):
+    def unexpected_calendar(*args, **kwargs):
+        raise AssertionError("Weekday modifiers should reuse their calendar")
+
+    monkeypatch.setattr(calendar, "Calendar", unexpected_calendar)
+    instance = date_type(2026, 10, 15)
+    assert_date(instance.first_of("month", pendulum.MONDAY), 2026, 10, 5)
+    assert_date(instance.last_of("month", pendulum.MONDAY), 2026, 10, 26)
+    assert_date(instance.nth_of("month", 2, pendulum.MONDAY), 2026, 10, 12)
+
+
 def test_start_of_week():
     d = pendulum.date(1980, 8, 7).start_of("week")
     assert_date(d, 1980, 8, 4)
