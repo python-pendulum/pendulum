@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import datetime as _datetime
+import io
 import zoneinfo
 
 from abc import ABC
 from abc import abstractmethod
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import TypeVar
 from typing import cast
 
@@ -16,6 +18,9 @@ from pendulum.tz.exceptions import NonExistingTime
 
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from zoneinfo._common import _IOBytes
+
     from typing_extensions import Self
 
 POST_TRANSITION = "post"
@@ -60,11 +65,38 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
     >>> tz = Timezone('Europe/Paris')
     """
 
+    _file_bytes: bytes | None = None
+
     def __new__(cls, key: str) -> Self:
         try:
             return super().__new__(cls, key)
         except zoneinfo.ZoneInfoNotFoundError:
             raise InvalidTimezone(key)
+
+    @classmethod
+    def from_file(cls, fobj: _IOBytes, /, key: str | None = None) -> Self:
+        # zoneinfo.ZoneInfo can't pickle this, so keep the bytes to rebuild it.
+        data = fobj.read(-1)
+        instance = cast("Self", super().from_file(io.BytesIO(data), key=key))
+        instance._file_bytes = data
+
+        return instance
+
+    def __reduce__(
+        self,
+    ) -> (
+        tuple[Callable[[bytes, str | None], Self], tuple[bytes, str | None]]
+        | str
+        | tuple[Any, ...]
+    ):
+        if self._file_bytes is None:
+            return super().__reduce__()
+
+        return self.__class__._from_pickled_file, (self._file_bytes, self.key)
+
+    @classmethod
+    def _from_pickled_file(cls, data: bytes, key: str | None) -> Self:
+        return cls.from_file(io.BytesIO(data), key=key)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Timezone) and self.key == other.key
