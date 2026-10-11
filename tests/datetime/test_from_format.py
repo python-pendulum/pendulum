@@ -45,6 +45,52 @@ def test_from_format_with_square_bracket_in_timezone():
         )
 
 
+@pytest.mark.parametrize(
+    "zone",
+    [
+        "America/Argentina/Buenos_Aires",
+        "America/Indiana/Indianapolis",
+        "America/Kentucky/Louisville",
+        "America/North_Dakota/New_Salem",
+        "Europe/Paris",
+        "UTC",
+    ],
+)
+@pytest.mark.parametrize("month", [1, 7])
+@pytest.mark.parametrize(
+    "fmt",
+    [
+        "YYYY-MM-DD HH:mm:ss.SSSSSS z",
+        "z YYYY-MM-DD HH:mm:ss.SSSSSS",
+        "z/YYYY-MM-DD HH:mm:ss.SSSSSS",
+    ],
+)
+def test_from_format_with_nested_timezone(zone: str, month: int, fmt: str) -> None:
+    expected = pendulum.datetime(2024, month, 15, 12, 34, 56, 123456, tz=zone)
+
+    actual = pendulum.from_format(expected.format(fmt), fmt, tz="Europe/London")
+
+    assert actual == expected
+    assert actual.timezone_name == zone
+    assert actual.utcoffset() == expected.utcoffset()
+
+
+@pytest.mark.parametrize(
+    "zone",
+    [
+        "America/Argentina/Not_A_City",
+        "America/Argentina/Buenos_Aires/Extra",
+        "America//Argentina/Buenos_Aires",
+        "America/Argentina/Buenos_Aires/",
+        "/America/Argentina/Buenos_Aires",
+        "America/Argentina/Buenos_Aires extra",
+    ],
+)
+def test_from_format_rejects_invalid_nested_timezone(zone: str) -> None:
+    with pytest.raises(ValueError):
+        pendulum.from_format(f"2024-01-15 12:34:56 {zone}", "YYYY-MM-DD HH:mm:ss z")
+
+
 def test_from_format_with_escaped_elements():
     d = pendulum.from_format("1975-05-21T22:32:11+00:00", "YYYY-MM-DD[T]HH:mm:ssZ")
     assert_datetime(d, 1975, 5, 21, 22, 32, 11)

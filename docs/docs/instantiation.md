@@ -119,6 +119,14 @@ It also accepts a `tz` keyword argument to specify the timezone:
 '1975-05-21T22:00:00+01:00'
 ```
 
+Use the `z` token to read a timezone name from the input, including names with multiple slashes:
+
+```python
+>>> dt = pendulum.from_format('2024-01-15 America/Argentina/Buenos_Aires', 'YYYY-MM-DD z')
+>>> dt.timezone_name
+'America/Argentina/Buenos_Aires'
+```
+
 The final helper is for working with unix timestamps.
 `from_timestamp()` will create a `DateTime` instance equal to the given timestamp
 and will set the timezone as well or default it to `UTC`.
