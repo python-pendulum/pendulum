@@ -99,9 +99,15 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
         return cls.from_file(io.BytesIO(data), key=key)
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Timezone) and self.key == other.key
+        if not isinstance(other, Timezone) or self.key != other.key:
+            return False
+
+        return self.key is not None or self._file_bytes == other._file_bytes
 
     def __hash__(self) -> int:
+        if self.key is None:
+            return hash((Timezone, self.key, self._file_bytes))
+
         return hash((Timezone, self.key))
 
     @property
