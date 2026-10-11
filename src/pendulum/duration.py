@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from typing import cast
 from typing import overload
 
 import pendulum
@@ -41,6 +40,15 @@ def _divide_and_round(a: float, b: float) -> int:
         q += 1
 
     return q
+
+
+def _timedelta_to_microseconds(delta: timedelta) -> int:
+    if isinstance(delta, Duration):
+        return delta._to_microseconds()
+
+    return (
+        delta.days * SECONDS_PER_DAY + delta.seconds
+    ) * US_PER_SECOND + delta.microseconds
 
 
 class Duration(timedelta):
@@ -386,10 +394,7 @@ class Duration(timedelta):
 
         usec = self._to_microseconds()
         if isinstance(other, timedelta):
-            return cast(
-                "int",
-                usec // other._to_microseconds(),  # type: ignore[attr-defined]
-            )
+            return usec // _timedelta_to_microseconds(other)
 
         if isinstance(other, int):
             return self.__class__(
@@ -412,10 +417,7 @@ class Duration(timedelta):
 
         usec = self._to_microseconds()
         if isinstance(other, timedelta):
-            return cast(
-                "float",
-                usec / other._to_microseconds(),  # type: ignore[attr-defined]
-            )
+            return usec / _timedelta_to_microseconds(other)
 
         if isinstance(other, int):
             return self.__class__(
@@ -441,7 +443,7 @@ class Duration(timedelta):
 
     def __mod__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
-            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined]
+            r = self._to_microseconds() % _timedelta_to_microseconds(other)
 
             return self.__class__(0, 0, r)
 
@@ -451,7 +453,7 @@ class Duration(timedelta):
         if isinstance(other, timedelta):
             q, r = divmod(
                 self._to_microseconds(),
-                other._to_microseconds(),  # type: ignore[attr-defined]
+                _timedelta_to_microseconds(other),
             )
 
             return q, self.__class__(0, 0, r)

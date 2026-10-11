@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import operator
+
+from datetime import timedelta
+
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_duration
@@ -83,3 +89,28 @@ def test_floor_divide():
 
     assert isinstance(mul, pendulum.Duration)
     assert_duration(mul, 0, 1, 0, 0, 16, 0, 11, 840740)
+
+
+@pytest.mark.parametrize(
+    "operation", [operator.truediv, operator.floordiv, operator.mod, divmod]
+)
+@pytest.mark.parametrize(
+    "divisor",
+    [
+        timedelta(seconds=2, microseconds=1),
+        timedelta(seconds=-2, microseconds=1),
+        timedelta(days=500_000, microseconds=1),
+    ],
+)
+def test_arithmetic_with_native_timedelta(operation, divisor):
+    native = timedelta(days=1, seconds=1, microseconds=3)
+    duration = pendulum.duration(days=1, seconds=1, microseconds=3)
+    assert operation(duration, divisor) == operation(native, divisor)
+
+
+@pytest.mark.parametrize(
+    "operation", [operator.truediv, operator.floordiv, operator.mod, divmod]
+)
+def test_arithmetic_with_zero_native_timedelta(operation):
+    with pytest.raises(ZeroDivisionError):
+        operation(pendulum.duration(seconds=1), timedelta())
