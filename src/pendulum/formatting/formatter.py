@@ -448,18 +448,16 @@ class Formatter:
         # If timestamp has been specified
         # we use it and don't go any further
         if parsed["timestamp"] is not None:
-            seconds, microseconds = divmod(parsed["timestamp"], 1_000_000)
-
-            from pendulum.helpers import local_time
-
-            time = local_time(seconds, 0, microseconds)
-            validated["year"] = time[0]
-            validated["month"] = time[1]
-            validated["day"] = time[2]
-            validated["hour"] = time[3]
-            validated["minute"] = time[4]
-            validated["second"] = time[5]
-            validated["microsecond"] = time[6]
+            time = datetime.datetime(1970, 1, 1) + datetime.timedelta(
+                microseconds=parsed["timestamp"]
+            )
+            validated["year"] = time.year
+            validated["month"] = time.month
+            validated["day"] = time.day
+            validated["hour"] = time.hour
+            validated["minute"] = time.minute
+            validated["second"] = time.second
+            validated["microsecond"] = time.microsecond
 
             return validated
 
