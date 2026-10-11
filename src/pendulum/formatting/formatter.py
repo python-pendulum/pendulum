@@ -477,9 +477,10 @@ class Formatter:
             validated["year"] = now.year
 
         if parsed["day_of_year"] is not None:
+            year = cast("int", validated["year"])
             dt = cast(
                 "pendulum.DateTime",
-                pendulum.parse(f"{validated['year']}-{parsed['day_of_year']:>03d}"),
+                pendulum.parse(f"{year:04d}-{parsed['day_of_year']:03d}"),
             )
 
             validated["month"] = dt.month

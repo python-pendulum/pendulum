@@ -220,3 +220,36 @@ def test_from_format_2_digit_year():
 
     d = pendulum.from_format("99", "YY")
     assert d.year == 1999
+
+
+@pytest.mark.parametrize("fmt", ["YYYY-DDD", "YYYY-DDDD"])
+@pytest.mark.parametrize(
+    "year,month,day",
+    [
+        (1, 1, 31),
+        (99, 12, 31),
+        (400, 2, 29),
+        (999, 1, 31),
+        (1000, 1, 31),
+        (9999, 12, 31),
+    ],
+)
+def test_from_format_day_of_year_round_trip(fmt, year, month, day):
+    expected = pendulum.datetime(year, month, day)
+
+    assert pendulum.from_format(expected.format(fmt), fmt) == expected
+
+
+def test_from_format_day_of_year_preserves_time_and_offset():
+    d = pendulum.from_format(
+        "0075-032 12:34:56.123456 +05:30", "YYYY-DDDD HH:mm:ss.SSSSSS Z"
+    )
+
+    assert_datetime(d, 75, 2, 1, 12, 34, 56, 123456)
+    assert d.utcoffset().total_seconds() == 19800
+
+
+@pytest.mark.parametrize("text", ["0001-366", "0400-367", "0000-031"])
+def test_from_format_day_of_year_rejects_invalid_dates(text):
+    with pytest.raises(ValueError):
+        pendulum.from_format(text, "YYYY-DDDD")
