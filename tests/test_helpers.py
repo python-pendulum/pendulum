@@ -126,6 +126,44 @@ def test_precise_diff_timezone() -> None:
     assert diff.total_days == 0
 
 
+@pytest.mark.parametrize(
+    "year, start_day, expected_days", [(2023, 4, 28), (2024, 3, 29)]
+)
+@pytest.mark.parametrize("reverse", [False, True])
+def test_precise_diff_partial_month(
+    year: int, start_day: int, expected_days: int, reverse: bool
+) -> None:
+    start = datetime(year, 1, start_day)
+    end = datetime(year, 2, 1)
+    sign = -1 if reverse else 1
+    diff = precise_diff(end, start) if reverse else precise_diff(start, end)
+
+    assert_diff(diff, days=sign * expected_days)
+
+    start = pendulum.datetime(year, 1, start_day, tz="America/Toronto")
+    end = pendulum.datetime(year, 2, 1, tz="America/Toronto")
+    interval = start - end if reverse else end - start
+
+    assert interval.in_months() == 0
+    assert interval.in_days() == sign * expected_days
+
+
+@pytest.mark.parametrize("year, end_day", [(2023, 28), (2024, 29)])
+def test_precise_diff_clipped_full_month(year: int, end_day: int) -> None:
+    start = datetime(year, 1, 31)
+    end = datetime(year, 2, end_day)
+
+    assert_diff(precise_diff(start, end), months=1)
+    assert_diff(precise_diff(end, start), months=-1)
+
+
+def test_precise_diff_partial_month_with_borrowed_day() -> None:
+    start = datetime(2024, 1, 30, 1)
+    end = datetime(2024, 2, 29)
+
+    assert_diff(precise_diff(start, end), days=29, hours=23)
+
+
 def test_week_day() -> None:
     assert week_day(2017, 6, 2) == 5
     assert week_day(2017, 1, 1) == 7

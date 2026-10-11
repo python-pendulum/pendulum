@@ -341,14 +341,16 @@ pub fn precise_diff<'py>(
                     day_diff += days_in_last_month;
                 }
             }
-            Ordering::Equal => {
+            Ordering::Equal
+                if dtinfo1.day == days_in_last_month && dtinfo2.day == days_in_month =>
+            {
                 // We have exactly a full month
                 // We remove the days difference
                 // and add one to the months difference
                 day_diff = 0;
                 month_diff += 1;
             }
-            Ordering::Greater => {
+            Ordering::Equal | Ordering::Greater => {
                 // We have a full month
                 day_diff += days_in_last_month;
             }

@@ -278,7 +278,11 @@ def precise_diff(
                 d_diff += d1.day
             else:
                 d_diff += days_in_last_month
-        elif d_diff == days_in_month - days_in_last_month:
+        elif (
+            d_diff == days_in_month - days_in_last_month
+            and d1.day == days_in_last_month
+            and d2.day == days_in_month
+        ):
             # We have exactly a full month
             # We remove the days difference
             # and add one to the months difference
