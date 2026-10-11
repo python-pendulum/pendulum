@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+### Fixed
+- Fixed `from_format()` with day-of-year tokens (`DDD`/`DDDD`) for years before 1000.
+
 ## [3.2.0] - 2026-01-30
 
 ### Added
