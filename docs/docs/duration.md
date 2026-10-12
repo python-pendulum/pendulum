@@ -175,3 +175,26 @@ It also has a handy `in_words()` method, which determines the duration represent
 >>> it.in_words(locale='de')
 '168 Wochen 1 Tag 2 Stunden 1 Minute 24 Sekunden'
 ```
+
+## Division and remainders
+
+When dividing one duration by another, years and months use the same approximations
+as `total_seconds()`: 365 days per year and 30 days per month. Floor division,
+modulo and `divmod()` use these approximations too. Remainders are fixed-length
+durations without year or month components.
+
+```python
+>>> month = pendulum.duration(months=1)
+>>> month / pendulum.duration(days=10)
+3.0
+>>> month // pendulum.duration(days=7)
+4
+>>> month % pendulum.duration(days=7)
+Duration(days=2)
+>>> divmod(month, pendulum.duration(days=7))
+(4, Duration(days=2))
+```
+
+An `Interval` uses the elapsed time between its endpoints instead of approximating
+its calendar components. For example, the interval from January 1 to February 1
+has 31 days, whereas `duration(months=1)` represents 30 days in these operations.

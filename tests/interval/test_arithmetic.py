@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+import operator
+
+from datetime import timedelta
+
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_duration
@@ -51,3 +57,20 @@ def test_floor_divide():
     mul = it // 3
     assert isinstance(mul, pendulum.Duration)
     assert_duration(mul, 0, 0, 0, 0, 16, 0, 11)
+
+
+@pytest.mark.parametrize(
+    "operation", [operator.truediv, operator.floordiv, operator.mod, divmod]
+)
+@pytest.mark.parametrize("reverse", [False, True])
+def test_calendar_duration_arithmetic_with_interval(operation, reverse):
+    start = pendulum.datetime(2024, 1, 1)
+    interval = pendulum.interval(start, start.add(months=1))
+    duration = pendulum.duration(months=1)
+    left, right = (duration, interval) if reverse else (interval, duration)
+    native_left, native_right = (
+        (timedelta(days=30), timedelta(days=31))
+        if reverse
+        else (timedelta(days=31), timedelta(days=30))
+    )
+    assert operation(left, right) == operation(native_left, native_right)
