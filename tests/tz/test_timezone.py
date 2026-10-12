@@ -5,6 +5,7 @@ import zoneinfo
 
 from datetime import datetime
 from datetime import timedelta
+from io import BytesIO
 
 import pytest
 
@@ -15,6 +16,7 @@ from pendulum.tz import fixed_timezone
 from pendulum.tz.exceptions import AmbiguousTime
 from pendulum.tz.exceptions import NonExistingTime
 from pendulum.tz.timezone import FixedTimezone
+from pendulum.tz.timezone import Timezone
 from tests.conftest import assert_datetime
 
 
@@ -479,20 +481,18 @@ def test_repr():
     assert repr(tz) == "Timezone('Europe/Paris')"
 
 
-def _paris_tzif_bytes() -> bytes:
+def _tzif_bytes(name: str) -> bytes:
     # tzdata works the same on every platform pendulum supports, unlike /usr/share/zoneinfo.
     from importlib import resources
 
-    return resources.files("tzdata.zoneinfo").joinpath("Europe", "Paris").read_bytes()
+    return resources.files("tzdata.zoneinfo").joinpath(*name.split("/")).read_bytes()
 
 
 def test_from_file_without_a_key_can_be_pickled():
     # get_local_timezone()'s last-resort fallback builds a Timezone this same way, with no key.
-    from io import BytesIO
-
     import pendulum.tz.timezone as timezone_module
 
-    tz = timezone_module.Timezone.from_file(BytesIO(_paris_tzif_bytes()))
+    tz = timezone_module.Timezone.from_file(BytesIO(_tzif_bytes("Europe/Paris")))
 
     assert tz.key is None
 
@@ -503,3 +503,76 @@ def test_from_file_without_a_key_can_be_pickled():
     assert dt.utcoffset() == timedelta(hours=2)  # CEST, matches Europe/Paris in July
     dt = datetime(2024, 1, 1, 12, tzinfo=unpickled)
     assert dt.utcoffset() == timedelta(hours=1)  # CET, matches Europe/Paris in January
+
+
+@pytest.mark.parametrize("name", ["UTC", "America/New_York", "Europe/London"])
+def test_from_file_without_a_key_distinguishes_zones(name):
+    paris = Timezone.from_file(BytesIO(_tzif_bytes("Europe/Paris")))
+    other = Timezone.from_file(BytesIO(_tzif_bytes(name)))
+
+    assert paris.key is None
+    assert other.key is None
+    assert paris.utcoffset(datetime(2024, 7, 1)) != other.utcoffset(
+        datetime(2024, 7, 1)
+    )
+    assert paris != other
+    assert other != paris
+    assert len({paris, other}) == 2
+    zones = {paris: "Paris", other: name}
+    assert zones[paris] == "Paris"
+    assert zones[other] == name
+
+
+def test_from_file_without_a_key_compares_file_contents():
+    data = _tzif_bytes("Europe/Paris")
+    first = Timezone.from_file(BytesIO(data))
+    second = Timezone.from_file(BytesIO(data))
+
+    assert first is not second
+    assert first == second
+    assert hash(first) == hash(second)
+    assert len({first, second}) == 1
+    assert {first: "Paris"}[second] == "Paris"
+
+
+@pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+def test_from_file_without_a_key_preserves_equality_when_pickled(protocol):
+    original = Timezone.from_file(BytesIO(_tzif_bytes("Europe/Paris")))
+    restored = pickle.loads(pickle.dumps(original, protocol=protocol))
+
+    assert original is not restored
+    assert original == restored
+    assert hash(original) == hash(restored)
+    assert {original: "Paris"}[restored] == "Paris"
+
+
+def test_from_file_named_equality_uses_the_key():
+    data = _tzif_bytes("Europe/Paris")
+    named = Timezone.from_file(BytesIO(data), key="Europe/Paris")
+    uncached = Timezone.no_cache("Europe/Paris")
+    unnamed = Timezone.from_file(BytesIO(data))
+
+    assert named == uncached
+    assert hash(named) == hash(uncached)
+    assert named == Timezone.from_file(BytesIO(_tzif_bytes("UTC")), key="Europe/Paris")
+    assert named != unnamed
+    assert unnamed != named
+    assert named != Timezone.from_file(BytesIO(data), key="custom")
+    assert unnamed != object()
+
+
+def test_local_timezone_files_remain_distinct(tmp_path, monkeypatch):
+    from pendulum.tz.local_timezone import _get_unix_timezone
+
+    monkeypatch.delenv("TZ", raising=False)
+    localtime = tmp_path / "etc" / "localtime"
+    localtime.parent.mkdir()
+    localtime.write_bytes(_tzif_bytes("Europe/Paris"))
+    paris = _get_unix_timezone(_root=str(tmp_path))
+    localtime.write_bytes(_tzif_bytes("UTC"))
+    utc = _get_unix_timezone(_root=str(tmp_path))
+
+    assert paris.key is None
+    assert utc.key is None
+    assert paris != utc
+    assert len({paris, utc}) == 2

@@ -9,6 +9,13 @@ tries to provide an easy and accurate system to handle them properly.
     can also be used with the standard ``datetime`` library with a few limitations.
     See [Using the timezone library directly](#using-the-timezone-library-directly).
 
+## Timezone equality
+
+Named timezones compare equal when their names match. When the local timezone is
+loaded from a file without a name, equality instead compares the timezone file
+contents. This keeps different unnamed timezones distinct in sets and dictionary
+keys, while preserving equality after pickling and unpickling the same timezone.
+
 ## Normalization
 
 When you create a `DateTime` instance, the library will normalize it for the
