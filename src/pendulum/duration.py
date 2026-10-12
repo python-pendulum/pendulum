@@ -356,6 +356,11 @@ class Duration(timedelta):
     def _to_microseconds(self) -> int:
         return (self._days * (24 * 3600) + self._seconds) * 1000000 + self._microseconds
 
+    def _to_total_microseconds(self) -> int:
+        # Match total_seconds()'s fixed approximations for calendar components.
+        calendar_days = self._years * 365 + self._months * 30
+        return self._to_microseconds() + calendar_days * SECONDS_PER_DAY * US_PER_SECOND
+
     def __mul__(self, other: int | float) -> Self:
         if isinstance(other, int):
             return self.__class__(
@@ -384,13 +389,13 @@ class Duration(timedelta):
         if not isinstance(other, (int, timedelta)):
             return NotImplemented
 
-        usec = self._to_microseconds()
         if isinstance(other, timedelta):
             return cast(
                 "int",
-                usec // other._to_microseconds(),  # type: ignore[attr-defined]
+                self._to_total_microseconds() // other._to_total_microseconds(),  # type: ignore[attr-defined]
             )
 
+        usec = self._to_microseconds()
         if isinstance(other, int):
             return self.__class__(
                 0,
@@ -410,13 +415,13 @@ class Duration(timedelta):
         if not isinstance(other, (int, float, timedelta)):
             return NotImplemented
 
-        usec = self._to_microseconds()
         if isinstance(other, timedelta):
             return cast(
                 "float",
-                usec / other._to_microseconds(),  # type: ignore[attr-defined]
+                self._to_total_microseconds() / other._to_total_microseconds(),  # type: ignore[attr-defined]
             )
 
+        usec = self._to_microseconds()
         if isinstance(other, int):
             return self.__class__(
                 0,
@@ -441,7 +446,7 @@ class Duration(timedelta):
 
     def __mod__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
-            r = self._to_microseconds() % other._to_microseconds()  # type: ignore[attr-defined]
+            r = self._to_total_microseconds() % other._to_total_microseconds()  # type: ignore[attr-defined]
 
             return self.__class__(0, 0, r)
 
@@ -450,8 +455,8 @@ class Duration(timedelta):
     def __divmod__(self, other: timedelta) -> tuple[int, Duration]:
         if isinstance(other, timedelta):
             q, r = divmod(
-                self._to_microseconds(),
-                other._to_microseconds(),  # type: ignore[attr-defined]
+                self._to_total_microseconds(),
+                other._to_total_microseconds(),  # type: ignore[attr-defined]
             )
 
             return q, self.__class__(0, 0, r)
@@ -520,6 +525,10 @@ class AbsoluteDuration(Duration):
         self._years = abs(years)
 
         return self
+
+    def _to_total_microseconds(self) -> int:
+        # AbsoluteDuration already includes calendar components in _days.
+        return self._to_microseconds()
 
     def total_seconds(self) -> float:
         return abs(self._total)
