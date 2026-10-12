@@ -18,6 +18,29 @@ def test_with_datetimes():
     assert_datetime(p.end, 2000, 1, 31)
 
 
+def test_native_datetime_interval_consistency():
+    """Native datetime inputs should produce the same results as pendulum datetimes.
+
+    Regression test for https://github.com/python-pendulum/pendulum/issues/906
+    """
+    # With pendulum datetimes
+    start_p = pendulum.datetime(2025, 7, 25, 19, 26, 34)
+    end_p = pendulum.datetime(2025, 7, 29, 19, 26, 34)
+    interval_p = pendulum.interval(start_p, end_p)
+
+    # With native datetimes
+    start_n = datetime(2025, 7, 25, 19, 26, 34)
+    end_n = datetime(2025, 7, 29, 19, 26, 34)
+    interval_n = pendulum.interval(start_n, end_n)
+
+    # Both should produce identical results
+    assert interval_p.in_words() == interval_n.in_words()
+    assert interval_p.in_words() == "4 days"
+    assert interval_p.days == interval_n.days == 4
+    assert interval_p.hours == interval_n.hours == 0
+    assert interval_p.minutes == interval_n.minutes == 0
+
+
 def test_with_pendulum():
     dt1 = pendulum.DateTime(2000, 1, 1)
     dt2 = pendulum.DateTime(2000, 1, 31)
