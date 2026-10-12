@@ -119,6 +119,17 @@ It also accepts a `tz` keyword argument to specify the timezone:
 '1975-05-21T22:00:00+01:00'
 ```
 
+The `X` (seconds) and `x` (milliseconds) tokens also parse Unix timestamps,
+including values before the Unix epoch. The `X` token accepts fractional seconds
+with up to six decimal places:
+
+```python
+>>> pendulum.from_format('0.000001', 'X').isoformat()
+'1970-01-01T00:00:00.000001+00:00'
+>>> pendulum.from_format('-1', 'x').isoformat()
+'1969-12-31T23:59:59.999000+00:00'
+```
+
 The final helper is for working with unix timestamps.
 `from_timestamp()` will create a `DateTime` instance equal to the given timestamp
 and will set the timezone as well or default it to `UTC`.

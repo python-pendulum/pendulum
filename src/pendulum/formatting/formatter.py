@@ -45,6 +45,15 @@ _MATCH_WORD = (
 _MATCH_TIMEZONE = "[A-Za-z0-9-+]+(/[A-Za-z0-9-+_]+)?"
 
 
+def _parse_timestamp(timestamp: str) -> int:
+    seconds, _, fraction = timestamp.partition(".")
+    microseconds = int(fraction.ljust(6, "0"))
+    if timestamp.startswith("-"):
+        microseconds = -microseconds
+
+    return int(seconds) * 1_000_000 + microseconds
+
+
 class Formatter:
     _TOKENS: str = (
         r"\[([^\[]*)\]|\\(.)|"
@@ -235,8 +244,8 @@ class Formatter:
         "SSSSS": lambda us: int(us) * 10,
         "SSSSSS": lambda us: int(us),
         "a": lambda meridiem: meridiem,
-        "X": lambda ts: float(ts),
-        "x": lambda ts: float(ts) / 1e3,
+        "X": _parse_timestamp,
+        "x": lambda ts: int(ts) * 1000,
         "ZZ": str,
         "Z": str,
         "z": str,
@@ -439,22 +448,16 @@ class Formatter:
         # If timestamp has been specified
         # we use it and don't go any further
         if parsed["timestamp"] is not None:
-            str_us = str(parsed["timestamp"])
-            if "." in str_us:
-                microseconds = int(f"{str_us.split('.')[1].ljust(6, '0')}")
-            else:
-                microseconds = 0
-
-            from pendulum.helpers import local_time
-
-            time = local_time(parsed["timestamp"], 0, microseconds)
-            validated["year"] = time[0]
-            validated["month"] = time[1]
-            validated["day"] = time[2]
-            validated["hour"] = time[3]
-            validated["minute"] = time[4]
-            validated["second"] = time[5]
-            validated["microsecond"] = time[6]
+            time = datetime.datetime(1970, 1, 1) + datetime.timedelta(
+                microseconds=parsed["timestamp"]
+            )
+            validated["year"] = time.year
+            validated["month"] = time.month
+            validated["day"] = time.day
+            validated["hour"] = time.hour
+            validated["minute"] = time.minute
+            validated["second"] = time.second
+            validated["microsecond"] = time.microsecond
 
             return validated
 
