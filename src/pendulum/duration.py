@@ -329,8 +329,34 @@ class Duration(timedelta):
 
         return rep.replace(", )", ")")
 
+    def _scalar_seconds(self) -> float:
+        """Seconds from weeks, days, and the clock, excluding years and months.
+
+        ``Duration`` stores years and months beside a ``timedelta`` that also
+        contains their 365/30-day approximation. Adding those totals together
+        and rebuilding from seconds alone drops the calendar fields (#751).
+        """
+        calendar = (self._years * 365 + self._months * 30) * SECONDS_PER_DAY
+        return self.total_seconds() - calendar
+
     def __add__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
+            if (
+                type(self) is Duration
+                and isinstance(other, Duration)
+                and type(other) is Duration
+            ):
+                return self.__class__(
+                    years=self._years + other._years,
+                    months=self._months + other._months,
+                    seconds=self._scalar_seconds() + other._scalar_seconds(),
+                )
+            if type(self) is Duration and (self._years or self._months):
+                return self.__class__(
+                    years=self._years,
+                    months=self._months,
+                    seconds=self._scalar_seconds() + other.total_seconds(),
+                )
             return self.__class__(seconds=self.total_seconds() + other.total_seconds())
 
         return NotImplemented
@@ -339,6 +365,22 @@ class Duration(timedelta):
 
     def __sub__(self, other: timedelta) -> Self:
         if isinstance(other, timedelta):
+            if (
+                type(self) is Duration
+                and isinstance(other, Duration)
+                and type(other) is Duration
+            ):
+                return self.__class__(
+                    years=self._years - other._years,
+                    months=self._months - other._months,
+                    seconds=self._scalar_seconds() - other._scalar_seconds(),
+                )
+            if type(self) is Duration and (self._years or self._months):
+                return self.__class__(
+                    years=self._years,
+                    months=self._months,
+                    seconds=self._scalar_seconds() - other.total_seconds(),
+                )
             return self.__class__(seconds=self.total_seconds() - other.total_seconds())
 
         return NotImplemented
