@@ -85,3 +85,16 @@ Each method returns a new `DateTime` instance.
 
     Passing negative values to `add()` is also possible and will act exactly
     like `subtract()`
+
+## Time arithmetic
+
+`Time` instances support adding a `datetime.timedelta` on either side of `+`.
+As with `Time.add_timedelta()`, the duration must not have a nonzero `days` component.
+
+```python
+>>> from datetime import timedelta
+>>> pendulum.time(12, 30) + timedelta(minutes=15)
+Time(12, 45, 0)
+>>> timedelta(minutes=15) + pendulum.time(12, 30)
+Time(12, 45, 0)
+```

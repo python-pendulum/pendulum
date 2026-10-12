@@ -167,6 +167,9 @@ class Time(FormattableMixin, time):
 
         return self.add_timedelta(other)
 
+    def __radd__(self, other: datetime.timedelta) -> Time:
+        return self.__add__(other)
+
     @overload
     def __sub__(self, other: time) -> pendulum.Duration: ...
 
