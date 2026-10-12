@@ -833,7 +833,7 @@ impl<'a> Parser<'a> {
         iso_week: u32,
         iso_day: u32,
     ) -> Result<(u32, u32, u32), ParseError> {
-        if iso_week > 53 || iso_week > 52 && !is_long_year(iso_year as i32) {
+        if iso_week < 1 || iso_week > 53 || iso_week > 52 && !is_long_year(iso_year as i32) {
             return Err(ParseError {
                 index: self.idx,
                 message: format!(
@@ -842,7 +842,7 @@ impl<'a> Parser<'a> {
             });
         }
 
-        if iso_day > 7 {
+        if iso_day < 1 || iso_day > 7 {
             return Err(ParseError {
                 index: self.idx,
                 message: "Invalid ISO date: week day is invalid".to_string(),

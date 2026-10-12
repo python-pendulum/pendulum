@@ -161,6 +161,10 @@ def test_parse_iso8601_invalid():
     with pytest.raises(ValueError):
         parse_iso8601("2012-W63")
     with pytest.raises(ValueError):
+        parse_iso8601("2015-W00")
+    with pytest.raises(ValueError):
+        parse_iso8601("2015-W01-0")
+    with pytest.raises(ValueError):
         parse_iso8601("2012-W12-9")
     with pytest.raises(ValueError):
         parse_iso8601("2012W12-3")  # Missing separator
