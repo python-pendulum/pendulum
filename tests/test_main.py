@@ -36,6 +36,42 @@ def test_instance_with_aware_datetime_any_tzinfo() -> None:
     assert now.timezone_name == "+02:00"
 
 
+def test_instance_with_aware_datetime_and_explicit_tz_converts() -> None:
+    dt = datetime(2024, 9, 3, 13, 56, 35, tzinfo=timezone("Europe/Brussels"))
+    now = pendulum.instance(dt, tz="EST")
+
+    assert now.timezone_name == "EST"
+    # 13:56 in Brussels (UTC+2) is 06:56 EST (UTC-5)
+    assert (now.hour, now.minute, now.second) == (6, 56, 35)
+    assert now == dt
+
+
+def test_instance_with_pendulum_datetime_and_explicit_tz_converts() -> None:
+    dt = pendulum.datetime(2024, 9, 3, 13, 56, 35, tz="Europe/Brussels")
+    now = pendulum.instance(dt, tz="EST")
+
+    assert now.timezone_name == "EST"
+    assert (now.hour, now.minute, now.second) == (6, 56, 35)
+    assert now == dt
+
+
+def test_instance_with_naive_datetime_and_explicit_tz() -> None:
+    now = pendulum.instance(datetime(2024, 9, 3, 13, 56, 35), tz="Europe/Paris")
+
+    assert now.timezone_name == "Europe/Paris"
+    assert (now.hour, now.minute, now.second) == (13, 56, 35)
+
+
+def test_datetime_instance_with_explicit_tz_converts() -> None:
+    dt = pendulum.datetime(2024, 9, 3, 13, 56, 35, tz="Europe/Brussels")
+    converted = pendulum.DateTime.instance(dt, tz="America/New_York")
+
+    assert converted.timezone_name == "America/New_York"
+    # 13:56 in Brussels (UTC+2) is 07:56 in New York (UTC-4)
+    assert (converted.hour, converted.minute, converted.second) == (7, 56, 35)
+    assert converted == dt
+
+
 def test_instance_with_date() -> None:
     dt = pendulum.instance(date(2022, 12, 23))
 

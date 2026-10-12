@@ -128,12 +128,18 @@ class DateTime(datetime.datetime, Date):
     def instance(
         cls,
         dt: datetime.datetime,
-        tz: str | Timezone | FixedTimezone | datetime.tzinfo | None = UTC,
+        tz: str | Timezone | FixedTimezone | datetime.tzinfo | None = None,
     ) -> Self:
-        tz = dt.tzinfo or tz
-
         if tz is not None:
+            # An explicitly given timezone takes precedence over the one
+            # carried by the datetime: aware datetimes are converted to it,
+            # while naive ones are interpreted in it.
             tz = pendulum._safe_timezone(tz, dt=dt)
+
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(tz)
+        else:
+            tz = pendulum._safe_timezone(dt.tzinfo or UTC, dt=dt)
 
         return cls.create(
             dt.year,
@@ -1256,16 +1262,26 @@ class DateTime(datetime.datetime, Date):
 
     @classmethod
     def utcfromtimestamp(cls, t: float) -> Self:
-        return cls.instance(
-            datetime.datetime.fromtimestamp(t, tz=datetime.timezone.utc).replace(
-                tzinfo=None
-            ),
-            tz=None,
+        dt = datetime.datetime.fromtimestamp(t, tz=datetime.timezone.utc).replace(
+            tzinfo=None
+        )
+
+        return cls(
+            dt.year,
+            dt.month,
+            dt.day,
+            dt.hour,
+            dt.minute,
+            dt.second,
+            dt.microsecond,
+            fold=dt.fold,
         )
 
     @classmethod
     def fromordinal(cls, n: int) -> Self:
-        return cls.instance(datetime.datetime.fromordinal(n), tz=None)
+        dt = datetime.datetime.fromordinal(n)
+
+        return cls(dt.year, dt.month, dt.day)
 
     @classmethod
     def combine(
@@ -1274,7 +1290,33 @@ class DateTime(datetime.datetime, Date):
         time: datetime.time,
         tzinfo: datetime.tzinfo | None = None,
     ) -> Self:
-        return cls.instance(datetime.datetime.combine(date, time), tz=tzinfo)
+        dt = datetime.datetime.combine(date, time)
+
+        tz = tzinfo if tzinfo is not None else dt.tzinfo
+
+        if tz is None:
+            return cls(
+                dt.year,
+                dt.month,
+                dt.day,
+                dt.hour,
+                dt.minute,
+                dt.second,
+                dt.microsecond,
+                fold=dt.fold,
+            )
+
+        return cls.create(
+            dt.year,
+            dt.month,
+            dt.day,
+            dt.hour,
+            dt.minute,
+            dt.second,
+            dt.microsecond,
+            tz=tz,
+            fold=dt.fold,
+        )
 
     def astimezone(self, tz: datetime.tzinfo | None = None) -> Self:
         # Convert a plain datetime: tzinfo.fromutc() implementations add

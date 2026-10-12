@@ -75,7 +75,7 @@ def _parse(
             duration = parsed.duration
 
             if parsed.start is not None:
-                dt = pendulum.instance(parsed.start, tz=options.get("tz", UTC))
+                dt = pendulum.instance(parsed.start, tz=options.get("tz"))
 
                 return pendulum.interval(
                     dt,
@@ -92,7 +92,7 @@ def _parse(
                 )
 
             dt = pendulum.instance(
-                t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
+                t.cast("datetime.datetime", parsed.end), tz=options.get("tz")
             )
 
             return pendulum.interval(
@@ -111,10 +111,10 @@ def _parse(
 
         return pendulum.interval(
             pendulum.instance(
-                t.cast("datetime.datetime", parsed.start), tz=options.get("tz", UTC)
+                t.cast("datetime.datetime", parsed.start), tz=options.get("tz")
             ),
             pendulum.instance(
-                t.cast("datetime.datetime", parsed.end), tz=options.get("tz", UTC)
+                t.cast("datetime.datetime", parsed.end), tz=options.get("tz")
             ),
         )
 
