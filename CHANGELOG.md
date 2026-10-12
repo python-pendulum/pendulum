@@ -1,5 +1,32 @@
 # Change Log
 
+## [3.3.0] - 2026-10-12
+
+### Added
+- Added support for PEP 703 free-threaded Python [#952](https://github.com/python-pendulum/pendulum/952)
+- Make `Timezone` and `FixedTimezone` hashable [#1021](https://github.com/python-pendulum/pendulum/1021)
+- Added support for Python 3.15 [#1037](https://github.com/python-pendulum/pendulum/1037)
+
+### Changed
+- Dropped support for Python 3.9 [#930](https://github.com/python-pendulum/pendulum/930)
+- Updated `time-machine` requirement to v3 [#927](https://github.com/python-pendulum/pendulum/927)
+- Fixed `substract(minutes=24)` example in documentation [#950](https://github.com/python-pendulum/pendulum/950)
+- `parse()` now raises `ParserError` for empty string [#965](https://github.com/python-pendulum/pendulum/965)
+- Fixed type annotation to allow `None` for `exc_tb` in `Traveller.__exit__` [#974](https://github.com/python-pendulum/pendulum/974)
+- Fixed wrong parameter name in `Time.diff_for_humans` docstring [#1007](https://github.com/python-pendulum/pendulum/1007)
+- Replaced deprecated `utcnow()` and `utcfromtimestamp()` with timezone-aware equivalents [#967](https://github.com/python-pendulum/pendulum/967)
+- Fixed `diff_for_humans` crash for `zh` locale [#1001](https://github.com/python-pendulum/pendulum/1001)
+- Bumped PyO3 to 0.29 [#978](https://github.com/python-pendulum/pendulum/978)
+- Removed call-stack inspection from `DateTime.__add__` [#1032](https://github.com/python-pendulum/pendulum/1032)
+- Fixed weekday modifiers after global `calendar` layout changes [#1039](https://github.com/python-pendulum/pendulum/1039)
+- Fixed `DateTime` pickling when container's timezone was set by copying `/etc/localtime` [#1040](https://github.com/python-pendulum/pendulum/1040)
+
+### Locales
+- Fixed Japanese locale to use Japanese date formats [#977](https://github.com/python-pendulum/pendulum/977)
+- Fixed Ukrainian locale to follow ISO 639 and updated it [#957](https://github.com/python-pendulum/pendulum/957)
+- Added Gujarati (gu) locale [#963](https://github.com/python-pendulum/pendulum/963)
+- Fixed Hindi locale date formats [#964](https://github.com/python-pendulum/pendulum/964)
+
 ## [3.2.0] - 2026-01-30
 
 ### Added
@@ -247,9 +274,9 @@
 
 
 
-[Unreleased]: https://github.com/python-pendulum/pendulum/compare/3.1.0...master
+[Unreleased]: https://github.com/python-pendulum/pendulum/compare/3.3.0...master
+[3.3.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.3.0
 [3.2.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.2.0
-[3.1.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.1.0
 [3.1.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.1.0
 [3.0.0]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0
 [3.0.0b1]: https://github.com/python-pendulum/pendulum/releases/tag/3.0.0b1
