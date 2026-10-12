@@ -582,7 +582,7 @@ impl<'a> Parser<'a> {
             };
             tzminute += tzhour * 60;
             tzminute *= tzsign;
-            if tzminute > 24 * 60 {
+            if tzminute.abs() >= 24 * 60 {
                 return Err(self.parse_error("Timezone offset is too large".to_string()));
             }
             datetime.offset = Some(tzminute * 60);

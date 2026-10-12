@@ -72,6 +72,13 @@ def test_from_format_with_invalid_padded_day():
         pendulum.from_format("Apr   2 12:00:00 2020 GMT", "MMM DD HH:mm:ss YYYY z")
 
 
+def test_from_format_with_out_of_range_offset():
+    with pytest.raises(ValueError):
+        pendulum.from_format("1975-05-21 22:32:11 +9959", "YYYY-MM-DD HH:mm:ss ZZ")
+    with pytest.raises(ValueError):
+        pendulum.from_format("1975-05-21 22:32:11 +24:00", "YYYY-MM-DD HH:mm:ss Z")
+
+
 @pytest.mark.parametrize(
     "text,fmt,expected,now",
     [
