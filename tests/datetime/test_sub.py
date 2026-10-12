@@ -120,6 +120,21 @@ def test_subtract_duration():
     assert d.microsecond == 123456
 
 
+def test_subtract_duration_days_across_dst_matches_method():
+    # `- duration(days=...)` must be calendar-aware like `.subtract(days=...)`
+    # and `+ duration(days=-...)`, not fold days into absolute seconds.
+    d = pendulum.datetime(2013, 4, 2, tz="Europe/Paris")  # spring-forward is 2013-03-31
+
+    assert (d - pendulum.duration(days=3)) == d.subtract(days=3)
+    assert (d - pendulum.duration(days=3)) == (d + pendulum.duration(days=-3))
+    assert (d - pendulum.duration(weeks=1)) == d.subtract(weeks=1)
+
+    # round-trip stability across a transition
+    dt = pendulum.datetime(2023, 3, 12, 5, 0, tz="America/New_York")
+    one = pendulum.duration(days=1)
+    assert (dt - one) + one == dt
+
+
 def test_subtract_time_to_new_transition_skipped():
     dt = pendulum.datetime(2013, 3, 31, 3, 0, 0, 0, tz="Europe/Paris")
 
