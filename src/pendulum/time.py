@@ -36,12 +36,12 @@ class Time(FormattableMixin, time):
 
     @classmethod
     def instance(
-        cls, t: time, tz: str | Timezone | FixedTimezone | datetime.tzinfo | None = UTC
+        cls, t: time, tz: str | Timezone | FixedTimezone | datetime.tzinfo | None = None
     ) -> Self:
-        tz = t.tzinfo or tz
+        if tz is None:
+            tz = t.tzinfo or UTC
 
-        if tz is not None:
-            tz = pendulum._safe_timezone(tz)
+        tz = pendulum._safe_timezone(tz)
 
         return cls(t.hour, t.minute, t.second, t.microsecond, tzinfo=tz, fold=t.fold)
 

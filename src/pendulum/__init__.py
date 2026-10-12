@@ -201,32 +201,38 @@ def time(hour: int, minute: int = 0, second: int = 0, microsecond: int = 0) -> T
 @overload
 def instance(
     obj: _datetime.datetime,
-    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
+    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = None,
 ) -> DateTime: ...
 
 
 @overload
 def instance(
     obj: _datetime.date,
-    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
+    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = None,
 ) -> Date: ...
 
 
 @overload
 def instance(
     obj: _datetime.time,
-    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
+    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = None,
 ) -> Time: ...
 
 
 def instance(
     obj: _datetime.datetime | _datetime.date | _datetime.time,
-    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = UTC,
+    tz: str | Timezone | FixedTimezone | _datetime.tzinfo | None = None,
 ) -> DateTime | Date | Time:
     """
     Create a DateTime/Date/Time instance from a datetime/date/time native one.
     """
-    if isinstance(obj, (DateTime, Date, Time)):
+    if isinstance(obj, DateTime):
+        if tz is not None:
+            return DateTime.instance(obj, tz=tz)
+
+        return obj
+
+    if isinstance(obj, (Date, Time)):
         return obj
 
     if isinstance(obj, _datetime.date) and not isinstance(obj, _datetime.datetime):
