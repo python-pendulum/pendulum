@@ -4,6 +4,7 @@ import pytest
 
 from pendulum.parsing import ParserError
 from pendulum.parsing import parse
+from pendulum.parsing import with_extensions
 
 
 def test_parse_duration():
@@ -304,3 +305,19 @@ def test_parse_interval_invalid():
 def test_parse_duration_fraction_only_allowed_on_last_component():
     with pytest.raises(ParserError):
         parse("P2Y3M4DT5.5H6M7S")
+
+
+@pytest.mark.skipif(
+    not with_extensions, reason="Only the Rust parser bounds duration values"
+)
+def test_parse_duration_value_too_large():
+    # 2**32 seconds does not fit the parser's accumulator
+    with pytest.raises(ParserError):
+        parse("PT4294967296S")
+
+    # Repeating a unit must not wrap the accumulated value either
+    with pytest.raises(ParserError):
+        parse("PT4294967295H1H")
+
+    with pytest.raises(ParserError):
+        parse("P4294967295D0.5W")
