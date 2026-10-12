@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_datetime
@@ -119,3 +121,61 @@ def test_different_timezones_same_time():
 
     assert interval.in_words() == "1 day 5 hours"
     assert interval.in_hours() == 29
+
+
+@pytest.mark.parametrize(
+    "start_hour,start_minute,start_fold,end_hour,end_minute,end_fold,expected",
+    [
+        (0, 30, 0, 1, 30, 1, (2, 0)),
+        (1, 30, 1, 2, 30, 0, (1, 0)),
+        (1, 15, 0, 1, 45, 1, (1, 30)),
+        (1, 15, 0, 1, 45, 0, (0, 30)),
+        (1, 15, 1, 1, 45, 1, (0, 30)),
+    ],
+)
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("absolute", [False, True])
+def test_preserves_fold_in_components(
+    start_hour,
+    start_minute,
+    start_fold,
+    end_hour,
+    end_minute,
+    end_fold,
+    expected,
+    reverse,
+    absolute,
+):
+    start = pendulum.datetime(
+        2024,
+        11,
+        3,
+        start_hour,
+        start_minute,
+        tz="America/New_York",
+        fold=start_fold,
+    )
+    end = pendulum.datetime(
+        2024,
+        11,
+        3,
+        end_hour,
+        end_minute,
+        tz="America/New_York",
+        fold=end_fold,
+    )
+    if reverse:
+        start, end = end, start
+    interval = pendulum.interval(start, end, absolute=absolute)
+    sign = -1 if reverse and not absolute else 1
+
+    assert (interval.hours, interval.minutes) == tuple(
+        sign * value for value in expected
+    )
+    assert interval.total_seconds() == sign * (expected[0] * 3600 + expected[1] * 60)
+    assert (
+        interval.in_words()
+        == pendulum.duration(
+            hours=sign * expected[0], minutes=sign * expected[1]
+        ).in_words()
+    )
