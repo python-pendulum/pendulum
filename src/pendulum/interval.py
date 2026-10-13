@@ -300,6 +300,9 @@ class Interval(Duration, Generic[_T]):
         while op(start, end):
             yield start
 
+            if start == end and amount != 0:
+                break
+
             start = getattr(self.start, method)(**{unit: i})
 
             i += amount
