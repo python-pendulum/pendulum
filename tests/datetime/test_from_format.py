@@ -57,6 +57,22 @@ def test_from_format_with_escaped_elements_valid_tokens():
     assert d.timezone_name == "UTC"
 
 
+def test_from_format_with_multi_character_escaped_elements():
+    # GH #971: literal blocks longer than one character that contain token letters
+    # (e.g. "the" holds the h/e tokens, "del" holds the d/e tokens) were
+    # mis-tokenized and raised instead of being treated as literal text.
+    d = pendulum.from_format("the year 2023", "[the year] YYYY")
+    assert_datetime(d, 2023, 1, 1, 0, 0, 0)
+    d = pendulum.from_format(
+        "21 de noviembre del 2023", "DD [de] MMMM [del] YYYY", locale="es"
+    )
+    assert_datetime(d, 2023, 11, 21, 0, 0, 0)
+    d = pendulum.from_format(
+        "21 de noviembre de 2023", "DD [de] MMMM [de] YYYY", locale="es"
+    )
+    assert_datetime(d, 2023, 11, 21, 0, 0, 0)
+
+
 def test_from_format_with_millis():
     d = pendulum.from_format("1975-05-21 22:32:11.123456", "YYYY-MM-DD HH:mm:ss.SSSSSS")
     assert_datetime(d, 1975, 5, 21, 22, 32, 11, 123456)

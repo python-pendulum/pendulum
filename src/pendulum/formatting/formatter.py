@@ -66,7 +66,7 @@ class Formatter:
 
     _FORMAT_RE: re.Pattern[str] = re.compile(_TOKENS)
 
-    _FROM_FORMAT_RE: re.Pattern[str] = re.compile(r"(?<!\\\[)" + _TOKENS + r"(?!\\\])")
+    _FROM_FORMAT_RE: re.Pattern[str] = re.compile(r"\\\[.*?\\\]|" + _TOKENS)
 
     _LOCALIZABLE_TOKENS: ClassVar[
         dict[str, str | Callable[[Locale], Sequence[str]] | None]
@@ -664,6 +664,11 @@ class Formatter:
             raise ValueError("Invalid date")
 
     def _replace_tokens(self, token: str, locale: Locale) -> str:
+        if token.startswith("\\[") and token.endswith("\\]"):
+            # parse() runs re.escape() on the format first, so a literal block such
+            # as "[de]" arrives here as "\\[de\\]". Drop the (escaped) brackets and
+            # keep the already-escaped inner text as a literal.
+            return token[2:-2]
         if token.startswith("[") and token.endswith("]"):
             return token[1:-1]
         elif token.startswith("\\"):
