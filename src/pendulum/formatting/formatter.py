@@ -255,11 +255,13 @@ class Formatter:
         loaded_locale: Locale = Locale.load(locale or pendulum.get_locale())
 
         result = self._FORMAT_RE.sub(
-            lambda m: m.group(1)
-            if m.group(1)
-            else m.group(2)
-            if m.group(2)
-            else self._format_token(dt, m.group(3), loaded_locale),
+            lambda m: (
+                m.group(1)
+                if m.group(1)
+                else m.group(2)
+                if m.group(2)
+                else self._format_token(dt, m.group(3), loaded_locale)
+            ),
             fmt,
         )
 
