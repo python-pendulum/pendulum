@@ -214,3 +214,24 @@ def test_parse_iso8601_duration_invalid():
     # Must include at least one element
     with pytest.raises(ValueError):
         parse_iso8601("P")
+
+def test_parse_iso8601_subsecond_more_than_nine_digits():
+    """
+    Regression test for #935.
+
+    The ISO 8601 subsecond capture group was bounded to \\d{1,9}, so
+    timestamps with 10 or more fractional digits raised ParserError even
+    though the standard library accepts them.
+    """
+    from pendulum.parsing.iso8601 import parse_iso8601 as _parse_iso8601
+
+    result = _parse_iso8601("2001-01-01T12:34:56.1234567890Z")
+
+    assert result.year == 2001
+    assert result.month == 1
+    assert result.day == 1
+    assert result.hour == 12
+    assert result.minute == 34
+    assert result.second == 56
+    # 1234567890 truncated to microseconds -> 123456
+    assert result.microsecond == 123456
