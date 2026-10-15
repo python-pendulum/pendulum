@@ -206,6 +206,7 @@ class Formatter:
     _PARSE_TOKENS: ClassVar[dict[str, Callable[[str], Any]]] = {
         "YYYY": lambda year: int(year),
         "YY": lambda year: int(year),
+        "Y": lambda year: int(year),
         "Q": lambda quarter: int(quarter),
         "MMMM": lambda month: month,
         "MMM": lambda month: month,
