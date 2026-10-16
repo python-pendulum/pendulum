@@ -97,3 +97,12 @@ def test_float_years_and_months():
 
     with pytest.raises(ValueError):
         pendulum.duration(months=1.5)
+
+
+def test_large_microseconds_match_timedelta():
+    us = 8999999999999999
+    dur = pendulum.duration(microseconds=us)
+    delta = timedelta(microseconds=us)
+    assert dur.microseconds == delta.microseconds
+    assert dur.seconds == delta.seconds
+    assert dur.days == delta.days
