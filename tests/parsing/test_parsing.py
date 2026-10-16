@@ -700,3 +700,19 @@ def test_exif_edge_case():
     assert parsed.hour == 15
     assert parsed.minute == 45
     assert parsed.second == 28
+
+
+def test_subsecond_more_than_nine_digits():
+    # Fractional seconds beyond microsecond precision are truncated (issue #935)
+    text = "2016-10-06T12:34:56.123456789012"
+
+    parsed = parse(text)
+
+    assert parsed.microsecond == 123456
+
+    # The common parser handles the same input
+    text = "2016/10/06 12:34:56.123456789012"
+
+    parsed = parse(text)
+
+    assert parsed.microsecond == 123456
