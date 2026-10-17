@@ -169,7 +169,16 @@ class Timezone(zoneinfo.ZoneInfo, PendulumTimezone):
                 # Repeated time
                 raise AmbiguousTime(dt)
 
-            return dt.replace(tzinfo=self)
+            dt = dt.replace(tzinfo=self)
+
+            if self.utcoffset(dt.replace(fold=0)) == self.utcoffset(dt.replace(fold=1)):
+                # The local time is not ambiguous, so the fold attribute
+                # carries no meaning for it and must be set to 0 (PEP 495).
+                # Without this, times created with the default fold=1,
+                # e.g. via DateTime.create(), keep a bogus fold value.
+                dt = dt.replace(fold=0)
+
+            return dt
 
         return cast("_DT", dt.astimezone(self))
 
