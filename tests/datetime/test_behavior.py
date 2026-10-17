@@ -50,6 +50,44 @@ def test_time(p, dt):
     assert p.time() == dt.time()
 
 
+@pytest.mark.parametrize("fold", [0, 1])
+@pytest.mark.parametrize(
+    "tzinfo",
+    [
+        None,
+        datetime_timezone.utc,
+        zoneinfo.ZoneInfo("America/New_York"),
+        zoneinfo.ZoneInfo("Australia/Lord_Howe"),
+    ],
+)
+def test_time_preserves_fold(fold, tzinfo):
+    native = datetime(2024, 11, 3, 1, 30, 12, 345678, tzinfo=tzinfo, fold=fold)
+    dt = pendulum.DateTime(2024, 11, 3, 1, 30, 12, 345678, tzinfo=tzinfo, fold=fold)
+
+    result = dt.time()
+
+    assert isinstance(result, pendulum.Time)
+    assert result == native.time()
+    assert result.tzinfo is None
+    assert result.fold == native.time().fold
+
+
+@pytest.mark.parametrize("fold", [0, 1])
+@pytest.mark.parametrize(
+    ("tz", "year", "month", "day", "hour", "minute"),
+    [
+        ("America/New_York", 2024, 11, 3, 1, 30),
+        ("Australia/Lord_Howe", 2024, 4, 7, 1, 45),
+    ],
+)
+def test_time_round_trip_during_fold(fold, tz, year, month, day, hour, minute):
+    dt = pendulum.datetime(year, month, day, hour, minute, tz=tz, fold=fold)
+
+    rebuilt = datetime.combine(dt.date(), dt.time(), tzinfo=dt.tzinfo)
+
+    assert rebuilt.timestamp() == dt.timestamp()
+
+
 def test_timetz(p, dt):
     assert p.timetz() == dt.timetz()
 

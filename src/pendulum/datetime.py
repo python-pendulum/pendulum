@@ -313,7 +313,9 @@ class DateTime(datetime.datetime, Date):
         return Date(self.year, self.month, self.day)
 
     def time(self) -> Time:
-        return Time(self.hour, self.minute, self.second, self.microsecond)
+        return Time(
+            self.hour, self.minute, self.second, self.microsecond, fold=self.fold
+        )
 
     def naive(self) -> Self:
         """
