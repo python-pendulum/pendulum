@@ -228,8 +228,19 @@ class DateTime(datetime.datetime, Date):
         if tz is None:
             tz = self.tz
 
+        fold = self.fold
+        if (
+            self.tz is not None
+            and self.replace(fold=0).utcoffset() == self.replace(fold=1).utcoffset()
+        ):
+            # The current time is not ambiguous, so its fold attribute
+            # carries no meaning and must not decide how the new time
+            # is resolved if it falls in a DST gap or overlap.
+            # Use the default resolution of create() instead.
+            fold = 1
+
         return self.__class__.create(
-            year, month, day, hour, minute, second, microsecond, tz=tz, fold=self.fold
+            year, month, day, hour, minute, second, microsecond, tz=tz, fold=fold
         )
 
     @property

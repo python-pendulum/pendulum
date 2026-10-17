@@ -141,6 +141,15 @@ def test_fluid_at_with_transition():
     assert new.second == 0
 
 
+def test_set_keeps_fold_of_ambiguous_time():
+    d = pendulum.datetime(2023, 11, 5, 1, 30, tz="America/New_York", fold=0)
+    new = d.set(minute=45)
+
+    assert isinstance(new, datetime)
+    assert new.fold == 0
+    assert new.offset == -4 * 3600
+
+
 def test_replace_tzinfo_dst_off():
     d = pendulum.datetime(2016, 3, 27, 0, 30)  # 30 min before DST turning on
     new = d.replace(tzinfo=pendulum.timezone("Europe/Paris"))

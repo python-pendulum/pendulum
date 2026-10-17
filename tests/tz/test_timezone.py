@@ -330,6 +330,35 @@ def test_convert_fold_attribute_is_honored():
     assert new.strftime("%z") == "-0500"
 
 
+def test_convert_unambiguous_time_has_fold_zero():
+    tz = pendulum.timezone("CET")
+    dt = datetime(2024, 5, 1)
+
+    new = tz.convert(dt)
+    assert new.fold == 0
+
+    new = tz.convert(dt.replace(fold=1))
+    assert new.fold == 0
+
+
+def test_datetime_unambiguous_time_has_fold_zero():
+    dt = pendulum.datetime(2024, 5, 1, tz="CET")
+
+    assert dt.fold == 0
+    assert dt.add(minutes=1).fold == 0
+    assert dt.add(days=1).fold == 0
+
+
+def test_datetime_ambiguous_time_keeps_fold():
+    dt = pendulum.datetime(2023, 11, 5, 1, 30, tz="America/New_York")
+
+    assert dt.fold == 1
+
+    dt = pendulum.datetime(2023, 11, 5, 1, 30, tz="America/New_York", fold=0)
+
+    assert dt.fold == 0
+
+
 def test_utcoffset_fold_attribute_is_honored():
     tz = pendulum.timezone("US/Eastern")
     dt = datetime(2014, 11, 2, 1, 30)
