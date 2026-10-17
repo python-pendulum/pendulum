@@ -278,3 +278,186 @@ def test_interval_over_midnight_tz():
     new_end = start + interval
 
     assert new_end == end
+
+
+@pytest.mark.parametrize("method, sign", [("add", 1), ("subtract", -1)])
+@pytest.mark.parametrize(
+    "tz, start, calendar_units, fixed_units, expected",
+    [
+        pytest.param(
+            "Europe/Sofia",
+            (2024, 4, 1, 4),
+            {"days": -1},
+            {"seconds": -1},
+            "2024-03-31T02:59:59+02:00",
+            id="spring-forward-gap",
+        ),
+        pytest.param(
+            "Europe/Paris",
+            (2013, 3, 24, 2, 30),
+            {"weeks": 1},
+            {"hours": 1},
+            "2013-03-31T04:30:00+02:00",
+            id="calendar-gap-normalization",
+        ),
+        pytest.param(
+            "America/New_York",
+            (2024, 2, 10, 1, 30),
+            {"months": 1},
+            {"hours": 25},
+            "2024-03-11T03:30:00-04:00",
+            id="fixed-hours-over-one-day",
+        ),
+        pytest.param(
+            "Europe/Paris",
+            (2012, 10, 27, 1, 59, 59, 999999),
+            {"years": 1},
+            {"hours": 1, "microseconds": 1},
+            "2013-10-27T02:00:00+01:00",
+            id="fall-back-forward-shift",
+        ),
+        pytest.param(
+            "Europe/Paris",
+            (2013, 11, 27, 2),
+            {"months": -1},
+            {"microseconds": -1},
+            "2013-10-27T02:59:59.999999+02:00",
+            id="fall-back-backward-shift",
+        ),
+        pytest.param(
+            "Europe/Sofia",
+            (2024, 10, 26, 4, 30),
+            {"days": 1},
+            {"hours": -1},
+            "2024-10-27T03:30:00+02:00",
+            id="fall-back-calendar-then-elapsed",
+        ),
+        pytest.param(
+            "Europe/Sofia",
+            (2024, 10, 20, 3, 30),
+            {"weeks": 1},
+            {"minutes": -60},
+            "2024-10-27T03:30:00+03:00",
+            id="ambiguous-time-fold",
+        ),
+        pytest.param(
+            "Europe/Sofia",
+            (2024, 3, 30, 4),
+            {"days": 1},
+            {"seconds": -0.5},
+            "2024-03-31T02:59:59.500000+02:00",
+            id="opposite-directions-fractional-seconds",
+        ),
+        pytest.param(
+            "America/New_York",
+            (2025, 11, 3, 0, 30),
+            {"years": -1},
+            {"hours": 2},
+            "2024-11-03T01:30:00-05:00",
+            id="negative-calendar-positive-elapsed",
+        ),
+        pytest.param(
+            "Australia/Lord_Howe",
+            (2024, 10, 7, 2, 30),
+            {"days": -1},
+            {"microseconds": -1},
+            "2024-10-06T01:59:59.999999+10:30",
+            id="half-hour-spring-forward",
+        ),
+        pytest.param(
+            "Australia/Lord_Howe",
+            (2024, 4, 14, 1),
+            {"weeks": -1},
+            {"hours": 1},
+            "2024-04-07T01:30:00+10:30",
+            id="half-hour-fall-back",
+        ),
+        pytest.param(
+            "Europe/Paris",
+            (2024, 2, 29, 1, 30),
+            {"years": 1, "months": 1, "days": 1},
+            {"hours": 2},
+            "2025-03-30T04:30:00+02:00",
+            id="multiple-calendar-units",
+        ),
+        pytest.param(
+            "Europe/Sofia",
+            (2024, 4, 1, 16),
+            {"days": -1.5},
+            {"seconds": -1},
+            "2024-03-31T02:59:59+02:00",
+            id="fractional-calendar-days",
+        ),
+        pytest.param(
+            "UTC",
+            (2024, 4, 1, 4),
+            {"days": -1},
+            {"seconds": -1},
+            "2024-03-31T03:59:59+00:00",
+            id="utc-control",
+        ),
+        pytest.param(
+            None,
+            (2024, 4, 1, 4),
+            {"days": -1},
+            {"seconds": -1},
+            "2024-03-31T03:59:59",
+            id="naive-control",
+        ),
+        pytest.param(
+            5.5,
+            (2024, 1, 31, 4),
+            {"months": 1},
+            {"seconds": -0.25, "microseconds": -1000001},
+            "2024-02-29T03:59:58.749999+05:30",
+            id="fixed-offset-month-clamping",
+        ),
+    ],
+)
+def test_mixed_arithmetic_applies_calendar_before_elapsed_time(
+    method: str,
+    sign: int,
+    tz: str | float | None,
+    start: tuple[int, ...],
+    calendar_units: dict[str, int | float],
+    fixed_units: dict[str, int | float],
+    expected: str,
+) -> None:
+    dt = pendulum.DateTime.create(*start, tz=tz)
+    calendar_args = {unit: sign * value for unit, value in calendar_units.items()}
+    fixed_args = {unit: sign * value for unit, value in fixed_units.items()}
+
+    result = getattr(dt, method)(**calendar_args, **fixed_args)
+
+    assert result.isoformat() == expected
+    assert result.tzinfo is dt.tzinfo
+
+
+@pytest.mark.parametrize(
+    "tz, expected",
+    [
+        ("Europe/Sofia", "2024-03-31T02:59:59.500000+02:00"),
+        (None, "2024-03-31T03:59:59.500000"),
+    ],
+)
+def test_mixed_arithmetic_preserves_subclass(tz: str | None, expected: str) -> None:
+    class Subclass(pendulum.DateTime):
+        pass
+
+    dt = Subclass.create(2024, 4, 1, 4, tz=tz)
+    result = dt.subtract(days=1, seconds=0.5)
+
+    assert type(result) is Subclass
+    assert result.tzinfo is dt.tzinfo
+    assert result.isoformat() == expected
+
+
+def test_naive_mixed_arithmetic_rounds_fractional_units_once() -> None:
+    dt = pendulum.naive(2024, 4, 1, 4)
+    days = 0.6 / 86_400_000_000
+    seconds = 0.0000006
+
+    result = dt.add(days=days, seconds=seconds)  # type: ignore[arg-type]
+
+    assert result.isoformat() == "2024-04-01T04:00:00.000001"
+    assert result.tzinfo is None

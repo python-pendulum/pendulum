@@ -100,3 +100,13 @@ spring-forward transition:
 >>> dt.subtract(days=1, seconds=1).isoformat()
 '2024-03-31T02:59:59+02:00'
 ```
+
+The same ordering applies across a fall-back transition. The calendar shift
+first selects the normalized local time and offset, then the fixed-length shift
+uses elapsed time from that instant:
+
+```python
+>>> dt = pendulum.datetime(2024, 10, 26, 4, 30, tz='Europe/Sofia')
+>>> dt.add(days=1, hours=-1).isoformat()
+'2024-10-27T03:30:00+02:00'
+```
