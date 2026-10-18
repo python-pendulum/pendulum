@@ -5,8 +5,10 @@ import sys
 
 import pytest
 
+from pendulum.tz.data.windows import windows_timezones
 from pendulum.tz.local_timezone import _get_unix_timezone
 from pendulum.tz.local_timezone import _get_windows_timezone
+from pendulum.tz.timezone import Timezone
 
 
 @pytest.mark.skipif(
@@ -50,3 +52,26 @@ def test_unix_etc_timezone_dir():
     tz = _get_unix_timezone(_root=root_path)
 
     assert tz.name == "Europe/Paris"
+
+
+@pytest.mark.parametrize(
+    ("windows_name", "expected"),
+    [
+        ("British Columbia Standard Time", "America/Vancouver"),
+        ("Alberta Standard Time", "America/Edmonton"),
+        ("Manitoba Standard Time", "America/Winnipeg"),
+        ("Yukon Standard Time", "America/Whitehorse"),
+        ("Qyzylorda Standard Time", "Asia/Qyzylorda"),
+        ("South Sudan Standard Time", "Africa/Juba"),
+        ("Volgograd Standard Time", "Europe/Volgograd"),
+        ("Central Asia Standard Time", "Asia/Bishkek"),
+        ("Mountain Standard Time (Mexico)", "America/Mazatlan"),
+    ],
+)
+def test_windows_timezone_names_match_cldr(windows_name, expected):
+    assert windows_timezones[windows_name] == expected
+
+
+def test_windows_timezone_names_load():
+    for name in windows_timezones.values():
+        assert Timezone(name).name == name
