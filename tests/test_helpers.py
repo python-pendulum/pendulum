@@ -126,6 +126,33 @@ def test_precise_diff_timezone() -> None:
     assert diff.total_days == 0
 
 
+def test_precise_diff_timezone_crossing_a_date_boundary() -> None:
+    utc = zoneinfo.ZoneInfo("UTC")
+    new_york = zoneinfo.ZoneInfo("America/New_York")
+    tokyo = zoneinfo.ZoneInfo("Asia/Tokyo")
+
+    # 2024-06-01 20:00-04:00 is 2024-06-02 00:00 UTC
+    dt1 = datetime(2024, 6, 1, tzinfo=utc)
+    dt2 = datetime(2024, 6, 1, 20, tzinfo=new_york)
+
+    assert_diff(precise_diff(dt1, dt2), days=1)
+    assert_diff(precise_diff(dt2, dt1), days=-1)
+
+    # 2023-12-31 20:00-05:00 is 2024-01-01 01:00 UTC
+    dt1 = datetime(2023, 6, 1, tzinfo=utc)
+    dt2 = datetime(2023, 12, 31, 20, tzinfo=new_york)
+
+    assert_diff(precise_diff(dt1, dt2), months=7, hours=1)
+    assert_diff(precise_diff(dt2, dt1), months=-7, hours=-1)
+
+    # 2024-03-01 05:00+09:00 is 2024-02-29 20:00 UTC
+    dt1 = datetime(2024, 1, 30, tzinfo=utc)
+    dt2 = datetime(2024, 3, 1, 5, tzinfo=tokyo)
+
+    assert_diff(precise_diff(dt1, dt2), days=30, hours=20)
+    assert_diff(precise_diff(dt2, dt1), days=-30, hours=-20)
+
+
 def test_week_day() -> None:
     assert week_day(2017, 6, 2) == 5
     assert week_day(2017, 1, 1) == 7

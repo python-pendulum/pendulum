@@ -28,6 +28,59 @@ struct DateTimeInfo<'py> {
     pub is_datetime: bool,
 }
 
+impl DateTimeInfo<'_> {
+    /// Subtract the UTC offset from the wall-clock fields,
+    /// carrying over into the day, month and year as needed.
+    fn shift_to_utc(&mut self) {
+        let seconds =
+            self.hour * SECS_PER_HOUR as i32 + self.minute * SECS_PER_MIN as i32 + self.second
+                - self.offset;
+        let day_shift = seconds.div_euclid(SECS_PER_DAY as i32);
+        let seconds = seconds.rem_euclid(SECS_PER_DAY as i32);
+
+        self.hour = seconds / SECS_PER_HOUR as i32;
+        self.minute = seconds % SECS_PER_HOUR as i32 / SECS_PER_MIN as i32;
+        self.second = seconds % SECS_PER_MIN as i32;
+
+        // UTC offsets are strictly less than a day,
+        // so the date moves by at most one day.
+        match day_shift.cmp(&0) {
+            Ordering::Less => {
+                self.day -= 1;
+
+                if self.day == 0 {
+                    if self.month == 1 {
+                        self.month = 12;
+                        self.year -= 1;
+                    } else {
+                        self.month -= 1;
+                    }
+
+                    self.day = DAYS_PER_MONTHS[usize::from(helpers::is_leap(self.year))]
+                        [self.month as usize];
+                }
+            }
+            Ordering::Greater => {
+                self.day += 1;
+
+                if self.day
+                    > DAYS_PER_MONTHS[usize::from(helpers::is_leap(self.year))][self.month as usize]
+                {
+                    self.day = 1;
+
+                    if self.month == 12 {
+                        self.month = 1;
+                        self.year += 1;
+                    } else {
+                        self.month += 1;
+                    }
+                }
+            }
+            Ordering::Equal => {}
+        }
+    }
+}
+
 impl PartialEq for DateTimeInfo<'_> {
     fn eq(&self, other: &Self) -> bool {
         (
@@ -197,35 +250,7 @@ pub fn precise_diff<'py>(
         dtinfo1.microsecond = dt1dt.get_microsecond() as i32;
 
         if !in_same_tz && dtinfo1.offset != 0 || total_days == 0 {
-            dtinfo1.hour -= dtinfo1.offset / SECS_PER_HOUR as i32;
-            dtinfo1.offset %= SECS_PER_HOUR as i32;
-            dtinfo1.minute -= dtinfo1.offset / SECS_PER_MIN as i32;
-            dtinfo1.offset %= SECS_PER_MIN as i32;
-            dtinfo1.second -= dtinfo1.offset;
-
-            if dtinfo1.second < 0 {
-                dtinfo1.second += 60;
-                dtinfo1.minute -= 1;
-            } else if dtinfo1.second > 60 {
-                dtinfo1.second -= 60;
-                dtinfo1.minute += 1;
-            }
-
-            if dtinfo1.minute < 0 {
-                dtinfo1.minute += 60;
-                dtinfo1.hour -= 1;
-            } else if dtinfo1.minute > 60 {
-                dtinfo1.minute -= 60;
-                dtinfo1.hour += 1;
-            }
-
-            if dtinfo1.hour < 0 {
-                dtinfo1.hour += 24;
-                dtinfo1.day -= 1;
-            } else if dtinfo1.hour > 24 {
-                dtinfo1.hour -= 24;
-                dtinfo1.day += 1;
-            }
+            dtinfo1.shift_to_utc();
         }
 
         dtinfo1.total_seconds = dtinfo1.hour * SECS_PER_HOUR as i32
@@ -242,35 +267,7 @@ pub fn precise_diff<'py>(
         dtinfo2.microsecond = dt2dt.get_microsecond() as i32;
 
         if !in_same_tz && dtinfo2.offset != 0 || total_days == 0 {
-            dtinfo2.hour -= dtinfo2.offset / SECS_PER_HOUR as i32;
-            dtinfo2.offset %= SECS_PER_HOUR as i32;
-            dtinfo2.minute -= dtinfo2.offset / SECS_PER_MIN as i32;
-            dtinfo2.offset %= SECS_PER_MIN as i32;
-            dtinfo2.second -= dtinfo2.offset;
-
-            if dtinfo2.second < 0 {
-                dtinfo2.second += 60;
-                dtinfo2.minute -= 1;
-            } else if dtinfo2.second > 60 {
-                dtinfo2.second -= 60;
-                dtinfo2.minute += 1;
-            }
-
-            if dtinfo2.minute < 0 {
-                dtinfo2.minute += 60;
-                dtinfo2.hour -= 1;
-            } else if dtinfo2.minute > 60 {
-                dtinfo2.minute -= 60;
-                dtinfo2.hour += 1;
-            }
-
-            if dtinfo2.hour < 0 {
-                dtinfo2.hour += 24;
-                dtinfo2.day -= 1;
-            } else if dtinfo2.hour > 24 {
-                dtinfo2.hour -= 24;
-                dtinfo2.day += 1;
-            }
+            dtinfo2.shift_to_utc();
         }
 
         dtinfo2.total_seconds = dtinfo2.hour * SECS_PER_HOUR as i32
