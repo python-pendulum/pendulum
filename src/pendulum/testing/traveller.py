@@ -115,7 +115,8 @@ if not PYPY:
                         minutes=minutes,
                         seconds=seconds,
                         microseconds=microseconds,
-                    )
+                    ),
+                    tick=False if freeze else None,
                 )
 
                 return self
@@ -123,7 +124,9 @@ if not PYPY:
             def travel_to(self, dt: DateTime, *, freeze: bool = False) -> Self:
                 self._start(freeze=freeze)
 
-                cast("time_machine.Traveller", self._traveller).move_to(dt)
+                cast("time_machine.Traveller", self._traveller).move_to(
+                    dt, tick=False if freeze else None
+                )
 
                 return self
 

@@ -55,6 +55,10 @@ stopping the time, use the `freeze` parameter:
 >>> pendulum.travel_to(pendulum.yesterday(), freeze=True)
 ```
 
+Passing `freeze=True` also stops a clock that is already travelling. Once frozen,
+subsequent calls to `travel()` or `travel_to()` keep the clock frozen, even when
+`freeze` is omitted. Use `travel_back()` before starting a new ticking clock.
+
 ## Travelling back to the present
 
 Using any of the travel helpers will keep you in the past, or future, until you decide
