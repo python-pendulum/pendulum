@@ -75,3 +75,19 @@ True
 # Compares to now by default
 True
 ```
+
+The `closest()` and `farthest()` methods also work with naive datetimes.
+When the reference datetime is naive, naive candidates remain naive:
+
+```python
+>>> reference = pendulum.naive(2026, 10, 20, 12)
+>>> before = pendulum.naive(2026, 10, 20, 11)
+>>> after = pendulum.naive(2026, 10, 20, 14)
+>>> reference.closest(before, after) == before
+True
+>>> reference.farthest(before, after) == after
+True
+```
+
+As with datetime subtraction, a naive reference cannot be compared with an aware
+candidate. For an aware reference, naive candidates continue to use UTC.
