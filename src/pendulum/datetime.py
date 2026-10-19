@@ -499,7 +499,8 @@ class DateTime(datetime.datetime, Date):
         """
         Get the closest date to the instance.
         """
-        pdts = [self.instance(x) for x in dts]
+        tz = UTC if self.tzinfo is not None else None
+        pdts = [self.instance(x, tz=tz) for x in dts]
 
         return min((abs(self - dt), dt) for dt in pdts)[1]
 
@@ -507,7 +508,8 @@ class DateTime(datetime.datetime, Date):
         """
         Get the farthest date from the instance.
         """
-        pdts = [self.instance(x) for x in dts]
+        tz = UTC if self.tzinfo is not None else None
+        pdts = [self.instance(x, tz=tz) for x in dts]
 
         return max((abs(self - dt), dt) for dt in pdts)[1]
 

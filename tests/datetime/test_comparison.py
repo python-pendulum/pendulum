@@ -4,6 +4,8 @@ import zoneinfo
 
 from datetime import datetime
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_datetime
@@ -372,6 +374,106 @@ def test_farthest_with_equals():
     ]
     farthest = instance.farthest(dt1, dt2, *dts)
     assert farthest == dts[-1]
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+@pytest.mark.parametrize("native", [False, True])
+@pytest.mark.parametrize("reverse", [False, True])
+def test_closest_and_farthest_with_naive_datetimes(method, native, reverse):
+    instance = pendulum.naive(2026, 10, 20, 12, 34, 56, 123456)
+    near = instance.subtract(microseconds=1)
+    far = instance.add(microseconds=2)
+    candidates = [near, far]
+    if native:
+        candidates = [
+            datetime(
+                dt.year,
+                dt.month,
+                dt.day,
+                dt.hour,
+                dt.minute,
+                dt.second,
+                dt.microsecond,
+            )
+            for dt in candidates
+        ]
+    if reverse:
+        candidates.reverse()
+
+    result = getattr(instance, method)(*candidates)
+
+    assert result == (near if method == "closest" else far)
+    assert type(result) is pendulum.DateTime
+    assert result.tzinfo is None
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+def test_closest_and_farthest_with_naive_single_candidate(method):
+    instance = pendulum.naive(2026, 10, 20)
+
+    assert getattr(instance, method)(instance) == instance
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("tz", [None, "UTC"])
+def test_closest_and_farthest_with_ties(method, reverse, tz):
+    instance = pendulum.datetime(2026, 10, 20, 12, tz=tz)
+    before = instance.subtract(hours=1)
+    after = instance.add(hours=1)
+    candidates = [before, after]
+    if reverse:
+        candidates.reverse()
+
+    result = getattr(instance, method)(*candidates)
+
+    assert result == candidates[0]
+    assert result.tzinfo == instance.tzinfo
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+def test_closest_and_farthest_with_naive_subclass(method):
+    class CustomDateTime(pendulum.DateTime):
+        pass
+
+    instance = CustomDateTime(2026, 10, 20, 12)
+    candidates = [datetime(2026, 10, 20, 11), datetime(2026, 10, 20, 14)]
+
+    result = getattr(instance, method)(*candidates)
+
+    assert type(result) is CustomDateTime
+    assert result.hour == (11 if method == "closest" else 14)
+    assert result.tzinfo is None
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+@pytest.mark.parametrize("tz", [None, "UTC", "Europe/Paris"])
+def test_closest_and_farthest_without_candidates(method, tz):
+    instance = pendulum.datetime(2026, 10, 20, tz=tz)
+
+    with pytest.raises(ValueError):
+        getattr(instance, method)()
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+def test_closest_and_farthest_with_naive_reference_and_aware_candidate(method):
+    instance = pendulum.naive(2026, 10, 20)
+    candidate = pendulum.datetime(2026, 10, 21)
+
+    with pytest.raises(TypeError, match="offset-naive and offset-aware"):
+        getattr(instance, method)(candidate)
+
+
+@pytest.mark.parametrize("method", ["closest", "farthest"])
+def test_closest_and_farthest_aware_reference_keeps_naive_candidate_default(method):
+    instance = pendulum.datetime(2026, 10, 20, 12, tz="Europe/Paris")
+    naive = datetime(2026, 10, 20, 10)
+    aware = pendulum.datetime(2026, 10, 20, 13, tz="Europe/Paris")
+
+    result = getattr(instance, method)(naive, aware)
+
+    assert result == (pendulum.instance(naive) if method == "closest" else aware)
+    assert result.timezone_name == ("UTC" if method == "closest" else "Europe/Paris")
 
 
 def test_is_same_day():
