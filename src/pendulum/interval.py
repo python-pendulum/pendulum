@@ -314,7 +314,10 @@ class Interval(Duration, Generic[_T]):
         return self.range("days")
 
     def __contains__(self, item: _T) -> bool:
-        return self.start <= item <= self.end
+        if self.start <= self.end:
+            return self.start <= item <= self.end
+
+        return self.end <= item <= self.start
 
     def __add__(self, other: timedelta) -> Duration:  # type: ignore[override]
         return self.as_duration().__add__(other)

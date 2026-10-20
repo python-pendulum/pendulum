@@ -166,3 +166,6 @@ You can check if a `DateTime` instance is inside a interval using the `in` keywo
 >>> dt in interval
 True
 ```
+
+Membership includes both endpoints, including for inverted intervals. The order of
+the endpoints controls iteration direction, not whether a date is inside the interval.
