@@ -1,5 +1,4 @@
 #![allow(clippy::useless_conversion)]
-use std::cmp::Ordering;
 
 use pyo3::{
     prelude::*,
@@ -308,6 +307,9 @@ pub fn precise_diff<'py>(
         hour_diff -= 1;
     }
 
+    // The time of day of dt2 is earlier than that of dt1
+    let time_borrow = hour_diff < 0;
+
     if hour_diff < 0 {
         hour_diff += 24;
         day_diff -= 1;
@@ -332,26 +334,17 @@ pub fn precise_diff<'py>(
         let days_in_month =
             DAYS_PER_MONTHS[usize::from(helpers::is_leap(dtinfo2.year))][dtinfo2.month as usize];
 
-        match day_diff.cmp(&(days_in_month - days_in_last_month)) {
-            Ordering::Less => {
-                // We don't have a full month, we calculate days
-                if days_in_last_month < dtinfo1.day {
-                    day_diff += dtinfo1.day;
-                } else {
-                    day_diff += days_in_last_month;
-                }
-            }
-            Ordering::Equal => {
-                // We have exactly a full month
-                // We remove the days difference
-                // and add one to the months difference
-                day_diff = 0;
-                month_diff += 1;
-            }
-            Ordering::Greater => {
-                // We have a full month
-                day_diff += days_in_last_month;
-            }
+        if dtinfo2.day == days_in_month && !time_borrow {
+            // dt2 is the last day of its month and dt1's day does not
+            // exist in it, so adding the months to dt1 lands exactly
+            // on dt2 (e.g. Jan 31 + 1 month = Feb 28): a full month
+            day_diff = 0;
+            month_diff += 1;
+        } else if days_in_last_month < dtinfo1.day {
+            // We don't have a full month, we calculate days
+            day_diff += dtinfo1.day;
+        } else {
+            day_diff += days_in_last_month;
         }
 
         month_diff -= 1;

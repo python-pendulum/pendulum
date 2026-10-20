@@ -261,7 +261,7 @@ def test_diff_for_humans_other_and_month():
 
         assert today.diff_for_humans(today.add(months=1)) == "1 month before"
 
-    with pendulum.travel_to(pendulum.datetime(2017, 1, 31)):
+    with pendulum.travel_to(pendulum.local(2017, 1, 31)):
         today = pendulum.today().date()
 
         assert today.diff_for_humans(today.add(weeks=4)) == "1 month before"
@@ -314,7 +314,7 @@ def test_diff_for_humans_other_and_future_month():
         assert today.diff_for_humans(today.subtract(weeks=4)) == "4 weeks after"
         assert today.diff_for_humans(today.subtract(months=1)) == "1 month after"
 
-    with pendulum.travel_to(pendulum.datetime(2017, 2, 28)):
+    with pendulum.travel_to(pendulum.local(2017, 2, 28)):
         today = pendulum.today().date()
 
         assert today.diff_for_humans(today.subtract(weeks=4)) == "1 month after"
