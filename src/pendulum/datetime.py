@@ -454,9 +454,11 @@ class DateTime(datetime.datetime, Date):
         """
         return self._to_string("w3c")
 
-    def _to_string(self, fmt: str, locale: str | None = None) -> str:
+    def _to_string(self, fmt: str, locale: str = "en") -> str:
         """
         Format the instance to a common string format.
+
+        These formats use English day and month names whatever the current locale.
         """
         if fmt not in self._FORMATS:
             raise ValueError(f"Format [{fmt}] is not supported")
