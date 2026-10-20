@@ -100,6 +100,24 @@ def test_to_w3c_string():
     assert d.to_w3c_string() == "1975-12-25T14:15:16-05:00"
 
 
+@pytest.mark.parametrize(
+    "method, expected",
+    [
+        ("to_cookie_string", "Thursday, 25-Dec-1975 14:15:16 EST"),
+        ("to_rfc822_string", "Thu, 25 Dec 75 14:15:16 -0500"),
+        ("to_rfc850_string", "Thursday, 25-Dec-75 14:15:16 EST"),
+        ("to_rfc1036_string", "Thu, 25 Dec 75 14:15:16 -0500"),
+        ("to_rfc1123_string", "Thu, 25 Dec 1975 14:15:16 -0500"),
+        ("to_rfc2822_string", "Thu, 25 Dec 1975 14:15:16 -0500"),
+        ("to_rss_string", "Thu, 25 Dec 1975 14:15:16 -0500"),
+    ],
+)
+def test_common_formats_are_not_localized(method, expected):
+    pendulum.set_locale("fr")
+    d = pendulum.datetime(1975, 12, 25, 14, 15, 16, tz="local")
+    assert getattr(d, method)() == expected
+
+
 def test_to_string_invalid():
     d = pendulum.datetime(1975, 12, 25, 14, 15, 16, tz="local")
 
