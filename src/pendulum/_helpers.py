@@ -253,6 +253,8 @@ def precise_diff(
             hour_diff += 24
             d_diff -= 1
 
+    # A negative d_diff here means the time of day of d2 is earlier than d1's
+    time_borrow = d_diff < 0
     y_diff = d2.year - d1.year
     m_diff = d2.month - d1.month
     d_diff += d2.day - d1.day
@@ -272,20 +274,16 @@ def precise_diff(
         days_in_last_month = DAYS_PER_MONTHS[leap][month]
         days_in_month = DAYS_PER_MONTHS[int(is_leap(d2.year))][d2.month]
 
-        if d_diff < days_in_month - days_in_last_month:
-            # We don't have a full month, we calculate days
-            if days_in_last_month < d1.day:
-                d_diff += d1.day
-            else:
-                d_diff += days_in_last_month
-        elif d_diff == days_in_month - days_in_last_month:
-            # We have exactly a full month
-            # We remove the days difference
-            # and add one to the months difference
+        if d2.day == days_in_month and not time_borrow:
+            # d2 is the last day of its month and d1's day does not
+            # exist in it, so adding the months to d1 lands exactly
+            # on d2 (e.g. Jan 31 + 1 month = Feb 28): a full month
             d_diff = 0
             m_diff += 1
+        elif days_in_last_month < d1.day:
+            # We don't have a full month, we calculate days
+            d_diff += d1.day
         else:
-            # We have a full month
             d_diff += days_in_last_month
 
         m_diff -= 1

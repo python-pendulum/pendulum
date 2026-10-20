@@ -86,6 +86,33 @@ def test_precise_diff() -> None:
     assert_diff(diff, days=6, hours=0)
 
 
+def test_precise_diff_partial_month() -> None:
+    # May 12 to June 11 is 30 days, not a full month
+    diff = precise_diff(datetime(2020, 5, 12, 4), datetime(2020, 6, 11, 10))
+    assert_diff(diff, days=30, hours=6)
+
+    diff = precise_diff(datetime(2020, 6, 11, 10), datetime(2020, 5, 12, 4))
+    assert_diff(diff, days=-30, hours=-6)
+
+    # https://github.com/python-pendulum/pendulum/issues/790
+    diff = precise_diff(datetime(2024, 1, 3), datetime(2024, 2, 1))
+    assert_diff(diff, days=29)
+
+
+def test_precise_diff_end_of_month() -> None:
+    # Jan 31 + 1 month is clamped to Feb 28, so this is a full month
+    diff = precise_diff(datetime(2023, 1, 31), datetime(2023, 2, 28))
+    assert_diff(diff, months=1)
+
+    # https://github.com/python-pendulum/pendulum/issues/402
+    diff = precise_diff(datetime(2019, 8, 30), datetime(2020, 2, 29))
+    assert_diff(diff, months=6)
+
+    # Not a full month if the time of day has not been reached yet
+    diff = precise_diff(datetime(2023, 1, 31, 10), datetime(2023, 2, 28, 9))
+    assert_diff(diff, days=27, hours=23)
+
+
 def test_precise_diff_timezone() -> None:
     paris = pendulum.timezone("Europe/Paris")
     toronto = pendulum.timezone("America/Toronto")
