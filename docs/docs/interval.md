@@ -138,7 +138,9 @@ If you want to iterate over a interval, you can use the `range()` method:
     Supported units for `range()` are: `years`, `months`, `weeks`,
     `days`, `hours`, `minutes`, `seconds` and `microseconds`
 
-You can pass an amount for the passed unit to control the length of the gap:
+You can pass a positive amount for the passed unit to control the length of the gap.
+Zero or negative amounts raise `ValueError` when iteration starts. Inverted intervals
+already iterate backwards, so their amount must also be positive:
 
 ```python
 >>> for dt in interval.range('days', 2):
