@@ -99,8 +99,8 @@ class Formatter:
 
     _TOKENS_RULES: ClassVar[dict[str, Callable[[pendulum.DateTime], str]]] = {
         # Year
-        "YYYY": lambda dt: f"{dt.year:d}",
-        "YY": lambda dt: f"{dt.year:d}"[2:],
+        "YYYY": lambda dt: f"{dt.year:04d}",
+        "YY": lambda dt: f"{dt.year % 100:02d}",
         "Y": lambda dt: f"{dt.year:d}",
         # Quarter
         "Q": lambda dt: f"{dt.quarter:d}",
