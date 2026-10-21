@@ -68,6 +68,11 @@ class Formatter:
 
     _FROM_FORMAT_RE: re.Pattern[str] = re.compile(r"(?<!\\\[)" + _TOKENS + r"(?!\\\])")
 
+    # Names are matched regardless of case, as in "14nov22" or "MONDAY".
+    _CASE_INSENSITIVE_TOKENS: ClassVar[frozenset[str]] = frozenset(
+        {"MMMM", "MMM", "dddd", "ddd", "dd"}
+    )
+
     _LOCALIZABLE_TOKENS: ClassVar[
         dict[str, str | Callable[[Locale], Sequence[str]] | None]
     ] = {
@@ -694,5 +699,7 @@ class Formatter:
             candidates = (cast("str", candidates),)
 
         pattern = f"(?P<{token}>{'|'.join(candidates)})"
+        if token in self._CASE_INSENSITIVE_TOKENS:
+            pattern = f"(?i:{pattern})"
 
         return pattern

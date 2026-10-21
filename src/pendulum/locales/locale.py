@@ -90,10 +90,11 @@ class Locale:
 
     def match_translation(self, key: str, value: Any) -> dict[str, str] | None:
         translations = self.translation(key)
-        if value not in translations.values():
+        by_value = {v.lower(): k for k, v in translations.items()}
+        if value.lower() not in by_value:
             return None
 
-        return cast(Dict[str, str], {v: k for k, v in translations.items()}[value])
+        return cast(Dict[str, str], by_value[value.lower()])
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self._locale}')"
