@@ -269,10 +269,12 @@ class Time(FormattableMixin, time):
         second: SupportsIndex | None = None,
         microsecond: SupportsIndex | None = None,
         tzinfo: bool | datetime.tzinfo | Literal[True] | None = True,
-        fold: int = 0,
+        fold: int | None = None,
     ) -> Self:
         if tzinfo is True:
             tzinfo = self.tzinfo
+        if fold is None:
+            fold = self.fold
 
         hour = hour if hour is not None else self.hour
         minute = minute if minute is not None else self.minute
@@ -288,7 +290,7 @@ class Time(FormattableMixin, time):
             fold=fold,
         )
         return self.__class__(
-            t.hour, t.minute, t.second, t.microsecond, tzinfo=t.tzinfo
+            t.hour, t.minute, t.second, t.microsecond, tzinfo=t.tzinfo, fold=t.fold
         )
 
     def __getnewargs__(self) -> tuple[Time]:
