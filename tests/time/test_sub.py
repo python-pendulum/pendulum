@@ -111,3 +111,25 @@ def test_subtract_time():
 
     with pytest.raises(TypeError):
         t3 - t
+
+
+def test_subtract_time_includes_microseconds():
+    t = Time(12, 0, 1)
+    t1 = Time(12, 0, 0, 500000)
+    t2 = time(12, 0, 0, 500000)
+
+    diff = t - t1
+    assert isinstance(diff, pendulum.Duration)
+    assert diff.total_seconds() == 0.5
+
+    diff = t1 - t
+    assert diff.total_seconds() == -0.5
+
+    diff = t - t2
+    assert diff.total_seconds() == 0.5
+
+    diff = t2 - t
+    assert diff.total_seconds() == -0.5
+
+    diff = Time(12, 0, 0, 999999) - t
+    assert diff.total_seconds() == -1e-06
