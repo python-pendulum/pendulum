@@ -59,8 +59,8 @@ to the instance and the passed in instance. There are 4 possibilities:
     * 5 months ago
 
 * When comparing a value in the future to default now:
-    * 1 hour from now
-    * 5 months from now
+    * in 1 hour
+    * in 5 months
 
 * When comparing a value in the past to another value:
     * 1 hour before
@@ -70,7 +70,7 @@ to the instance and the passed in instance. There are 4 possibilities:
     * 1 hour after
     * 5 months after
 
-You may also pass `True` as a 2nd parameter to remove the modifiers `ago`, `from now`, etc.
+You may also pass `True` as a 2nd parameter to remove the modifiers `ago`, `in`, etc.
 
 ```python
 >>> import pendulum
@@ -91,7 +91,7 @@ You may also pass `True` as a 2nd parameter to remove the modifiers `ago`, `from
 '1 month after'
 
 >>> pendulum.now().add(seconds=5).diff_for_humans()
-'5 seconds from now'
+'in a few seconds'
 
 >>> pendulum.now().subtract(days=24).diff_for_humans()
 '3 weeks ago'
