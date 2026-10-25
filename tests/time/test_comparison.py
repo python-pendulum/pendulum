@@ -178,6 +178,56 @@ def test_farthest_with_equals():
     assert t2 == farthest
 
 
+def test_closest_with_microseconds():
+    instance = pendulum.time(12, 0, 0, 900000)
+    t1 = pendulum.time(12, 0, 0, 900000)
+    t2 = pendulum.time(12, 0, 1, 100000)
+
+    assert instance.closest(t1, t2) == t1
+    assert instance.closest(t2, t1) == t1
+
+
+def test_closest_with_microseconds_across_a_second():
+    instance = pendulum.time(12, 0, 0, 900000)
+    t1 = pendulum.time(12, 0, 1)
+    t2 = pendulum.time(12, 0, 0)
+
+    assert instance.closest(t1, t2) == t1
+    assert instance.closest(t2, t1) == t1
+
+
+def test_closest_with_microseconds_of_native_times():
+    instance = pendulum.time(12, 0, 0, 900000)
+    closest = instance.closest(time(12, 0, 0, 900000), time(12, 0, 1, 100000))
+
+    assert_time(closest, 12, 0, 0, 900000)
+
+
+def test_farthest_with_microseconds():
+    instance = pendulum.time(12, 0, 0, 900000)
+    t1 = pendulum.time(12, 0, 0, 900000)
+    t2 = pendulum.time(12, 0, 1, 100000)
+
+    assert instance.farthest(t1, t2) == t2
+    assert instance.farthest(t2, t1) == t2
+
+
+def test_farthest_with_microseconds_across_a_second():
+    instance = pendulum.time(12, 0, 0, 900000)
+    t1 = pendulum.time(12, 0, 1)
+    t2 = pendulum.time(12, 0, 0)
+
+    assert instance.farthest(t1, t2) == t2
+    assert instance.farthest(t2, t1) == t2
+
+
+def test_farthest_with_microseconds_of_native_times():
+    instance = pendulum.time(12, 0, 0, 900000)
+    farthest = instance.farthest(time(12, 0, 1, 100000), time(12, 0, 0, 900000))
+
+    assert_time(farthest, 12, 0, 1, 100000)
+
+
 def test_comparison_to_unsupported():
     t1 = pendulum.now().time()
 

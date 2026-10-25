@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import time
+
 import pendulum
 
 from pendulum import Time
@@ -96,6 +98,37 @@ def test_diff_in_seconds_ensure_is_truncated():
     assert dt.diff(dt.add(seconds=1.9)).in_seconds() == 1
 
 
+def test_diff_includes_microseconds():
+    dt = Time(12, 0, 0, 500000)
+    diff = dt.diff(Time(12, 0, 1))
+
+    assert diff.total_seconds() == 0.5
+    assert diff.microseconds == 500000
+    assert diff.in_seconds() == 0
+
+
+def test_diff_includes_microseconds_negative_with_sign():
+    dt = Time(12, 0, 1)
+    diff = dt.diff(Time(12, 0, 0, 250000), False)
+
+    assert diff.total_seconds() == -0.75
+    assert diff.microseconds == -750000
+
+
+def test_diff_includes_microseconds_within_the_same_second():
+    dt = Time(12, 0, 0, 1)
+    assert dt.diff(Time(12, 0, 0, 999999)).total_seconds() == 0.999998
+
+
+def test_diff_includes_microseconds_of_native_time():
+    dt = Time(12, 0, 0)
+    assert dt.diff(time(12, 0, 0, 750000)).total_seconds() == 0.75
+
+
+def test_diff_min_and_max():
+    assert Time.min.diff(Time.max).total_seconds() == 86399.999999
+
+
 def test_diff_for_humans_now_and_second():
     with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
         now = pendulum.now().time()
@@ -167,42 +200,42 @@ def test_diff_for_humans_now_and_future_seconds():
 
 
 def test_diff_for_humans_now_and_nearly_future_minute():
-    with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
+    with pendulum.travel_to(pendulum.today().at(12, 34, 56), freeze=True):
         now = pendulum.now().time()
 
         assert now.add(seconds=59).diff_for_humans() == "in 59 seconds"
 
 
 def test_diff_for_humans_now_and_future_minute():
-    with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
+    with pendulum.travel_to(pendulum.today().at(12, 34, 56), freeze=True):
         now = pendulum.now().time()
 
         assert now.add(minutes=1).diff_for_humans() == "in 1 minute"
 
 
 def test_diff_for_humans_now_and_future_minutes():
-    with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
+    with pendulum.travel_to(pendulum.today().at(12, 34, 56), freeze=True):
         now = pendulum.now().time()
 
         assert now.add(minutes=2).diff_for_humans() == "in 2 minutes"
 
 
 def test_diff_for_humans_now_and_nearly_future_hour():
-    with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
+    with pendulum.travel_to(pendulum.today().at(12, 34, 56), freeze=True):
         now = pendulum.now().time()
 
         assert now.add(minutes=59).diff_for_humans() == "in 59 minutes"
 
 
 def test_diff_for_humans_now_and_future_hour():
-    with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
+    with pendulum.travel_to(pendulum.today().at(12, 34, 56), freeze=True):
         now = pendulum.now().time()
 
         assert now.add(hours=1).diff_for_humans() == "in 1 hour"
 
 
 def test_diff_for_humans_now_and_future_hours():
-    with pendulum.travel_to(pendulum.today().at(12, 34, 56)):
+    with pendulum.travel_to(pendulum.today().at(12, 34, 56), freeze=True):
         now = pendulum.now().time()
 
         assert now.add(hours=2).diff_for_humans() == "in 2 hours"

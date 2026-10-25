@@ -69,7 +69,7 @@ class Time(FormattableMixin, time):
         dt1 = self.__class__(dt1.hour, dt1.minute, dt1.second, dt1.microsecond)
         dt2 = self.__class__(dt2.hour, dt2.minute, dt2.second, dt2.microsecond)
 
-        if self.diff(dt1).in_seconds() < self.diff(dt2).in_seconds():
+        if self.diff(dt1).total_seconds() < self.diff(dt2).total_seconds():
             return dt1
 
         return dt2
@@ -81,7 +81,7 @@ class Time(FormattableMixin, time):
         dt1 = self.__class__(dt1.hour, dt1.minute, dt1.second, dt1.microsecond)
         dt2 = self.__class__(dt2.hour, dt2.minute, dt2.second, dt2.microsecond)
 
-        if self.diff(dt1).in_seconds() > self.diff(dt2).in_seconds():
+        if self.diff(dt1).total_seconds() > self.diff(dt2).total_seconds():
             return dt1
 
         return dt2
@@ -226,11 +226,11 @@ class Time(FormattableMixin, time):
 
         us1 = (
             self.hour * SECS_PER_HOUR + self.minute * SECS_PER_MIN + self.second
-        ) * USECS_PER_SEC
+        ) * USECS_PER_SEC + self.microsecond
 
         us2 = (
             dt.hour * SECS_PER_HOUR + dt.minute * SECS_PER_MIN + dt.second
-        ) * USECS_PER_SEC
+        ) * USECS_PER_SEC + dt.microsecond
 
         klass = Duration
         if abs:
