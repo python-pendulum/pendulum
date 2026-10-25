@@ -347,14 +347,16 @@ class Formatter:
             first_day = cast("int", locale.get("translations.week_data.first_day"))
 
             return locale.ordinalize((dt.day_of_week % 7 - first_day) % 7 + 1)
-        elif token == "A":
+        elif token in ["A", "a"]:
             key = "translations.day_periods"
             if dt.hour >= 12:
                 key += ".pm"
             else:
                 key += ".am"
 
-            return cast("str", locale.get(key))
+            meridiem = cast("str", locale.get(key))
+
+            return meridiem.lower() if token == "a" else meridiem
         else:
             return token
 

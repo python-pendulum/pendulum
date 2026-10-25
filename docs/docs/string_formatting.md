@@ -140,6 +140,7 @@ The following tokens are currently supported:
 |                                | SSSS ...      | 000[0..] 001[0..] ... 998[0..] 999[0..]    |
 |                                | SSSSSS        |                                            |
 | **AM / PM**                    | A             | AM, PM                                     |
+|                                | a             | am, pm                                     |
 | **Timezone**                   | Z             | -07:00, -06:00 ... +06:00, +07:00          |
 |                                | ZZ            | -0700, -0600 ... +0600, +0700              |
 |                                | z             | Asia/Baku, Europe/Warsaw, GMT ...          |
