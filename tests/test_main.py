@@ -31,7 +31,7 @@ def test_instance_with_aware_datetime_zoneinfo() -> None:
 
 
 def test_instance_with_aware_datetime_any_tzinfo() -> None:
-    dt = datetime(2016, 8, 7, 12, 34, 56, tzinfo=tz.gettz("Europe/Paris"))
+    dt = datetime(2016, 8, 7, 12, 34, 56, tzinfo=tz.tzoffset("custom", 7200))
     now = pendulum.instance(dt)
     assert now.timezone_name == "+02:00"
 
