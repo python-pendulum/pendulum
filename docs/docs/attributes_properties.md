@@ -23,9 +23,9 @@ Pendulum gives access to more attributes and properties than the default ``datet
 >>> dt.microsecond
 123789
 >>> dt.day_of_week
-3
+<WeekDay.WEDNESDAY: 2>
 >>> dt.day_of_year
-248
+249
 >>> dt.week_of_month
 1
 >>> dt.week_of_year

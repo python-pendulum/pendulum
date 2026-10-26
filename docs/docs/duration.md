@@ -123,19 +123,19 @@ you can use the appropriate methods.
 # Each method returns a float like the native
 # total_seconds() method
 >>> it.total_weeks()
-168.15490079569113
+285.2977579385483
 
 >>> it.total_days()
-1177.0843055698379
+1997.0843055698379
 
 >>> it.total_hours()
-28250.02333367611
+47930.02333367611
 
 >>> it.total_minutes()
-1695001.4000205665
+2875801.400020567
 
 >>> it.total_seconds()
-101700084.001234
+172548084.001234
 ```
 
 Similarly, the `in_xxx()` methods return the total duration in each
@@ -143,19 +143,19 @@ supported unit as a truncated integer.
 
 ```python
 >>> it.in_weeks()
-168
+285
 
 >>> it.in_days()
 1997
 
 >>> it.in_hours()
-28250
+47930
 
 >>> it.in_minutes()
-1695001
+2875801
 
 >>> it.in_seconds()
-101700084
+172548084
 ```
 
 It also has a handy `in_words()` method, which determines the duration representation when printed.

@@ -28,12 +28,12 @@ The default string representation is the same as the one returned by the `isofor
 'Thu, Dec 25, 1975 2:15 PM'
 
 # You can also use the format() method
->>> dt.format('dddd Do [of] MMMM YYYY HH:mm:ss A')
+>>> dt.format('dddd Do [of] MMMM YYYY hh:mm:ss A')
 'Thursday 25th of December 1975 02:15:16 PM'
 
 # Of course, the strftime method is still available
->>> dt.strftime('%A %-d%t of %B %Y %I:%M:%S %p')
-'Thursday 25th of December 1975 02:15:16 PM'
+>>> dt.strftime('%A %d of %B %Y %I:%M:%S %p')
+'Thursday 25 of December 1975 02:15:16 PM'
 ```
 
 !!!note
@@ -57,7 +57,7 @@ The following are methods to display a `DateTime` instance as a common format:
 'Thursday, 25-Dec-1975 14:15:16 EST'
 
 >>> dt.to_iso8601_string()
-'1975-12-25T14:15:16-0500'
+'1975-12-25T14:15:16-05:00'
 
 >>> dt.to_rfc822_string()
 'Thu, 25 Dec 75 14:15:16 -0500'

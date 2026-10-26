@@ -728,8 +728,8 @@ class DateTime(datetime.datetime, Date):
         5 months ago
 
         When comparing a value in the future to default now:
-        1 day from now
-        5 months from now
+        in 1 day
+        in 5 months
 
         When comparing a value in the past to another value:
         1 day before
