@@ -706,6 +706,10 @@ class Formatter:
         if not isinstance(candidates, tuple):
             candidates = (cast("str", candidates),)
 
+        # Locale names can hold regex characters ("lun." in fr), so escape them.
+        if token in self._CASE_INSENSITIVE_TOKENS:
+            candidates = tuple(re.escape(name) for name in candidates)
+
         pattern = f"(?P<{token}>{'|'.join(candidates)})"
         if token in self._CASE_INSENSITIVE_TOKENS:
             pattern = f"(?i:{pattern})"
