@@ -3,6 +3,7 @@ from __future__ import annotations
 import pickle
 import zoneinfo
 
+from copy import copy
 from copy import deepcopy
 from datetime import date
 from datetime import datetime
@@ -164,6 +165,37 @@ def test_pickle():
     dt2 = pickle.loads(s)
 
     assert dt1 == dt2
+
+
+@pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+@pytest.mark.parametrize("fold", [0, 1])
+def test_pickle_preserves_fold_and_instant(protocol, fold):
+    original = pendulum.datetime(2024, 11, 3, 1, 30, tz="America/Chicago", fold=fold)
+    restored = pickle.loads(pickle.dumps(original, protocol=protocol))
+
+    assert type(restored) is type(original)
+    assert restored.fold == fold
+    assert restored.utcoffset() == original.utcoffset()
+    assert restored.timestamp() == original.timestamp()
+
+
+def test_shallow_copy_preserves_fold_and_instant():
+    original = pendulum.datetime(2024, 11, 3, 1, 30, tz="America/Chicago", fold=1)
+    restored = copy(original)
+
+    assert restored.fold == original.fold
+    assert restored.utcoffset() == original.utcoffset()
+    assert restored.timestamp() == original.timestamp()
+
+
+def test_pickle_keeps_tzinfo():
+    tz = zoneinfo.ZoneInfo("America/Chicago")
+    original = pendulum.DateTime(2024, 11, 3, 1, 30, tzinfo=tz, fold=1)
+    restored = pickle.loads(pickle.dumps(original))
+
+    assert type(restored.tzinfo) is zoneinfo.ZoneInfo
+    assert restored.utcoffset() == original.utcoffset()
+    assert restored.timestamp() == original.timestamp()
 
 
 def test_pickle_with_integer_tzinfo():

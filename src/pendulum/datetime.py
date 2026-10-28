@@ -50,6 +50,22 @@ if TYPE_CHECKING:
 _MONTH_CALENDAR = calendar.Calendar(firstweekday=calendar.MONDAY)
 
 
+def _restore_datetime(
+    cls: type[DateTime],
+    year: int,
+    month: int,
+    day: int,
+    hour: int,
+    minute: int,
+    second: int,
+    microsecond: int,
+    tzinfo: datetime.tzinfo | None,
+    fold: int,
+) -> DateTime:
+    """Rebuild a DateTime from the state produced by ``DateTime._getstate()``."""
+    return cls(year, month, day, hour, minute, second, microsecond, tzinfo, fold=fold)
+
+
 class DateTime(datetime.datetime, Date):
     EPOCH: ClassVar[DateTime]
     min: ClassVar[DateTime]
@@ -1367,21 +1383,13 @@ class DateTime(datetime.datetime, Date):
             self.tzinfo,
         )
 
-    def __reduce__(
-        self,
-    ) -> tuple[
-        type[Self],
-        tuple[int, int, int, int, int, int, int, datetime.tzinfo | None],
-    ]:
+    def __reduce__(self) -> tuple[Callable[..., DateTime], tuple[Any, ...]]:
         return self.__reduce_ex__(2)
 
     def __reduce_ex__(
         self, protocol: SupportsIndex
-    ) -> tuple[
-        type[Self],
-        tuple[int, int, int, int, int, int, int, datetime.tzinfo | None],
-    ]:
-        return self.__class__, self._getstate(protocol)
+    ) -> tuple[Callable[..., DateTime], tuple[Any, ...]]:
+        return _restore_datetime, (self.__class__, *self._getstate(protocol), self.fold)
 
     def __deepcopy__(self, _: dict[int, Self]) -> Self:
         return self.__class__(
