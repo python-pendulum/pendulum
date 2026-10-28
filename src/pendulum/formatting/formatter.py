@@ -45,6 +45,22 @@ _MATCH_WORD = (
 _MATCH_TIMEZONE = "[A-Za-z0-9-+]+(/[A-Za-z0-9-+_]+)?"
 
 
+def _ordinal_candidates(locale: Locale) -> tuple[str, ...]:
+    """Regex candidates matching an ordinal number in the given locale.
+
+    Mirrors ``Locale.ordinalize()``: locales without ordinal suffixes
+    format ordinals as the plain number, so the parse pattern must
+    accept plain digits for them.
+    """
+    candidates = tuple(
+        rf"\d+{o}" for o in (locale.get("custom.ordinal") or {}).values()
+    )
+    if not candidates:
+        candidates = (r"\d+",)
+
+    return candidates
+
+
 class Formatter:
     _TOKENS: str = (
         r"\[([^\[]*)\]|\\(.)|"
@@ -71,14 +87,12 @@ class Formatter:
     _LOCALIZABLE_TOKENS: ClassVar[
         dict[str, str | Callable[[Locale], Sequence[str]] | None]
     ] = {
-        "Qo": None,
+        "Qo": _ordinal_candidates,
         "MMMM": "months.wide",
         "MMM": "months.abbreviated",
-        "Mo": None,
-        "DDDo": None,
-        "Do": lambda locale: tuple(
-            rf"\d+{o}" for o in locale.get("custom.ordinal").values()
-        ),
+        "Mo": _ordinal_candidates,
+        "DDDo": _ordinal_candidates,
+        "Do": _ordinal_candidates,
         "dddd": "days.wide",
         "ddd": "days.abbreviated",
         "dd": "days.short",
@@ -627,8 +641,17 @@ class Formatter:
         elif token == "MMM":
             unit = "month"
             match = "months.abbreviated"
-        elif token == "Do":
-            parsed["day"] = int(cast("Match[str]", re.match(r"(\d+)", value)).group(1))
+        elif token in ("Do", "Mo", "Qo", "DDDo"):
+            number = int(cast("Match[str]", re.match(r"(\d+)", value)).group(1))
+
+            if token == "Do":
+                parsed["day"] = number
+            elif token == "Mo":
+                parsed["month"] = number
+            elif token == "Qo":
+                parsed["quarter"] = number
+            else:
+                parsed["day_of_year"] = number
 
             return
         elif token == "dddd":
@@ -676,6 +699,8 @@ class Formatter:
 
         if token in self._LOCALIZABLE_TOKENS:
             values = self._LOCALIZABLE_TOKENS[token]
+            if values is None:
+                raise ValueError(f"Unsupported token: {token}")
             if callable(values):
                 candidates = values(locale)
             else:

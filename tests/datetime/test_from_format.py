@@ -220,3 +220,41 @@ def test_from_format_2_digit_year():
 
     d = pendulum.from_format("99", "YY")
     assert d.year == 1999
+
+
+def test_from_format_ordinal_day_without_locale_ordinals():
+    """
+    Locales without ordinal suffixes format ``Do`` as the plain day
+    number; ``from_format`` must accept what ``format`` emits.
+    """
+    d = pendulum.from_format("7 Juni 1982", "Do MMMM YYYY", locale="de")
+    assert_datetime(d, 1982, 6, 7, 0, 0, 0)
+
+
+def test_from_format_ordinal_day_with_ordinals():
+    d = pendulum.from_format("7th June 1982", "Do MMMM YYYY")
+    assert_datetime(d, 1982, 6, 7, 0, 0, 0)
+
+
+def test_from_format_ordinal_month():
+    d = pendulum.from_format("6th 1982", "Mo YYYY")
+    assert_datetime(d, 1982, 6, 1, 0, 0, 0)
+
+
+def test_from_format_ordinal_quarter():
+    d = pendulum.from_format("2nd 1982", "Qo YYYY")
+    assert_datetime(d, 1982, 4, 1, 0, 0, 0)
+
+
+def test_from_format_ordinal_day_of_year():
+    d = pendulum.from_format("158th 1982", "DDDo YYYY")
+    assert_datetime(d, 1982, 6, 7, 0, 0, 0)
+
+
+@pytest.mark.parametrize("token", ["Wo", "wo", "do", "e", "eo"])
+def test_from_format_unsupported_tokens_raise_value_error(token):
+    # These tokens used to raise AttributeError ("'NoneType' object has
+    # no attribute 'values'"); they must raise the regular
+    # unsupported-token ValueError.
+    with pytest.raises(ValueError, match=r"^Unsupported token"):
+        pendulum.from_format("1st 1982", f"{token} YYYY")
