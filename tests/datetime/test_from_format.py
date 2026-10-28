@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 import pendulum
 
+from pendulum.locales.locale import Locale
 from tests.conftest import assert_datetime
 
 
@@ -182,6 +185,66 @@ def test_from_format_with_locale(text, fmt, expected):
 
 
 @pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("15 MAYIS 2024", "2024-05-15T00:00:00+00:00"),
+        ("15 NİSAN 2024", "2024-04-15T00:00:00+00:00"),
+    ],
+)
+def test_from_format_with_turkish_dotted_and_dotless_i(text, expected):
+    assert (
+        pendulum.from_format(text, "DD MMMM YYYY", locale="tr").isoformat() == expected
+    )
+
+
+def _shipped_locales() -> list[str]:
+    locales_dir = Path(pendulum.__file__).parent / "locales"
+
+    return sorted(p.name for p in locales_dir.iterdir() if (p / "locale.py").is_file())
+
+
+def test_from_format_names_in_upper_and_lower_case_in_every_locale():
+    """
+    Sweep: for every shipped locale, each month name (MMMM, MMM) and weekday name
+    (dddd, ddd, dd), in .upper() and .lower() form, parses to that month or weekday
+    or raises ValueError. It never parses to a different one.
+    """
+    now = pendulum.datetime(2018, 2, 2)
+    month_tables = {"MMMM": "months.wide", "MMM": "months.abbreviated"}
+    weekday_tables = {
+        "dddd": "days.wide",
+        "ddd": "days.abbreviated",
+        "dd": "days.short",
+    }
+    wrong = []
+
+    with pendulum.travel_to(now, freeze=True):
+        for locale in _shipped_locales():
+            loaded = Locale.load(locale)
+            for token, table in {**month_tables, **weekday_tables}.items():
+                for number, name in loaded.translation(table).items():
+                    for variant in (name.upper(), name.lower()):
+                        if token in month_tables:
+                            text, fmt = f"15 {variant} 2024", f"DD {token} YYYY"
+                        else:
+                            text, fmt = variant, token
+                        try:
+                            parsed = pendulum.from_format(text, fmt, locale=locale)
+                        except ValueError:
+                            continue
+
+                        got = (
+                            parsed.month
+                            if token in month_tables
+                            else parsed.day_of_week
+                        )
+                        if got != number:
+                            wrong.append((locale, token, name, variant, number, got))
+
+    assert wrong == []
+
+
+@pytest.mark.parametrize(
     "text,fmt,locale",
     [
         ("23:00", "hh:mm", "en"),
@@ -191,6 +254,7 @@ def test_from_format_with_locale(text, fmt, expected):
         ("invalid", "dd", "en"),
         ("invalid", "MMMM", "en"),
         ("invalid", "MMM", "en"),
+        ("LUNX", "ddd", "fr"),  # "lun." accepts any 4th character; no name maps to LUNX
     ],
 )
 def test_from_format_error(text, fmt, locale):

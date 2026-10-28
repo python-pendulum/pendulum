@@ -410,13 +410,11 @@ class Formatter:
             lambda m: self._replace_tokens(m.group(0), loaded_locale), escaped_fmt
         )
 
-        if not re.fullmatch(pattern, time):
+        match = re.fullmatch(pattern, time)
+        if not match:
             raise ValueError(f"String does not match format {fmt}")
 
-        def _get_parsed_values(m: Match[str]) -> Any:
-            return self._get_parsed_values(m, parsed, loaded_locale, now)
-
-        re.sub(pattern, _get_parsed_values, time)
+        self._get_parsed_values(match, fmt, parsed, loaded_locale, now)
 
         return self._check_parsed(parsed, now)
 
@@ -546,13 +544,16 @@ class Formatter:
     def _get_parsed_values(
         self,
         m: Match[str],
+        fmt: str,
         parsed: dict[str, Any],
         locale: Locale,
         now: pendulum.DateTime,
     ) -> None:
         for token, index in m.re.groupindex.items():
             if token in self._LOCALIZABLE_TOKENS:
-                self._get_parsed_locale_value(token, m.group(index), parsed, locale)
+                self._get_parsed_locale_value(
+                    token, m.group(index), fmt, parsed, locale
+                )
             else:
                 self._get_parsed_value(token, m.group(index), parsed, now)
 
@@ -624,7 +625,12 @@ class Formatter:
             parsed["tz"] = pendulum.timezone(value)
 
     def _get_parsed_locale_value(
-        self, token: str, value: str, parsed: dict[str, Any], locale: Locale
+        self,
+        token: str,
+        value: str,
+        fmt: str,
+        parsed: dict[str, Any],
+        locale: Locale,
     ) -> None:
         if token == "MMMM":
             unit = "month"
@@ -664,9 +670,11 @@ class Formatter:
         else:
             raise ValueError(f'Invalid token "{token}"')
 
-        parsed[unit] = locale.match_translation(match, value)
-        if value is None:
-            raise ValueError("Invalid date")
+        translated = locale.match_translation(match, value)
+        if translated is None:
+            raise ValueError(f"String does not match format {fmt}")
+
+        parsed[unit] = translated
 
     def _replace_tokens(self, token: str, locale: Locale) -> str:
         if token.startswith("[") and token.endswith("]"):

@@ -88,13 +88,24 @@ class Locale:
 
         return f"{number}{ordinal}"
 
-    def match_translation(self, key: str, value: Any) -> dict[str, str] | None:
-        translations = self.translation(key)
-        by_value = {v.lower(): k for k, v in translations.items()}
-        if value.lower() not in by_value:
-            return None
+    def match_translation(self, key: str, value: str) -> Any | None:
+        """
+        Return the translation key whose name matches value, or None.
 
-        return cast(Dict[str, str], by_value[value.lower()])
+        An exact match wins. Otherwise a name matches when re.IGNORECASE accepts
+        the text, the same rule the from_format regex used to let the text through.
+        Lowercasing is not used: "MAYIS".lower() differs from "Mayıs".lower().
+        """
+        translations = self.translation(key)
+        for k, v in translations.items():
+            if v == value:
+                return k
+
+        for k, v in translations.items():
+            if re.fullmatch(re.escape(v), value, re.IGNORECASE):
+                return k
+
+        return None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self._locale}')"
