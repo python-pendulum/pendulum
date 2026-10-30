@@ -426,10 +426,10 @@ def _get_iso_8601_week(
     year = int(year)
     week = int(week)
 
-    if week > 53 or (week > 52 and not is_long_year(year)):
+    if week < 1 or week > 53 or (week > 52 and not is_long_year(year)):
         raise ParserError("Invalid week for week date")
 
-    if weekday > 7:
+    if weekday < 1 or weekday > 7:
         raise ParserError("Invalid weekday for week date")
 
     # We can't rely on strptime directly here since
