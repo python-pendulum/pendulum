@@ -50,3 +50,27 @@ def test_unix_etc_timezone_dir():
     tz = _get_unix_timezone(_root=root_path)
 
     assert tz.name == "Europe/Paris"
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="Test only available for UNIX systems"
+)
+def test_unix_localtime_regular_file_defaults_to_utc():
+    # /etc/localtime as a bare copy of a zoneinfo file (no IANA key), as
+    # found in minimal containers / Slurm jobs, used to yield a Timezone
+    # with key=None, which crashed the Rust helpers (#989). It must now
+    # fall through to the UTC default with a named key.
+    import shutil
+    import tempfile
+
+    local_path = os.path.join(os.path.split(__file__)[0], "..")
+    root_path = tempfile.mkdtemp()
+    os.makedirs(os.path.join(root_path, "etc"), exist_ok=True)
+    shutil.copy(
+        os.path.join(local_path, "fixtures", "tz", "Paris"),
+        os.path.join(root_path, "etc", "localtime"),
+    )
+    tz = _get_unix_timezone(_root=root_path)
+
+    assert tz.key is not None
+    assert tz.name == "UTC"
