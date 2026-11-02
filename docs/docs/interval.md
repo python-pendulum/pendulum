@@ -151,6 +151,10 @@ You can pass an amount for the passed unit to control the length of the gap:
 '2000-01-09T00:00:00+00:00'
 ```
 
+`amount` must be a non-zero integer. A zero amount raises `ValueError`.
+A negative amount whose sign does not match the interval direction
+yields an empty iterator (the same way Python's `range()` does).
+
 You can also directly iterate over the `Interval` instance,
 the unit will be `days` in this case:
 

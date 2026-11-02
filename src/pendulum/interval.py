@@ -288,11 +288,22 @@ class Interval(Duration, Generic[_T]):
         return separator.join(parts)
 
     def range(self, unit: str, amount: int = 1) -> Iterator[_T]:
+        if amount == 0:
+            raise ValueError("range() requires a non-zero amount")
+
         method = "add"
         op = operator.le
         if not self._absolute and self.invert:
             method = "subtract"
             op = operator.ge
+
+        # A negative amount walks the opposite direction of the interval.
+        # Flip the step so the loop either iterates toward the end (matching
+        # sign) or is empty immediately (wrong sign), instead of hanging.
+        if amount < 0:
+            amount = -amount
+            method = "subtract" if method == "add" else "add"
+            op = operator.ge if op is operator.le else operator.le
 
         start, end = self.start, self.end
 
