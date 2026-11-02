@@ -1005,11 +1005,14 @@ class DateTime(datetime.datetime, Date):
         to indicate the desired day_of_week, ex. DateTime.MONDAY.
 
         Supported units are month, quarter and year.
+        Occurrences start at 1.
         """
         if unit not in ["month", "quarter", "year"]:
             raise ValueError(f'Invalid unit "{unit}" for first_of()')
 
-        dt = cast("Self | None", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
+        dt = None
+        if nth > 0:
+            dt = cast("Self | None", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
         if not dt:
             raise PendulumException(
                 f"Unable to find occurrence {nth}"

@@ -550,13 +550,15 @@ class Date(FormattableMixin, date):
         Supported units are month, quarter and year.
 
         :param unit: The unit to use
-        :param nth: The occurrence to use
+        :param nth: The occurrence to use, starting at 1
         :param day_of_week: The day of week to set to.
         """
         if unit not in ["month", "quarter", "year"]:
             raise ValueError(f'Invalid unit "{unit}" for first_of()')
 
-        dt = cast("Self", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
+        dt = None
+        if nth > 0:
+            dt = cast("Self", getattr(self, f"_nth_of_{unit}")(nth, day_of_week))
         if not dt:
             raise PendulumException(
                 f"Unable to find occurrence {nth}"

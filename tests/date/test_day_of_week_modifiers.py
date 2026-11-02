@@ -196,6 +196,16 @@ def test_nth_of_month_outside_scope():
         d.nth_of("month", 6, pendulum.MONDAY)
 
 
+@pytest.mark.parametrize("date_type", [pendulum.Date, pendulum.DateTime])
+@pytest.mark.parametrize("unit", ["month", "quarter", "year"])
+@pytest.mark.parametrize("nth", [0, -1, -4])
+def test_nth_of_nonpositive_occurrence(date_type, unit, nth):
+    d = date_type(2024, 5, 15)
+
+    with pytest.raises(PendulumException):
+        d.nth_of(unit, nth, pendulum.FRIDAY)
+
+
 def test_nth_of_month_outside_year():
     d = pendulum.date(1975, 12, 5)
 
