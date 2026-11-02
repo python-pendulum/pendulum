@@ -594,6 +594,9 @@ class Formatter:
         elif token in ["X", "x"]:
             parsed["timestamp"] = parsed_token
         elif token in ["ZZ", "Z"]:
+            if value in ["Z", "z"]:
+                value = "+00:00"
+
             negative = bool(value.startswith("-"))
             tz = value[1:]
             if ":" not in tz:
