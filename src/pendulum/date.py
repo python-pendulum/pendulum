@@ -260,6 +260,9 @@ class Date(FormattableMixin, date):
 
         return self._add_timedelta(other)
 
+    def __radd__(self, other: timedelta) -> Self:
+        return self.__add__(other)
+
     @overload  # type: ignore[override]  # this is only needed because of Python 3.7
     def __sub__(self, __delta: timedelta) -> Self: ...
 
