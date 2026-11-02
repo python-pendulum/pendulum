@@ -259,12 +259,12 @@ def test_average_from_lower():
     assert_datetime(d2, 2004, 12, 31, 12, 30, 30)
 
 
-def start_of_with_invalid_unit():
+def test_start_of_with_invalid_unit():
     with pytest.raises(ValueError):
         pendulum.now().start_of("invalid")
 
 
-def end_of_with_invalid_unit():
+def test_end_of_with_invalid_unit():
     with pytest.raises(ValueError):
         pendulum.now().end_of("invalid")
 
