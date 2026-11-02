@@ -37,6 +37,20 @@ def test_from_format_with_timezone():
     assert d.timezone_name == "Europe/London"
 
 
+@pytest.mark.parametrize("token", ["Z", "ZZ"])
+@pytest.mark.parametrize("offset", ["Z", "z", "+00:00", "+0000"])
+@pytest.mark.parametrize("default_tz", ["UTC", "Europe/Paris"])
+def test_from_format_with_utc_designator(token, offset, default_tz):
+    d = pendulum.from_format(
+        f"1975-05-21T22:32:11{offset}",
+        f"YYYY-MM-DD[T]HH:mm:ss{token}",
+        tz=default_tz,
+    )
+
+    assert_datetime(d, 1975, 5, 21, 22, 32, 11)
+    assert d.offset == 0
+
+
 def test_from_format_with_square_bracket_in_timezone():
     with pytest.raises(ValueError, match=r"^String does not match format"):
         pendulum.from_format(
