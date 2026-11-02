@@ -487,7 +487,10 @@ def _paris_tzif_bytes() -> bytes:
 
 
 def test_from_file_without_a_key_can_be_pickled():
-    # get_local_timezone()'s last-resort fallback builds a Timezone this same way, with no key.
+    # Timezone.from_file without a key yields a keyless Timezone (key is
+    # None); this is still supported for pickling / utcoffset (#989). The
+    # local-timezone resolver no longer returns such a value, defaulting
+    # to UTC instead (see test_unix_localtime_regular_file_defaults_to_utc).
     from io import BytesIO
 
     import pendulum.tz.timezone as timezone_module
