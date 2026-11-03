@@ -278,7 +278,7 @@ class Interval(Duration, Generic[_T]):
             count: str | int = 0
             if abs(self.microseconds) > 0:
                 unit = f"units.second.{loaded_locale.plural(1)}"
-                count = f"{abs(self.microseconds) / 1e6:.2f}"
+                count = f"{self.microseconds / 1e6:.2f}"
             else:
                 unit = f"units.microsecond.{loaded_locale.plural(0)}"
 

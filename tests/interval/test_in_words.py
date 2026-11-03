@@ -56,6 +56,14 @@ def test_subseconds():
     assert interval.in_words() == "0.12 second"
 
 
+def test_negative_subseconds():
+    start_date = pendulum.datetime(2012, 1, 1)
+    interval = pendulum.interval(
+        start=start_date.add(microseconds=123456), end=start_date
+    )
+    assert interval.in_words() == "-0.12 second"
+
+
 def test_subseconds_with_seconds():
     start_date = pendulum.datetime(2012, 1, 1)
     interval = pendulum.interval(
