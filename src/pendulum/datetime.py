@@ -704,7 +704,7 @@ class DateTime(datetime.datetime, Date):
     # DIFFERENCES
 
     def diff(  # type: ignore[override]
-        self, dt: datetime.datetime | None = None, abs: bool = True
+        self, dt: DateTime | datetime.datetime | None = None, abs: bool = True
     ) -> Interval[datetime.datetime]:
         """
         Returns the difference between two DateTime objects represented as an Interval.
