@@ -14,11 +14,11 @@ translations = {
     "ordinal": {"one": ".", "two": ".", "few": ".", "other": "."},
     # Date formats
     "date_formats": {
-        "LTS": "h:mm:ss A",
-        "LT": "h:mm A",
-        "L": "MM/DD/YYYY",
-        "LL": "MMMM D, YYYY",
-        "LLL": "MMMM D, YYYY h:mm A",
-        "LLLL": "dddd, MMMM D, YYYY h:mm A",
+        "LTS": "HH:mm:ss",
+        "LT": "HH:mm",
+        "L": "DD.MM.YYYY",
+        "LL": "D MMMM YYYY",
+        "LLL": "D MMMM YYYY HH:mm",
+        "LLLL": "dddd, D MMMM YYYY HH:mm",
     },
 }

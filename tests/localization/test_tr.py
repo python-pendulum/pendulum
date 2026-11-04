@@ -64,3 +64,18 @@ def diff_for_humans():
 
     assert d.diff_for_humans(d2, True, locale=locale) == "1 saniye"
     assert d2.diff_for_humans(d.add(seconds=1), True, locale=locale) == "2 saniye"
+
+
+def test_format():
+    d = pendulum.datetime(2016, 8, 28, 7, 3, 6, 123456)
+    assert d.format("dddd", locale=locale) == "Pazar"
+    assert d.format("ddd", locale=locale) == "Paz"
+    assert d.format("MMMM", locale=locale) == "Ağustos"
+    assert d.format("MMM", locale=locale) == "Ağu"
+    assert d.format("Do", locale=locale) == "28."
+    assert d.format("LT", locale=locale) == "07:03"
+    assert d.format("LTS", locale=locale) == "07:03:06"
+    assert d.format("L", locale=locale) == "28.08.2016"
+    assert d.format("LL", locale=locale) == "28 Ağustos 2016"
+    assert d.format("LLL", locale=locale) == "28 Ağustos 2016 07:03"
+    assert d.format("LLLL", locale=locale) == "Pazar, 28 Ağustos 2016 07:03"
