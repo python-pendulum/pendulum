@@ -48,17 +48,15 @@ _MATCH_TIMEZONE = "[A-Za-z0-9-+]+(/[A-Za-z0-9-+_]+)?"
 def _ordinal_candidates(locale: Locale) -> tuple[str, ...]:
     """Regex candidates matching an ordinal number in the given locale.
 
-    Mirrors ``Locale.ordinalize()``: locales without ordinal suffixes
-    format ordinals as the plain number, so the parse pattern must
-    accept plain digits for them.
+    Mirrors ``Locale.ordinalize()``: locales whose ordinal map does not
+    cover every plural category format those numbers as the plain
+    number, so the parse pattern must accept plain digits as well.
     """
     candidates = tuple(
         rf"\d+{o}" for o in (locale.get("custom.ordinal") or {}).values()
     )
-    if not candidates:
-        candidates = (r"\d+",)
 
-    return candidates
+    return (*candidates, r"\d+")
 
 
 class Formatter:

@@ -241,6 +241,21 @@ def test_from_format_ordinal_month():
     assert_datetime(d, 1982, 6, 1, 0, 0, 0)
 
 
+def test_from_format_ordinal_with_partial_locale_ordinals():
+    """
+    Locales whose ordinal map does not cover every plural category
+    (Italian only maps ``other``; ``8`` falls in ``many``) format those
+    numbers without a suffix; ``from_format`` must accept what
+    ``format`` emits.
+    """
+    d = pendulum.datetime(1982, 8, 1)
+    s = d.format("Mo YYYY", locale="it")
+    assert s == "8 1982"
+
+    parsed = pendulum.from_format(s, "Mo YYYY", locale="it")
+    assert_datetime(parsed, 1982, 8, 1, 0, 0, 0)
+
+
 def test_from_format_ordinal_quarter():
     d = pendulum.from_format("2nd 1982", "Qo YYYY")
     assert_datetime(d, 1982, 4, 1, 0, 0, 0)
