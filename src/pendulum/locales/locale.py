@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from typing import Any
 from typing import ClassVar
-from typing import Dict
 from typing import cast
 
 
@@ -94,7 +93,7 @@ class Locale:
 
         An exact match wins. Otherwise a name matches when re.IGNORECASE accepts
         the text, the same rule the from_format regex used to let the text through.
-        Lowercasing is not used: "MAYIS".lower() differs from "Mayıs".lower().
+        Lowercasing is not used, because lower() maps dotted and dotless I differently.
         """
         translations = self.translation(key)
         for k, v in translations.items():
