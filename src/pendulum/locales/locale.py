@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 from typing import Any
 from typing import ClassVar
-from typing import Dict
 from typing import cast
 
 
@@ -88,12 +87,24 @@ class Locale:
 
         return f"{number}{ordinal}"
 
-    def match_translation(self, key: str, value: Any) -> dict[str, str] | None:
-        translations = self.translation(key)
-        if value not in translations.values():
-            return None
+    def match_translation(self, key: str, value: str) -> Any | None:
+        """
+        Return the translation key whose name matches value, or None.
 
-        return cast(Dict[str, str], {v: k for k, v in translations.items()}[value])
+        An exact match wins. Otherwise a name matches when re.IGNORECASE accepts
+        the text, the same rule the from_format regex used to let the text through.
+        Lowercasing is not used, because lower() maps dotted and dotless I differently.
+        """
+        translations = self.translation(key)
+        for k, v in translations.items():
+            if v == value:
+                return k
+
+        for k, v in translations.items():
+            if re.fullmatch(re.escape(v), value, re.IGNORECASE):
+                return k
+
+        return None
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self._locale}')"
