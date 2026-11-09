@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Fixed
+- `from_format` now parses the ordinal tokens `Mo`, `Qo` and `DDDo`, and `Do` in locales without ordinal suffixes, matching what `format()` emits; the remaining unsupported ordinal tokens raise the regular `ValueError` instead of `AttributeError` [#1074](https://github.com/python-pendulum/pendulum/issues/1074)
+
 ## [3.3.0] - 2026-10-12
 
 ### Added

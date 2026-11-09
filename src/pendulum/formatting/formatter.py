@@ -45,6 +45,20 @@ _MATCH_WORD = (
 _MATCH_TIMEZONE = "[A-Za-z0-9-+]+(/[A-Za-z0-9-+_]+)?"
 
 
+def _ordinal_candidates(locale: Locale, plain_fallback: bool = True) -> tuple[str, ...]:
+    """Regex candidates matching `format()` output for ordinal tokens.
+
+    Locales without a `custom.ordinal` table format ordinals as plain
+    numbers (see `Locale.ordinalize`), so the pattern must accept bare
+    digits there.
+    """
+    ordinals = locale.get("custom.ordinal")
+    if not ordinals:
+        return (r"\d+",) if plain_fallback else ()
+
+    return tuple(rf"\d+{o}" for o in ordinals.values())
+
+
 class Formatter:
     _TOKENS: str = (
         r"\[([^\[]*)\]|\\(.)|"
@@ -71,14 +85,12 @@ class Formatter:
     _LOCALIZABLE_TOKENS: ClassVar[
         dict[str, str | Callable[[Locale], Sequence[str]] | None]
     ] = {
-        "Qo": None,
+        "Qo": lambda locale: _ordinal_candidates(locale),
         "MMMM": "months.wide",
         "MMM": "months.abbreviated",
-        "Mo": None,
-        "DDDo": None,
-        "Do": lambda locale: tuple(
-            rf"\d+{o}" for o in locale.get("custom.ordinal").values()
-        ),
+        "Mo": lambda locale: _ordinal_candidates(locale),
+        "DDDo": lambda locale: _ordinal_candidates(locale),
+        "Do": lambda locale: _ordinal_candidates(locale),
         "dddd": "days.wide",
         "ddd": "days.abbreviated",
         "dd": "days.short",
@@ -631,6 +643,24 @@ class Formatter:
             parsed["day"] = int(cast("Match[str]", re.match(r"(\d+)", value)).group(1))
 
             return
+        elif token == "Qo":
+            parsed["quarter"] = int(
+                cast("Match[str]", re.match(r"(\d+)", value)).group(1)
+            )
+
+            return
+        elif token == "Mo":
+            parsed["month"] = int(
+                cast("Match[str]", re.match(r"(\d+)", value)).group(1)
+            )
+
+            return
+        elif token == "DDDo":
+            parsed["day_of_year"] = int(
+                cast("Match[str]", re.match(r"(\d+)", value)).group(1)
+            )
+
+            return
         elif token == "dddd":
             unit = "day_of_week"
             match = "days.wide"
@@ -676,6 +706,9 @@ class Formatter:
 
         if token in self._LOCALIZABLE_TOKENS:
             values = self._LOCALIZABLE_TOKENS[token]
+            if values is None:
+                raise ValueError(f"Unsupported token: {token}")
+
             if callable(values):
                 candidates = values(locale)
             else:
