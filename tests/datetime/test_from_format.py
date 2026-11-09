@@ -220,3 +220,37 @@ def test_from_format_2_digit_year():
 
     d = pendulum.from_format("99", "YY")
     assert d.year == 1999
+
+
+def test_from_format_do_ordinal():
+    d = pendulum.from_format("7th June 1982", "Do MMMM YYYY", locale="en")
+    assert_datetime(d, 1982, 6, 7)
+
+
+def test_from_format_do_without_locale_ordinals():
+    # de has no custom.ordinal table; format() emits the plain number
+    d = pendulum.from_format("7 Juni 1982", "Do MMMM YYYY", locale="de")
+    assert_datetime(d, 1982, 6, 7)
+
+
+def test_from_format_quarter_ordinal():
+    d = pendulum.from_format("2nd 1982", "Qo YYYY", locale="en")
+    assert d.year == 1982
+    assert d.quarter == 2
+
+
+def test_from_format_month_ordinal():
+    d = pendulum.from_format("6th 1982", "Mo YYYY", locale="en")
+    assert_datetime(d, 1982, 6, 1)
+
+
+def test_from_format_day_of_year_ordinal():
+    d = pendulum.from_format("158th 1982", "DDDo YYYY", locale="en")
+    assert_datetime(d, 1982, 6, 7)
+
+
+@pytest.mark.parametrize("token", ["do", "e", "eo", "Wo", "wo"])
+def test_from_format_unsupported_tokens_raise_value_error(token):
+    # previously a raw AttributeError leaked from the None entries
+    with pytest.raises(ValueError, match="Unsupported token"):
+        pendulum.from_format(f"1 1982", f"{token} YYYY", locale="en")
