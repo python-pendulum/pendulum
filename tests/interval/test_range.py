@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
 from pendulum.interval import Interval
@@ -117,3 +119,15 @@ def test_range_amount():
     assert_datetime(r[1], 2016, 10, 16, 1, 0, 0)
     assert_datetime(r[2], 2016, 10, 18, 0, 0, 0)
     assert_datetime(r[3], 2016, 10, 20, 0, 0, 0)
+
+
+def test_range_zero_amount_raises():
+    p = Interval(pendulum.datetime(2016, 1, 1), pendulum.datetime(2016, 2, 1))
+    with pytest.raises(ValueError, match="positive integer"):
+        list(p.range("days", 0))
+
+
+def test_range_negative_amount_raises():
+    p = Interval(pendulum.datetime(2016, 1, 1), pendulum.datetime(2016, 2, 1))
+    with pytest.raises(ValueError, match="positive integer"):
+        list(p.range("days", -1))
