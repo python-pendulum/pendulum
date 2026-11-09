@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Fixed
+- `Interval.range()` now raises `ValueError` for a non-positive `amount` instead of silently producing an infinite (amount <= 0... zero repeats the start forever, negative runs away from the end) or unbounded generator [#1080](https://github.com/python-pendulum/pendulum/issues/1080)
+
 ## [3.3.0] - 2026-10-12
 
 ### Added
