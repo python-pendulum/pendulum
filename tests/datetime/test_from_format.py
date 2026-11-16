@@ -220,3 +220,21 @@ def test_from_format_2_digit_year():
 
     d = pendulum.from_format("99", "YY")
     assert d.year == 1999
+
+
+@pytest.mark.parametrize(
+    "locale", ["de", "bg", "ru", "pl", "uk", "da", "sv", "en", "fr"]
+)
+@pytest.mark.parametrize("day", [1, 2, 3, 11, 21, 31])
+def test_from_format_ordinal_day_round_trip(locale, day):
+    date = pendulum.datetime(2024, 1, day)
+    fmt = "YYYY-MM-Do"
+    text = date.format(fmt, locale=locale)
+
+    assert pendulum.from_format(text, fmt, locale=locale) == date
+
+
+@pytest.mark.parametrize("token", ["Qo", "Mo", "DDDo", "do", "e", "eo", "Wo", "wo"])
+def test_from_format_unsupported_localized_token(token):
+    with pytest.raises(ValueError, match=f"^Unsupported token: {token}$"):
+        pendulum.from_format("1", token)
