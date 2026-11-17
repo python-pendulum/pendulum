@@ -323,3 +323,48 @@ def test_end_of_on_date_after_transition():
     assert d.end_of("day").offset == 3600
     assert d.end_of("month").offset == 3600
     assert d.end_of("year").offset == 3600
+
+
+def _from_utc(tz, *args):
+    # Like pendulum.now(tz): fold is 0 for an unambiguous time.
+    return pendulum.datetime(*args, tz="UTC").in_timezone(tz)
+
+
+def test_start_of_day_skipped_midnight_with_fold_0():
+    # Santiago skipped 2022-09-11 00:00-01:00; the day starts at 01:00.
+    d = _from_utc("America/Santiago", 2022, 9, 11, 15)
+    assert d.fold == 0
+
+    start = d.start_of("day")
+    assert_datetime(start, 2022, 9, 11, 1, 0, 0, 0)
+    assert start.offset == -3 * 3600
+
+
+def test_start_of_month_skipped_midnight_with_fold_0():
+    # Asuncion skipped 2023-10-01 00:00-01:00.
+    d = _from_utc("America/Asuncion", 2023, 10, 15, 15)
+    assert d.fold == 0
+
+    start = d.start_of("month")
+    assert_datetime(start, 2023, 10, 1, 1, 0, 0, 0)
+    assert start.offset == -3 * 3600
+
+
+def test_start_of_day_repeated_midnight_with_fold_1():
+    # Havana repeated 2012-11-04 00:00-01:00; the day starts at the first 00:00.
+    d = pendulum.datetime(2012, 11, 4, 12, tz="America/Havana")
+    assert d.fold == 1
+
+    start = d.start_of("day")
+    assert_datetime(start, 2012, 11, 4, 0, 0, 0, 0)
+    assert start.offset == -4 * 3600
+
+
+def test_end_of_day_repeated_last_hour_with_fold_0():
+    # Santiago repeated 2023-04-01 23:00-24:00; the day ends in the second pass.
+    d = _from_utc("America/Santiago", 2023, 4, 1, 15)
+    assert d.fold == 0
+
+    end = d.end_of("day")
+    assert_datetime(end, 2023, 4, 1, 23, 59, 59, 999999)
+    assert end.offset == -4 * 3600
