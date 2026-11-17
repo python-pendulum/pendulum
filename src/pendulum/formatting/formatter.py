@@ -76,8 +76,13 @@ class Formatter:
         "MMM": "months.abbreviated",
         "Mo": None,
         "DDDo": None,
-        "Do": lambda locale: tuple(
-            rf"\d+{o}" for o in locale.get("custom.ordinal").values()
+        "Do": lambda locale: (
+            *(
+                rf"\d+{re.escape(o)}"
+                for o in (locale.get("custom.ordinal") or {}).values()
+                if o
+            ),
+            r"\d+",
         ),
         "dddd": "days.wide",
         "ddd": "days.abbreviated",
@@ -676,6 +681,9 @@ class Formatter:
 
         if token in self._LOCALIZABLE_TOKENS:
             values = self._LOCALIZABLE_TOKENS[token]
+            if values is None:
+                raise ValueError(f"Unsupported token: {token}")
+
             if callable(values):
                 candidates = values(locale)
             else:
