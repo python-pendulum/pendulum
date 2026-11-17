@@ -825,43 +825,93 @@ class DateTime(datetime.datetime, Date):
         """
         return self.set(minute=59, second=59, microsecond=999999)
 
+    def _first_instant(self, year: int, month: int, day: int) -> Self:
+        """
+        Return the earliest instant of the given local date.
+        """
+        return self._local_instant(year, month, day, 0, 0, 0, 0, latest=False)
+
+    def _last_instant(self, year: int, month: int, day: int) -> Self:
+        """
+        Return the latest instant of the given local date.
+        """
+        return self._local_instant(year, month, day, 23, 59, 59, 999999, latest=True)
+
+    def _local_instant(
+        self,
+        year: int,
+        month: int,
+        day: int,
+        hour: int,
+        minute: int,
+        second: int,
+        microsecond: int,
+        latest: bool,
+    ) -> Self:
+        # Do not reuse self.fold: if the wall time is repeated (or skipped)
+        # by a DST change, only one fold gives the earliest (or latest)
+        # instant that still falls on the given date.
+        candidates = [
+            self.__class__.create(
+                year,
+                month,
+                day,
+                hour,
+                minute,
+                second,
+                microsecond,
+                tz=self.tz,
+                fold=fold,
+            )
+            for fold in (0, 1)
+        ]
+        on_date = [
+            dt for dt in candidates if (dt.year, dt.month, dt.day) == (year, month, day)
+        ] or candidates
+
+        def instant(dt: Self) -> datetime.datetime:
+            # Same-tzinfo comparisons ignore the offset, so compare in UTC terms.
+            return dt.replace(tzinfo=None) - (dt.utcoffset() or datetime.timedelta())
+
+        return (max if latest else min)(on_date, key=instant)
+
     def _start_of_day(self) -> Self:
         """
         Reset the time to 00:00:00.
         """
-        return self.at(0, 0, 0, 0)
+        return self._first_instant(self.year, self.month, self.day)
 
     def _end_of_day(self) -> Self:
         """
         Reset the time to 23:59:59.999999.
         """
-        return self.at(23, 59, 59, 999999)
+        return self._last_instant(self.year, self.month, self.day)
 
     def _start_of_month(self) -> Self:
         """
         Reset the date to the first day of the month and the time to 00:00:00.
         """
-        return self.set(self.year, self.month, 1, 0, 0, 0, 0)
+        return self._first_instant(self.year, self.month, 1)
 
     def _end_of_month(self) -> Self:
         """
         Reset the date to the last day of the month
         and the time to 23:59:59.999999.
         """
-        return self.set(self.year, self.month, self.days_in_month, 23, 59, 59, 999999)
+        return self._last_instant(self.year, self.month, self.days_in_month)
 
     def _start_of_year(self) -> Self:
         """
         Reset the date to the first day of the year and the time to 00:00:00.
         """
-        return self.set(self.year, 1, 1, 0, 0, 0, 0)
+        return self._first_instant(self.year, 1, 1)
 
     def _end_of_year(self) -> Self:
         """
         Reset the date to the last day of the year
         and the time to 23:59:59.999999.
         """
-        return self.set(self.year, 12, 31, 23, 59, 59, 999999)
+        return self._last_instant(self.year, 12, 31)
 
     def _start_of_decade(self) -> Self:
         """
@@ -869,7 +919,7 @@ class DateTime(datetime.datetime, Date):
         and the time to 00:00:00.
         """
         year = self.year - self.year % YEARS_PER_DECADE
-        return self.set(year, 1, 1, 0, 0, 0, 0)
+        return self._first_instant(year, 1, 1)
 
     def _end_of_decade(self) -> Self:
         """
@@ -878,7 +928,7 @@ class DateTime(datetime.datetime, Date):
         """
         year = self.year - self.year % YEARS_PER_DECADE + YEARS_PER_DECADE - 1
 
-        return self.set(year, 12, 31, 23, 59, 59, 999999)
+        return self._last_instant(year, 12, 31)
 
     def _start_of_century(self) -> Self:
         """
@@ -887,7 +937,7 @@ class DateTime(datetime.datetime, Date):
         """
         year = self.year - 1 - (self.year - 1) % YEARS_PER_CENTURY + 1
 
-        return self.set(year, 1, 1, 0, 0, 0, 0)
+        return self._first_instant(year, 1, 1)
 
     def _end_of_century(self) -> Self:
         """
@@ -896,7 +946,7 @@ class DateTime(datetime.datetime, Date):
         """
         year = self.year - 1 - (self.year - 1) % YEARS_PER_CENTURY + YEARS_PER_CENTURY
 
-        return self.set(year, 12, 31, 23, 59, 59, 999999)
+        return self._last_instant(year, 12, 31)
 
     def _start_of_week(self) -> Self:
         """
