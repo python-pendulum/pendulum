@@ -76,9 +76,13 @@ class Formatter:
         "MMM": "months.abbreviated",
         "Mo": None,
         "DDDo": None,
-        "Do": lambda locale: tuple(
-            rf"\d+{re.escape(o)}"
-            for o in (locale.get("custom.ordinal") or {"other": ""}).values()
+        "Do": lambda locale: (
+            *(
+                rf"\d+{re.escape(o)}"
+                for o in (locale.get("custom.ordinal") or {}).values()
+                if o
+            ),
+            r"\d+",
         ),
         "dddd": "days.wide",
         "ddd": "days.abbreviated",

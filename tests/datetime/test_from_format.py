@@ -223,12 +223,14 @@ def test_from_format_2_digit_year():
 
 
 @pytest.mark.parametrize(
-    "locale", ["de", "bg", "ru", "pl", "uk", "da", "sv", "en", "fr"]
+    "locale", ["de", "bg", "ru", "pl", "uk", "da", "sv", "en", "fr", "it"]
 )
-@pytest.mark.parametrize("day", [1, 2, 3, 11, 21, 31])
-def test_from_format_ordinal_day_round_trip(locale, day):
+@pytest.mark.parametrize("day", [1, 2, 3, 8, 11, 21, 31])
+@pytest.mark.parametrize(
+    "fmt", ["YYYY-MM-Do", "Do MMMM YYYY", "MMMM Do, YYYY", "Do.MM.YYYY"]
+)
+def test_from_format_ordinal_day_round_trip(locale, day, fmt):
     date = pendulum.datetime(2024, 1, day)
-    fmt = "YYYY-MM-Do"
     text = date.format(fmt, locale=locale)
 
     assert pendulum.from_format(text, fmt, locale=locale) == date
