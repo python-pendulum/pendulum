@@ -126,15 +126,31 @@ class Duration(timedelta):
         return self
 
     def total_minutes(self) -> float:
+        """
+        The total length of the duration in minutes, as a float.
+        Years count as 365 days and months as 30 days.
+        """
         return self.total_seconds() / SECONDS_PER_MINUTE
 
     def total_hours(self) -> float:
+        """
+        The total length of the duration in hours, as a float.
+        Years count as 365 days and months as 30 days.
+        """
         return self.total_seconds() / SECONDS_PER_HOUR
 
     def total_days(self) -> float:
+        """
+        The total length of the duration in days, as a float.
+        Years count as 365 days and months as 30 days.
+        """
         return self.total_seconds() / SECONDS_PER_DAY
 
     def total_weeks(self) -> float:
+        """
+        The total length of the duration in weeks, as a float.
+        Years count as 365 days and months as 30 days.
+        """
         return self.total_days() / 7
 
     if PYPY:
@@ -160,14 +176,24 @@ class Duration(timedelta):
 
     @property
     def years(self) -> int:
+        """
+        The years component the duration was created with.
+        """
         return self._years
 
     @property
     def months(self) -> int:
+        """
+        The months component the duration was created with.
+        """
         return self._months
 
     @property
     def weeks(self) -> int:
+        """
+        The number of whole weeks in the days part of the duration.
+        Years and months are not included: see in_weeks() for the total.
+        """
         return self._weeks
 
     if PYPY:
@@ -178,10 +204,16 @@ class Duration(timedelta):
 
     @property
     def remaining_days(self) -> int:
+        """
+        The days left over after whole weeks are taken out of the days part.
+        """
         return self._remaining_days
 
     @property
     def hours(self) -> int:
+        """
+        The hours component of the time part (negative if the duration is).
+        """
         if self._h is None:
             seconds = self._seconds
             self._h = 0
@@ -192,6 +224,9 @@ class Duration(timedelta):
 
     @property
     def minutes(self) -> int:
+        """
+        The minutes component of the time part (negative if the duration is).
+        """
         if self._i is None:
             seconds = self._seconds
             self._i = 0
@@ -202,10 +237,17 @@ class Duration(timedelta):
 
     @property
     def seconds(self) -> int:
+        """
+        The time part of the duration in seconds (negative if the duration is).
+        Whole days are not included: see in_seconds() for the total.
+        """
         return self._seconds
 
     @property
     def remaining_seconds(self) -> int:
+        """
+        The seconds component of the time part (negative if the duration is).
+        """
         if self._s is None:
             self._s = self._seconds
             self._s = abs(self._s) % 60 * self._sign(self._s)
@@ -214,28 +256,49 @@ class Duration(timedelta):
 
     @property
     def microseconds(self) -> int:
+        """
+        The microseconds component of the duration.
+        """
         return self._microseconds
 
     @property
     def invert(self) -> bool:
+        """
+        True if the duration is negative.
+        """
         if self._invert is None:
             self._invert = self.total_seconds() < 0
 
         return self._invert
 
     def in_weeks(self) -> int:
+        """
+        The total length of the duration in whole weeks (rounded towards zero).
+        """
         return int(self.total_weeks())
 
     def in_days(self) -> int:
+        """
+        The total length of the duration in whole days (rounded towards zero).
+        """
         return int(self.total_days())
 
     def in_hours(self) -> int:
+        """
+        The total length of the duration in whole hours (rounded towards zero).
+        """
         return int(self.total_hours())
 
     def in_minutes(self) -> int:
+        """
+        The total length of the duration in whole minutes (rounded towards zero).
+        """
         return int(self.total_minutes())
 
     def in_seconds(self) -> int:
+        """
+        The total length of the duration in whole seconds (rounded towards zero).
+        """
         return int(self.total_seconds())
 
     def in_words(self, locale: str | None = None, separator: str = " ") -> str:
