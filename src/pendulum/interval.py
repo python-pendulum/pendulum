@@ -39,8 +39,9 @@ class Interval(Duration, Generic[_T]):
     """
 
     def __new__(cls, start: _T, end: _T, absolute: bool = False) -> Self:
-        if (isinstance(start, datetime) and not isinstance(end, datetime)) or (
-            not isinstance(start, datetime) and isinstance(end, datetime)
+        if (isinstance(start, datetime) and not isinstance(end, datetime) or
+            not isinstance(start, datetime) and isinstance(end, datetime) or
+            not (isinstance(start, date) and isinstance(end, date))  # Time not allowed
         ):
             raise ValueError(
                 "Both start and end of an Interval must have the same type"
