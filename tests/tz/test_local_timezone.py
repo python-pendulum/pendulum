@@ -7,6 +7,8 @@ import pytest
 
 from pendulum.tz.local_timezone import _get_unix_timezone
 from pendulum.tz.local_timezone import _get_windows_timezone
+from pendulum.tz.local_timezone import get_local_timezone
+from pendulum.tz.timezone import Timezone
 
 
 @pytest.mark.skipif(
@@ -50,3 +52,15 @@ def test_unix_etc_timezone_dir():
     tz = _get_unix_timezone(_root=root_path)
 
     assert tz.name == "Europe/Paris"
+
+
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="Test only available for UNIX systems"
+)
+def test_unix_respects_TZ_env_var(monkeypatch):  # noqa: N802
+    monkeypatch.setattr("pendulum.tz.local_timezone._local_timezone", None)
+    monkeypatch.setenv("TZ", "Europe/Paris")
+
+    tz = get_local_timezone()
+
+    assert tz == Timezone("Europe/Paris")
