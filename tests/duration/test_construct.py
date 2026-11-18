@@ -97,3 +97,21 @@ def test_float_years_and_months():
 
     with pytest.raises(ValueError):
         pendulum.duration(months=1.5)
+
+
+def test_duration_rejects_bool():
+    for key in (
+        "days",
+        "seconds",
+        "microseconds",
+        "milliseconds",
+        "minutes",
+        "hours",
+        "weeks",
+        "years",
+        "months",
+    ):
+        with pytest.raises(TypeError, match=key):
+            pendulum.duration(**{key: True})
+        with pytest.raises(TypeError, match=key):
+            pendulum.duration(**{key: False})
