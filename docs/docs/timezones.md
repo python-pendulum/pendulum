@@ -9,6 +9,21 @@ tries to provide an easy and accurate system to handle them properly.
     can also be used with the standard ``datetime`` library with a few limitations.
     See [Using the timezone library directly](#using-the-timezone-library-directly).
 
+## Listing available time zones
+
+You can retrieve the available IANA time zone names using
+`pendulum.timezones()`.
+
+```python
+>>> import pendulum
+
+>>> zones = pendulum.timezones()
+>>> "Europe/Paris" in zones
+True
+```
+
+The function returns a `set[str]` of available IANA time zone names.
+
 ## Normalization
 
 When you create a `DateTime` instance, the library will normalize it for the
