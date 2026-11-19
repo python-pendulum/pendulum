@@ -304,3 +304,21 @@ def test_parse_interval_invalid():
 def test_parse_duration_fraction_only_allowed_on_last_component():
     with pytest.raises(ParserError):
         parse("P2Y3M4DT5.5H6M7S")
+
+
+@pytest.mark.parametrize(
+    "text, seconds",
+    [
+        ("P1.5D", 129600),   # one fractional digit, already correct
+        ("P1.25D", 108000),
+        ("PT1.25H", 4500),
+        ("PT1.05M", 63),
+        ("P1.25W", 756000),
+    ],
+)
+def test_parse_duration_multi_digit_fraction(text, seconds):
+    # Imports the pure-Python parser directly: `parse` uses the Rust extension
+    # unless PENDULUM_EXTENSIONS=0, so going through it would not exercise this.
+    from pendulum.parsing.iso8601 import parse_iso8601
+
+    assert parse_iso8601(text).total_seconds() == seconds
