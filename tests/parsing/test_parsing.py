@@ -520,6 +520,17 @@ def test_iso8601_time():
     assert parsed.tzinfo is None
 
 
+@pytest.mark.parametrize("offset", ["+05:30", "-03:45", "+00:00", "Z"])
+def test_iso8601_time_preserves_offset(offset):
+    text = f"20:12:05.123456{offset}"
+    now = datetime.datetime(2015, 11, 12)
+    expected = datetime.datetime.fromisoformat(
+        f"2015-11-12T{text.replace('Z', '+00:00')}"
+    )
+
+    assert parse(text, now=now) == expected
+
+
 def test_iso8601_ordinal_invalid():
     text = "2012-007-05"
 

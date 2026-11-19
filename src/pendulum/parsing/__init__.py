@@ -99,6 +99,7 @@ def _normalize(
             parsed.minute,
             parsed.second,
             parsed.microsecond,
+            tzinfo=parsed.tzinfo,
         )
     elif isinstance(parsed, date) and not isinstance(parsed, datetime):
         return datetime(parsed.year, parsed.month, parsed.day)
