@@ -368,7 +368,13 @@ class Duration(timedelta):
             usec = self._to_microseconds()
             a, b = other.as_integer_ratio()
 
-            return self.__class__(0, 0, _divide_and_round(usec * a, b))
+            return self.__class__(
+                0,
+                0,
+                _divide_and_round(usec * a, b),
+                years=_divide_and_round(self._years * a, b),
+                months=_divide_and_round(self._months * a, b),
+            )
 
         return NotImplemented
 
