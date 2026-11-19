@@ -82,6 +82,7 @@ ParserError: Unable to parse string [31-01-01]
 ### Time
 
 When passing only time information the date will default to today.
+An explicit UTC offset is preserved, just as it is for a complete datetime.
 
 | String                            | Output                                     |
 | --------------------------------- | ------------------------------------------ |
@@ -89,6 +90,7 @@ When passing only time information the date will default to today.
 | 12:04:23                          | 2016-12-17T12:04:23+00:00                  |
 | 120423                            | 2016-12-17T12:04:23+00:00                  |
 | 12:04:23.45                       | 2016-12-17T12:04:23.450000+00:00           |
+| 12:04:23+05:30                    | 2016-12-17T12:04:23+05:30                 |
 
 ### Intervals
 

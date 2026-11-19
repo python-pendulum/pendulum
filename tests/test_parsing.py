@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import datetime
+
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_date
@@ -46,6 +50,21 @@ def test_parse_with_timezone() -> None:
     assert dt.tz is not None
     assert dt.tz.name == "Europe/Paris"
     assert dt.offset == 7200
+
+
+@pytest.mark.parametrize("offset", ["+05:30", "-03:45", "+00:00", "Z"])
+@pytest.mark.parametrize("tz", ["UTC", "Europe/Paris"])
+def test_parse_time_preserves_offset(offset: str, tz: str) -> None:
+    text = f"20:12:05.123456{offset}"
+    expected = datetime.datetime.fromisoformat(
+        f"2015-11-12T{text.replace('Z', '+00:00')}"
+    )
+
+    parsed = pendulum.parse(text, now=datetime.datetime(2015, 11, 12), tz=tz)
+
+    assert isinstance(parsed, pendulum.DateTime)
+    assert parsed == expected
+    assert parsed.utcoffset() == expected.utcoffset()
 
 
 def test_parse_exact() -> None:
