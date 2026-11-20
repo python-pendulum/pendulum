@@ -282,11 +282,16 @@ def from_format(
     return datetime(**parts)
 
 
-def from_timestamp(timestamp: int | float, tz: str | Timezone = UTC) -> DateTime:
+def from_timestamp(timestamp: float, tz: str | Timezone = UTC) -> DateTime:
     """
     Create a DateTime instance from a timestamp.
     """
-    dt = _datetime.datetime.fromtimestamp(timestamp, tz=UTC)
+    # datetime.fromtimestamp() delegates to the platform C library, which
+    # rejects negative timestamps on Windows. Use epoch arithmetic instead so
+    # all timestamps within datetime's range work consistently everywhere.
+    dt = _datetime.datetime(
+        1970, 1, 1, tzinfo=_datetime.timezone.utc
+    ) + _datetime.timedelta(seconds=timestamp)
 
     dt = datetime(
         dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond
