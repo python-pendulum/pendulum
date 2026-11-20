@@ -12,6 +12,12 @@ def test_create_from_timestamp_returns_pendulum():
     assert d.timezone_name == "UTC"
 
 
+def test_create_from_timestamp_before_epoch():
+    d = pendulum.from_timestamp(-43201)
+    assert_datetime(d, 1969, 12, 31, 11, 59, 59)
+    assert d.timezone_name == "UTC"
+
+
 def test_create_from_timestamp_with_timezone_string():
     d = pendulum.from_timestamp(0, "America/Toronto")
     assert d.timezone_name == "America/Toronto"
