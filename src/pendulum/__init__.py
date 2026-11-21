@@ -238,7 +238,7 @@ def instance(
     return DateTime.instance(obj, tz=tz)
 
 
-def now(tz: str | Timezone | None = None) -> DateTime:
+def now(tz: str | float | _datetime.tzinfo | None = None) -> DateTime:
     """
     Get a DateTime instance for the current date and time.
     """

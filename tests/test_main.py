@@ -15,6 +15,17 @@ from pendulum import timezone
 from pendulum.tz.timezone import Timezone
 
 
+def test_now_with_numeric_offsets() -> None:
+    assert pendulum.now(5.5).timezone_name == "+05:30"
+    assert pendulum.DateTime.now(-3.5).timezone_name == "-03:30"
+
+
+def test_now_with_zoneinfo() -> None:
+    assert (
+        pendulum.now(zoneinfo.ZoneInfo("Europe/Paris")).timezone_name == "Europe/Paris"
+    )
+
+
 def test_instance_with_naive_datetime_defaults_to_utc() -> None:
     now = pendulum.instance(datetime.now())
     assert now.timezone_name == "UTC"
