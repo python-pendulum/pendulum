@@ -83,3 +83,25 @@ def test_floor_divide():
 
     assert isinstance(mul, pendulum.Duration)
     assert_duration(mul, 0, 1, 0, 0, 16, 0, 11, 840740)
+
+
+def test_abs():
+    it = pendulum.duration(years=-2, months=-3, days=-10, seconds=-34, microseconds=-5)
+    result = abs(it)
+
+    assert isinstance(result, pendulum.Duration)
+    assert_duration(result, 2, 3, 1, 3, 0, 0, 34, 5)
+
+    it = pendulum.duration(years=2, months=3, days=10)
+    result = abs(it)
+
+    assert isinstance(result, pendulum.Duration)
+    assert_duration(result, 2, 3, 1, 3, 0, 0, 0, 0)
+
+
+def test_pos():
+    it = pendulum.duration(years=2, months=3, days=10)
+    result = +it
+
+    assert isinstance(result, pendulum.Duration)
+    assert_duration(result, 2, 3, 1, 3, 0, 0, 0, 0)

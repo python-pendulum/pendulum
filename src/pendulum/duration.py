@@ -353,6 +353,12 @@ class Duration(timedelta):
             microseconds=-self._microseconds,
         )
 
+    def __pos__(self) -> Self:
+        return self
+
+    def __abs__(self) -> Self:
+        return -self if self.total_seconds() < 0 else self
+
     def _to_microseconds(self) -> int:
         return (self._days * (24 * 3600) + self._seconds) * 1000000 + self._microseconds
 
