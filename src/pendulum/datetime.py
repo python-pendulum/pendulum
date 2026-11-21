@@ -147,18 +147,8 @@ class DateTime(datetime.datetime, Date):
             fold=dt.fold,
         )
 
-    @overload
     @classmethod
-    def now(cls, tz: datetime.tzinfo | None = None) -> Self: ...
-
-    @overload
-    @classmethod
-    def now(cls, tz: str | Timezone | FixedTimezone | None = None) -> Self: ...
-
-    @classmethod
-    def now(
-        cls, tz: str | Timezone | FixedTimezone | datetime.tzinfo | None = None
-    ) -> Self:
+    def now(cls, tz: str | float | datetime.tzinfo | None = None) -> Self:
         """
         Get a DateTime instance for the current date and time.
         """

@@ -52,7 +52,8 @@ timezone to the local timezone.
 
     `local()` is just an alias for `datetime(..., tz='local')`.
 
-There is also the `now()` method.
+The `now()` method accepts a timezone name, a `tzinfo` object, or a numeric
+UTC offset in hours. It uses the local timezone by default.
 
 ```python
 >>> import pendulum
@@ -62,6 +63,8 @@ There is also the `now()` method.
 >>> now_in_london_tz = pendulum.now('Europe/London')
 >>> now_in_london_tz.timezone_name
 'Europe/London'
+>>> pendulum.now(5.5).timezone_name
+'+05:30'
 ```
 
 To accompany `now()`, a few other static instantiation helpers exist to create known instances.
