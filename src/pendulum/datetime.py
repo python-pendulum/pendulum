@@ -317,7 +317,7 @@ class DateTime(datetime.datetime, Date):
 
     def naive(self) -> Self:
         """
-        Return the DateTime without timezone information.
+        Return the DateTime without timezone information, preserving the fold.
         """
         return self.__class__(
             self.year,
@@ -327,6 +327,7 @@ class DateTime(datetime.datetime, Date):
             self.minute,
             self.second,
             self.microsecond,
+            fold=self.fold,
         )
 
     def on(self, year: int, month: int, day: int) -> Self:

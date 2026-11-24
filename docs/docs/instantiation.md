@@ -88,8 +88,9 @@ and each has their time value set to `00:00:00`.
 ```
 
 Pendulum enforces timezone aware datetimes, and using them is the preferred and recommended way
-of using the library. However, if you really need a **naive** `DateTime` object, the `naive()` helper
-is there for you.
+of using the library. If you need a **naive** `DateTime` object, `naive()` removes the timezone
+and preserves the local time and its `fold` value. During a clock rollback, this distinguishes the
+first occurrence of a local time from the second.
 
 ```python
 >>> import pendulum
