@@ -1,5 +1,10 @@
 # Change Log
 
+## Unreleased
+
+### Fixed
+- Preserve the DST fold when removing timezone information with `DateTime.naive()`.
+
 ## [3.3.0] - 2026-10-12
 
 ### Added

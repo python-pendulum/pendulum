@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
 from tests.conftest import assert_datetime
@@ -76,3 +78,24 @@ def test_naive_method():
     assert dt.tzinfo is None
     assert dt.timezone is None
     assert dt.timezone_name is None
+
+
+@pytest.mark.parametrize("fold", [0, 1])
+@pytest.mark.parametrize(
+    "tz, year, month, day, hour, minute",
+    [
+        ("America/New_York", 2024, 11, 3, 1, 30),
+        ("Australia/Lord_Howe", 2024, 4, 7, 1, 45),
+    ],
+)
+def test_naive_method_preserves_fold(tz, year, month, day, hour, minute, fold):
+    dt = pendulum.datetime(year, month, day, hour, minute, 12, 345678, tz=tz, fold=fold)
+
+    naive = dt.naive()
+
+    assert isinstance(naive, pendulum.DateTime)
+    assert_datetime(naive, year, month, day, hour, minute, 12, 345678)
+    assert naive.tzinfo is None
+    assert naive.fold == fold
+    assert naive.replace(tzinfo=dt.tzinfo).timestamp() == dt.timestamp()
+    assert naive.naive().fold == fold
