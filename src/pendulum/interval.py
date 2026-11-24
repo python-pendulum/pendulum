@@ -298,8 +298,8 @@ class Interval(Duration, Generic[_T]):
             op = operator.ge
 
         # A negative amount walks the opposite direction of the interval.
-        # Flip the step so the loop either iterates toward the end (matching
-        # sign) or is empty immediately (wrong sign), instead of hanging.
+        # Flip the comparison too, so unequal endpoints yield no values
+        # instead of looping forever. Equal endpoints are yielded once.
         if amount < 0:
             amount = -amount
             method = "subtract" if method == "add" else "add"

@@ -139,3 +139,11 @@ def test_range_wrong_sign_amount_is_empty():
 
     inverted = pendulum.interval(dt2, dt1)
     assert list(inverted.range("days", -1)) == []
+
+
+@pytest.mark.parametrize("amount", [-1, 1])
+def test_range_equal_endpoints(amount):
+    endpoint = pendulum.datetime(2000, 1, 1)
+    assert list(pendulum.interval(endpoint, endpoint).range("days", amount)) == [
+        endpoint
+    ]

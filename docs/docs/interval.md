@@ -152,8 +152,21 @@ You can pass an amount for the passed unit to control the length of the gap:
 ```
 
 `amount` must be a non-zero integer. A zero amount raises `ValueError`.
-A negative amount whose sign does not match the interval direction
-yields an empty iterator (the same way Python's `range()` does).
+A positive amount follows the interval direction, including backwards for an
+inverted interval. A negative amount walks away from the end, so it yields no
+values when the endpoints differ. When both endpoints are equal, either sign
+yields that endpoint once.
+
+```python
+>>> start = pendulum.datetime(2000, 1, 1)
+>>> end = pendulum.datetime(2000, 1, 3)
+>>> [dt.day for dt in pendulum.interval(end, start).range('days', 1)]
+[3, 2, 1]
+>>> list(pendulum.interval(end, start).range('days', -1))
+[]
+>>> [dt.day for dt in pendulum.interval(start, start).range('days', -1)]
+[1]
+```
 
 You can also directly iterate over the `Interval` instance,
 the unit will be `days` in this case:
