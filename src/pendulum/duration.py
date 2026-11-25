@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import cast
 from typing import overload
 
@@ -16,6 +17,7 @@ from pendulum.utils._compat import PYPY
 
 if TYPE_CHECKING:
     from typing_extensions import Self
+    from typing_extensions import SupportsIndex
 
 
 def _divide_and_round(a: float, b: float) -> int:
@@ -294,6 +296,23 @@ class Duration(timedelta):
         Return the interval as a native timedelta.
         """
         return timedelta(seconds=self.total_seconds())
+
+    def __reduce__(
+        self,
+    ) -> tuple[type[Self], tuple[int, int, int], dict[str, Any]]:
+        return self.__reduce_ex__(2)
+
+    def __reduce_ex__(
+        self, protocol: SupportsIndex
+    ) -> tuple[type[Self], tuple[int, int, int], dict[str, Any]]:
+        # The reduction inherited from timedelta only keeps the normalized
+        # day/second/microsecond constructor arguments, which drops the
+        # calendar units (years and months) the duration was built with.
+        # The instance state is preserved alongside them so that pickling
+        # and copying round-trip without losing information.
+        _, args = timedelta.__reduce__(self)
+
+        return self.__class__, args, dict(self.__dict__)
 
     def __str__(self) -> str:
         return self.in_words()
