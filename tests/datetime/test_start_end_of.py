@@ -368,3 +368,35 @@ def test_end_of_day_repeated_last_hour_with_fold_0():
     end = d.end_of("day")
     assert_datetime(end, 2023, 4, 1, 23, 59, 59, 999999)
     assert end.offset == -4 * 3600
+
+
+def test_start_end_of_at_the_limits_of_the_datetime_range():
+    # The UTC instant of these local times is outside years 1..9999.
+    start = pendulum.datetime(1, 1, 1, 12, tz=1).start_of("day")
+    assert_datetime(start, 1, 1, 1, 0, 0, 0, 0)
+
+    end = pendulum.datetime(9999, 12, 31, 12, tz=-1).end_of("day")
+    assert_datetime(end, 9999, 12, 31, 23, 59, 59, 999999)
+
+    assert_datetime(pendulum.datetime(1, 1, 15, tz=1).start_of("month"), 1, 1, 1)
+    assert_datetime(pendulum.datetime(1, 6, 1, tz=1).start_of("year"), 1, 1, 1)
+    assert_datetime(
+        pendulum.datetime(9999, 12, 1, tz=-1).end_of("month"),
+        9999,
+        12,
+        31,
+        23,
+        59,
+        59,
+        999999,
+    )
+    assert_datetime(
+        pendulum.datetime(9999, 6, 1, tz=-1).end_of("year"),
+        9999,
+        12,
+        31,
+        23,
+        59,
+        59,
+        999999,
+    )

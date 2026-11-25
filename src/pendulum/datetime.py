@@ -869,9 +869,18 @@ class DateTime(datetime.datetime, Date):
             dt for dt in candidates if (dt.year, dt.month, dt.day) == (year, month, day)
         ] or candidates
 
-        def instant(dt: Self) -> datetime.datetime:
+        def instant(dt: Self) -> datetime.timedelta:
             # Same-tzinfo comparisons ignore the offset, so compare in UTC terms.
-            return dt.replace(tzinfo=None) - (dt.utcoffset() or datetime.timedelta())
+            # A timedelta, not a datetime: the UTC instant of a date near
+            # year 1 or 9999 can be outside the datetime range.
+            local = datetime.timedelta(
+                days=dt.toordinal(),
+                hours=dt.hour,
+                minutes=dt.minute,
+                seconds=dt.second,
+                microseconds=dt.microsecond,
+            )
+            return local - (dt.utcoffset() or datetime.timedelta())
 
         return (max if latest else min)(on_date, key=instant)
 
