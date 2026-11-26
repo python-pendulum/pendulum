@@ -199,6 +199,8 @@ def parse_iso8601(
         raise ParserError(f"Invalid date string: {text}")
 
     if not is_date:
+        if not m.group("minute") and m.group("timesep") != "T":
+            raise ParserError("Invalid ISO 8601 time part")
         is_time = True
 
     # Grabbing hh:mm:ss

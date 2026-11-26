@@ -82,6 +82,8 @@ ParserError: Unable to parse string [31-01-01]
 ### Time
 
 When passing only time information the date will default to today.
+To give just the hour, include the `T` prefix, as in `T13`. A bare `13` raises
+`ParserError` in strict mode.
 
 | String                            | Output                                     |
 | --------------------------------- | ------------------------------------------ |
