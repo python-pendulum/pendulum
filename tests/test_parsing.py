@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 import pendulum
 
+from pendulum.parsing import ParserError
 from tests.conftest import assert_date
 from tests.conftest import assert_datetime
 from tests.conftest import assert_duration
@@ -35,6 +38,27 @@ def test_parse() -> None:
     assert isinstance(dt, pendulum.DateTime)
     assert_datetime(dt, 2015, 11, 12, 12, 34, 56, 123456)
     assert dt.offset == 0
+
+
+@pytest.mark.parametrize("text", ["13", "13Z", "13+02:00"])
+def test_parse_rejects_bare_hour(text: str) -> None:
+    with pytest.raises(ParserError):
+        pendulum.parse(text)
+
+
+def test_parse_prefixed_hour() -> None:
+    dt = pendulum.parse("T13", now=pendulum.datetime(2015, 11, 12))
+
+    assert isinstance(dt, pendulum.DateTime)
+    assert_datetime(dt, 2015, 11, 12, 13, 0, 0)
+
+
+def test_parse_bare_hour_non_strict() -> None:
+    with pendulum.travel_to(pendulum.datetime(2015, 11, 12), freeze=True):
+        dt = pendulum.parse("13", strict=False)
+
+    assert isinstance(dt, pendulum.DateTime)
+    assert_datetime(dt, 2015, 11, 13, 0, 0, 0)
 
 
 def test_parse_with_timezone() -> None:
